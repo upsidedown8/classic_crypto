@@ -1,6 +1,4 @@
-use std::vec;
-
-use key::{Key, SetKey};
+use key::{Key, SetKey, StatefulKey};
 
 use crate::convert;
 use crate::util;
@@ -196,7 +194,17 @@ impl Key for Matrix {
         }
         result
     }
+    fn new() -> Matrix {
+        Matrix {
+            value: {
+                vec![vec![0; 2]; 2]
+            },
+            dim_size: 2
+        }
+    }
+}
 
+impl StatefulKey for Matrix {
     fn reset(&mut self) {
         self.value = vec![vec![0; self.dim_size]; self.dim_size];
         for i in 0..self.dim_size {
@@ -211,15 +219,6 @@ impl Key for Matrix {
                 }
             }
             if self.is_invertible() { break; }
-        }
-    }
-
-    fn new() -> Matrix {
-        Matrix {
-            value: {
-                vec![vec![0; 2]; 2]
-            },
-            dim_size: 2
         }
     }
 }

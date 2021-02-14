@@ -1,4 +1,4 @@
-use key::{Key, SetKey};
+use key::{Key, SetKey, StatefulKey};
 
 use crate::convert;
 use crate::util;
@@ -65,16 +65,6 @@ impl Key for Alphabet {
     fn to_string(&self) -> String {
         convert::to_string(&self.value)
     }
-
-    fn reset(&mut self) {
-        self.value = vec![0; 26];
-        self.update_inverse();
-    }
-    fn randomize(&mut self, rnd: &mut impl rand::Rng) {
-        util::shuffle(&mut self.value, rnd);
-        self.update_inverse();
-    }
-
     fn new() -> Alphabet {
         let mut alphabet = vec![0; 26];
         util::fill_consecutive_vec(&mut alphabet, 0, 26);
@@ -82,5 +72,16 @@ impl Key for Alphabet {
             value: alphabet.clone(),
             inverse: alphabet
         }
+    }
+}
+
+impl StatefulKey for Alphabet {
+    fn reset(&mut self) {
+        self.value = vec![0; 26];
+        self.update_inverse();
+    }
+    fn randomize(&mut self, rnd: &mut impl rand::Rng) {
+        util::shuffle(&mut self.value, rnd);
+        self.update_inverse();
     }
 }

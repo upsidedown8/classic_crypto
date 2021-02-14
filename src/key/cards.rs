@@ -1,6 +1,6 @@
 use std::usize;
 
-use key::{Key, SetKey};
+use key::{Key, SetKey, StatefulKey};
 
 use crate::convert;
 use crate::util;
@@ -176,20 +176,21 @@ impl Key for Cards {
 
         result
     }
-
-    fn reset(&mut self) {
-        util::fill_consecutive_vec(&mut self.value, 0, 54);
-    }
-    fn randomize(&mut self, rnd: &mut impl rand::Rng) {
-        util::shuffle(&mut self.value, rnd);
-    }
-
     fn new() -> Cards {
         let mut cards = vec![0; 54];
         util::fill_consecutive_vec(&mut cards, 0, 54);
         Cards {
             value: cards
         }
+    }
+}
+
+impl StatefulKey for Cards {
+    fn reset(&mut self) {
+        util::fill_consecutive_vec(&mut self.value, 0, 54);
+    }
+    fn randomize(&mut self, rnd: &mut impl rand::Rng) {
+        util::shuffle(&mut self.value, rnd);
     }
 }
 

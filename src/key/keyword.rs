@@ -1,4 +1,4 @@
-use key::{Key, SetKey};
+use key::{Key, SetKey, StatefulKey};
 
 use crate::convert;
 use crate::util;
@@ -42,7 +42,14 @@ impl Key for Keyword {
     fn to_string(&self) -> String {
         convert::to_string(&self.value)
     }
+    fn new() -> Keyword {
+        Keyword {
+            value: vec![0]
+        }
+    }
+}
 
+impl StatefulKey for Keyword {
     fn reset(&mut self) {
         self.value = vec![0];
     }
@@ -50,11 +57,5 @@ impl Key for Keyword {
         let length = rnd.gen_range(3..12);
         self.value.resize(length, 0);
         util::fill_random_array(&mut self.value, rnd, 26);
-    }
-
-    fn new() -> Keyword {
-        Keyword {
-            value: vec![0]
-        }
     }
 }
