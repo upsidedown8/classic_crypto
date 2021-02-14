@@ -1,4 +1,4 @@
-pub fn to_string(arr: &Vec<u16>) -> String {
+pub fn to_string(arr: &Vec<i16>) -> String {
     arr
         .into_iter()
         .map(|i| {
@@ -6,21 +6,21 @@ pub fn to_string(arr: &Vec<u16>) -> String {
         })
         .collect()
 }
-pub fn from_str(string: &str) -> Vec<u16> {
+pub fn from_str(string: &str) -> Vec<i16> {
     string
         .chars()
         .map(|i| {
             let upper = i.to_uppercase().next().unwrap();
-            (upper as u16) - 65
+            (upper as i16) - 65
         })
         .collect()
 }
-pub fn from_string(string: &String) -> Vec<u16> {
+pub fn from_string(string: &String) -> Vec<i16> {
     string
         .chars()
         .map(|i| {
             let upper = i.to_uppercase().next().unwrap();
-            (upper as u16) - 65
+            (upper as i16) - 65
         })
         .collect()
 }

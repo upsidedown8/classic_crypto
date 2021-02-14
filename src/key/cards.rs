@@ -1,3 +1,5 @@
+use std::usize;
+
 use key::{Key, SetKey};
 
 use crate::convert;
@@ -5,17 +7,17 @@ use crate::util;
 use crate::key::key;
 
 pub struct Cards {
-    value: Vec<u16>
+    value: Vec<i16>
 }
 
-const CARDS_PER_SUITE: u16 = 13;
-const A_JOKER: u16 = 52;
-const B_JOKER: u16 = 53;
+const CARDS_PER_SUITE: i16 = 13;
+const A_JOKER: i16 = 52;
+const B_JOKER: i16 = 53;
 
 const SUITES: &str = "CDHS";
 
 impl Cards {
-    fn shift_joker(&mut self, joker: u16) {
+    fn shift_joker(&mut self, joker: i16) {
         let joker_pos = self.value
             .iter()
             .position(|&x| {
@@ -61,7 +63,7 @@ impl Cards {
 
         self.value = tmp;
     }
-    fn count_cut(&mut self, length: u16) {
+    fn count_cut(&mut self, length: i16) {
         if self.value[53] < 52 {
             let mut tmp = vec![0; 54];
             let mut idx = 0;
@@ -79,7 +81,7 @@ impl Cards {
         }
     }
 
-    fn output_card(&self) -> u16 {
+    fn output_card(&self) -> i16 {
         if self.value[0] < 52 {
             let x = 1 + self.value[(self.value[0] + 1) as usize];
             return std::cmp::min(x, 53)
@@ -87,7 +89,7 @@ impl Cards {
         // return last card if it is a joker
         std::cmp::min(self.value[53]+1, 53)
     }
-    pub fn key_stream(&mut self, stream_len: usize) -> Vec<u16> {
+    pub fn key_stream(&mut self, stream_len: usize) -> Vec<i16> {
         let mut stream = vec![0; stream_len];
 
         let mut idx = 0;
@@ -122,8 +124,8 @@ impl From<&String> for Cards {
         cards
     }
 }
-impl From<&Vec<u16>> for Cards {
-    fn from(cards: &Vec<u16>) -> Cards {
+impl From<&Vec<i16>> for Cards {
+    fn from(cards: &Vec<i16>) -> Cards {
         Cards {
             value: cards.clone()
         }
@@ -136,8 +138,8 @@ impl SetKey<&String> for Cards {
         self.set(&vec);
     }
 }
-impl SetKey<&Vec<u16>> for Cards {
-    fn set(&mut self, vec: &Vec<u16>) {
+impl SetKey<&Vec<i16>> for Cards {
+    fn set(&mut self, vec: &Vec<i16>) {
         for i in 0..vec.len() {
             self.shift_joker(A_JOKER);
             self.shift_joker(B_JOKER);
@@ -162,10 +164,10 @@ impl Key for Cards {
                     result.push_str("JokerB");
                 },
                 _ => {
-                    let pos: usize = (self.value[i]/CARDS_PER_SUITE).into();
+                    let pos: usize = (self.value[i]/CARDS_PER_SUITE) as usize;
                     result.push(SUITES.as_bytes()[pos] as char);
 
-                    let num: u16 = (self.value[i]%CARDS_PER_SUITE)+1;
+                    let num: i16 = (self.value[i]%CARDS_PER_SUITE)+1;
                     result.push_str(&num.to_string());
                 }
             };

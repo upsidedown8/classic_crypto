@@ -5,8 +5,8 @@ use crate::util;
 use crate::key::key;
 
 pub struct Alphabet {
-    value: Vec<u16>,
-    inverse: Vec<u16>
+    value: Vec<i16>,
+    inverse: Vec<i16>
 }
 
 impl Alphabet {
@@ -14,10 +14,10 @@ impl Alphabet {
         self.inverse = util::invert(&self.value);
     }
 
-    pub fn encrypt(&self, letter: u16) -> u16 {
+    pub fn encrypt(&self, letter: i16) -> i16 {
         self.value[letter as usize]
     }
-    pub fn decrypt(&self, letter: u16) -> u16 {
+    pub fn decrypt(&self, letter: i16) -> i16 {
         self.inverse[letter as usize]
     }
 }
@@ -29,7 +29,7 @@ impl From<&str> for Alphabet {
 }
 impl From<&String> for Alphabet {
     fn from(string: &String) -> Alphabet {
-        let alphabet: Vec<u16> = convert::from_string(&string);
+        let alphabet: Vec<i16> = convert::from_string(&string);
         let my_value = util::fill_alphabet_from_start(&alphabet, 26);
         let my_inverse = util::invert(&my_value);
         Alphabet {
@@ -38,8 +38,8 @@ impl From<&String> for Alphabet {
         }
     }
 }
-impl From<&Vec<u16>> for Alphabet {
-    fn from(vec: &Vec<u16>) -> Alphabet {
+impl From<&Vec<i16>> for Alphabet {
+    fn from(vec: &Vec<i16>) -> Alphabet {
         Alphabet {
             value: vec.clone(),
             inverse: util::invert(vec)
@@ -49,13 +49,13 @@ impl From<&Vec<u16>> for Alphabet {
 
 impl SetKey<&String> for Alphabet {
     fn set(&mut self, string: &String) {
-        let alphabet: Vec<u16> = convert::from_string(&string);
+        let alphabet: Vec<i16> = convert::from_string(&string);
         self.value = util::fill_alphabet_from_start(&alphabet, 26);
         self.update_inverse();
     }
 }
-impl SetKey<&Vec<u16>> for Alphabet {
-    fn set(&mut self, vec: &Vec<u16>) {
+impl SetKey<&Vec<i16>> for Alphabet {
+    fn set(&mut self, vec: &Vec<i16>) {
         self.value = vec.clone();
         self.update_inverse();
     }

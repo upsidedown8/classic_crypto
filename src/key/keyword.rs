@@ -5,7 +5,7 @@ use crate::util;
 use crate::key::key;
 
 pub struct Keyword {
-    value: Vec<u16>
+    value: Vec<i16>
 }
 
 impl Keyword {
@@ -32,8 +32,8 @@ impl SetKey<&String> for Keyword {
         self.value = convert::from_string(&string);
     }
 }
-impl SetKey<&Vec<u16>> for Keyword {
-    fn set(&mut self, key: &Vec<u16>) {
+impl SetKey<&Vec<i16>> for Keyword {
+    fn set(&mut self, key: &Vec<i16>) {
         self.value = key.clone();
     }
 }
