@@ -58,9 +58,9 @@ impl Matrix {
     pub fn invert(&self) -> Matrix {
         Matrix {
             value: {
-                let adj = vec![0; self.dim_size * self.dim_size];
-                let matrix = vec![vec![0; self.dim_size]; self.dim_size];
-                let mut inv = 0;
+                let mut matrix = vec![vec![0; self.dim_size]; self.dim_size];
+                let adj;
+                let inv;
 
                 match self.dim_size {
                     2 => {
@@ -141,7 +141,7 @@ impl From<&String> for Matrix {
 }
 impl From<&Vec<i16>> for Matrix {
     fn from(arr: &Vec<i16>) -> Matrix {
-        let matrix = Matrix::new();
+        let mut matrix = Matrix::new();
         matrix.set(arr);
         matrix
     }
@@ -190,8 +190,8 @@ impl SetKey<&Vec<Vec<i16>>> for Matrix {
 
 impl Key for Matrix {
     fn to_string(&self) -> String {
-        let result = String::new();
-        for arr in self.value {
+        let mut result = String::new();
+        for arr in &self.value {
             result.push_str(convert::to_string(&arr).as_str());
         }
         result
@@ -210,7 +210,7 @@ impl Key for Matrix {
                     self.value[i][j] = rnd.gen_range(0..26);
                 }
             }
-            if is_invertible() { break; }
+            if self.is_invertible() { break; }
         }
     }
 
