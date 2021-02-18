@@ -7,8 +7,8 @@ use crate::util;
 const A_VALUES: [i16; 12] = [ 1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25];
 
 pub struct Affine {
-    a: i16,
-    b: i16
+    pub a: i16,
+    pub b: i16
 }
 
 impl Affine {
@@ -55,7 +55,7 @@ impl Asymmetric for Affine {
 }
 
 impl Keyed for Affine {
-    fn new() -> Affine {
+    fn new(_language: &Language) -> Affine {
         Affine {
             a: 1,
             b: 0

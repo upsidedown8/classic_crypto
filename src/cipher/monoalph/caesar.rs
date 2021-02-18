@@ -3,7 +3,7 @@ use crate::lang::Language;
 use crate::util;
 
 pub struct Caesar {
-    shift: i16
+    pub shift: i16
 }
 
 impl Asymmetric for Caesar {
@@ -38,7 +38,7 @@ impl Asymmetric for Caesar {
 }
 
 impl Keyed for Caesar {
-    fn new() -> Caesar {
+    fn new(_language: &Language) -> Caesar {
         Caesar {
             shift: 0
         }
