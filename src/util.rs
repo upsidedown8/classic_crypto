@@ -100,11 +100,11 @@ pub fn find_order(key: &Vec<i16>) -> Vec<i16> {
     order
 }
 
-pub fn mmi(a: i16, b: i16) -> i16 {
+pub fn mmi(a: i16, b: i16) -> Option<i16> {
     let (g, x, _) = extended_gcd(a as i32, b as i32);
     match g {
-        1 => modulo(x as i16, b),
-        _ => -1
+        1 => Some(modulo(x as i16, b)),
+        _ => None
     }
 }
 pub fn extended_gcd(a: i32, b: i32) -> (i32, i32, i32) {
