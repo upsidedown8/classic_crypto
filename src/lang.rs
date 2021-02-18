@@ -201,6 +201,9 @@ impl Language {
         self.cp_count() - 1
     }
     pub fn cp_count(&self) -> i16 {
-        self.alphabet_len
+        self.alphabet_len() as i16
+    }
+    pub fn alphabet_len(&self) -> usize {
+        self.alphabet_len as usize
     }
 }
