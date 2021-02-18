@@ -1,22 +1,16 @@
 use crate::lang::Language;
 
-trait Cipher {
-    fn to_string(&self, language: &Language) -> String;
+pub trait Symmetric {
+    fn run(&self, language: &Language, msg: &String) -> String;
 }
 
-trait Encrypt {
+pub trait Asymmetric {
     fn encrypt(&self, language: &Language, msg: &String) -> String;
-}
-
-trait Decrypt {
     fn decrypt(&self, language: &Language, msg: &String) -> String;
 }
 
-trait Solve {
-    fn solve(&self, language: &Language, msg: &String);
-}
-
-trait KeyedCipher {
-    fn reset(&self, language: &Language);
+pub trait Keyed {
+    fn reset(&mut self, language: &Language);
+    fn randomize(&mut self, language: &Language, rng: &mut impl rand::Rng);
     fn to_string(&self, language: &Language) -> String;
 }
