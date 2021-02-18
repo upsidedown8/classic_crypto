@@ -208,11 +208,11 @@ impl StatefulKey for Matrix {
             self.value[i][i] = 1;
         }
     }
-    fn randomize(&mut self, _language: &Language, rnd: &mut impl rand::Rng) {
+    fn randomize(&mut self, _language: &Language, rng: &mut impl rand::Rng) {
         loop {
             for i in 0..self.dim_size {
                 for j in 0..self.dim_size {
-                    self.value[i][j] = rnd.gen_range(0..26);
+                    self.value[i][j] = rng.gen_range(0..26);
                 }
             }
             if self.is_invertible() { break; }

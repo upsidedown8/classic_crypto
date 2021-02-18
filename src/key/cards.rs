@@ -183,7 +183,7 @@ impl StatefulKey for Cards {
     fn reset(&mut self, _language: &Language) {
         util::fill_consecutive_vec(&mut self.value, 0, 54);
     }
-    fn randomize(&mut self, _language: &Language, rnd: &mut impl rand::Rng) {
-        util::shuffle(&mut self.value, rnd);
+    fn randomize(&mut self, _language: &Language, rng: &mut impl rand::Rng) {
+        util::shuffle(&mut self.value, rng);
     }
 }

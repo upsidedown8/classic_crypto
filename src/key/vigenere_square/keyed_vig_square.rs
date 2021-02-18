@@ -55,10 +55,10 @@ impl StatefulKey for KeyedVigSquare {
         assert_eq!(language.alphabet_len(), 26);
         self.init_squares();
     }
-    fn randomize(&mut self, _language: &Language, rnd: &mut impl rand::Rng) {
+    fn randomize(&mut self, _language: &Language, rng: &mut impl rand::Rng) {
         let mut alphabet = vec![0; 26];
         util::fill_consecutive_vec(&mut alphabet, 0, 26);
-        util::shuffle(&mut alphabet, rnd);
+        util::shuffle(&mut alphabet, rng);
         for row in 0..26 {
             let mut idx: usize = 0;
             for col in row..26 {

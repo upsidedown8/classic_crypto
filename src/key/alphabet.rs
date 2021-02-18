@@ -75,8 +75,8 @@ impl StatefulKey for Alphabet {
         self.value = vec![0; language.alphabet_len()];
         self.update_inverse();
     }
-    fn randomize(&mut self, _language: &Language, rnd: &mut impl rand::Rng) {
-        util::shuffle(&mut self.value, rnd);
+    fn randomize(&mut self, _language: &Language, rng: &mut impl rand::Rng) {
+        util::shuffle(&mut self.value, rng);
         self.update_inverse();
     }
 }

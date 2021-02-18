@@ -58,9 +58,9 @@ pub fn fill_consecutive_vec(arr: &mut Vec<i16>, start: i16, modulus: i16) {
         arr[i] = modulo(start + (i as i16), modulus);
     }
 }
-pub fn fill_random_array(arr: &mut Vec<i16>, rnd: &mut impl rand::Rng, max_exclusive: i16) {
+pub fn fill_random_array(arr: &mut Vec<i16>, rng: &mut impl rand::Rng, max_exclusive: i16) {
     for i in 0..arr.len() {
-        arr[i] = rnd.gen_range(0..max_exclusive) as i16;
+        arr[i] = rng.gen_range(0..max_exclusive) as i16;
     }
 }
 
@@ -69,9 +69,9 @@ pub fn swap(arr: &mut Vec<i16>, a: usize, b: usize) {
     arr[a] = arr[b];
     arr[b] = temp;
 }
-pub fn shuffle(arr: &mut Vec<i16>, rnd: &mut impl rand::Rng) {
+pub fn shuffle(arr: &mut Vec<i16>, rng: &mut impl rand::Rng) {
     for i in 0..arr.len() {
-        swap(arr, i, rnd.gen_range(0..arr.len()));
+        swap(arr, i, rng.gen_range(0..arr.len()));
     }
 }
 

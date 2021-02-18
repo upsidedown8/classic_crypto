@@ -17,5 +17,5 @@ pub trait Key {
 
 pub trait StatefulKey {
     fn reset(&mut self, language: &Language);
-    fn randomize(&mut self, language: &Language, rnd: &mut impl Rng);
+    fn randomize(&mut self, language: &Language, rng: &mut impl Rng);
 }
