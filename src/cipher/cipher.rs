@@ -10,6 +10,7 @@ pub trait Asymmetric {
 }
 
 pub trait Keyed {
+    fn new() -> Self;
     fn reset(&mut self, language: &Language);
     fn randomize(&mut self, language: &Language, rng: &mut impl rand::Rng);
     fn to_string(&self, language: &Language) -> String;

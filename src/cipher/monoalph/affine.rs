@@ -55,6 +55,12 @@ impl Asymmetric for Affine {
 }
 
 impl Keyed for Affine {
+    fn new() -> Affine {
+        Affine {
+            a: 1,
+            b: 0
+        }
+    }
     fn reset(&mut self, _language: &Language) {
         self.a = 1;
         self.b = 0;
