@@ -23,7 +23,7 @@ impl Alphabet {
 }
 
 impl KeyFrom<&String> for Alphabet {
-    fn from(language: &Language, string: &String) -> Alphabet {
+    fn create_from(language: &Language, string: &String) -> Alphabet {
         let alphabet: Vec<i16> = language.string_to_vec(&string);
         let my_value = util::fill_alphabet_from_start(&alphabet, 26);
         let my_inverse = util::invert(&my_value);
@@ -34,7 +34,7 @@ impl KeyFrom<&String> for Alphabet {
     }
 }
 impl KeyFrom<&Vec<i16>> for Alphabet {
-    fn from(_language: &Language, vec: &Vec<i16>) -> Alphabet {
+    fn create_from(_language: &Language, vec: &Vec<i16>) -> Alphabet {
         Alphabet {
             value: vec.clone(),
             inverse: util::invert(vec)

@@ -112,14 +112,14 @@ impl Cards {
 }
 
 impl KeyFrom<&String> for Cards {
-    fn from(language: &Language, string: &String) -> Cards {
+    fn create_from(language: &Language, string: &String) -> Cards {
         let mut cards = Cards::new();
         cards.set_key(language, string);
         cards
     }
 }
 impl KeyFrom<&Vec<i16>> for Cards {
-    fn from(_language: &Language, cards: &Vec<i16>) -> Cards {
+    fn create_from(_language: &Language, cards: &Vec<i16>) -> Cards {
         Cards {
             value: cards.clone()
         }

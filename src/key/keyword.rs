@@ -15,7 +15,7 @@ impl Keyword {
 }
 
 impl KeyFrom<&String> for Keyword {
-    fn from(language: &Language, string: &String) -> Keyword {
+    fn create_from(language: &Language, string: &String) -> Keyword {
         Keyword {
             value: language.string_to_vec(&string)
         }

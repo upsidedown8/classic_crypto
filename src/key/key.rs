@@ -2,7 +2,7 @@ use rand::Rng;
 use crate::lang::Language;
 
 pub trait KeyFrom<T> {
-    fn from(language: &Language, _: T) -> Self;
+    fn create_from(language: &Language, _: T) -> Self;
 }
 
 pub trait SetKey<T> {

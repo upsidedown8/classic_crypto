@@ -127,20 +127,20 @@ impl Matrix {
 }
 
 impl KeyFrom<&String> for Matrix {
-    fn from(language: &Language, string: &String) -> Matrix {
+    fn create_from(language: &Language, string: &String) -> Matrix {
         let arr: Vec<i16> = language.string_to_vec(&string);
-        KeyFrom::from(language, &arr)
+        KeyFrom::create_from(language, &arr)
     }
 }
 impl KeyFrom<&Vec<i16>> for Matrix {
-    fn from(language: &Language, arr: &Vec<i16>) -> Matrix {
+    fn create_from(language: &Language, arr: &Vec<i16>) -> Matrix {
         let mut matrix = Matrix::new();
         matrix.set_key(language, arr);
         matrix
     }
 }
 impl KeyFrom<&Vec<Vec<i16>>> for Matrix {
-    fn from(_language: &Language, arr: &Vec<Vec<i16>>) -> Matrix {
+    fn create_from(_language: &Language, arr: &Vec<Vec<i16>>) -> Matrix {
         Matrix {
             value: arr.clone(),
             dim_size: arr.len()
