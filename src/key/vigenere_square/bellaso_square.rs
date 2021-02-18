@@ -1,5 +1,5 @@
 use key::Key;
-use crate::key::key;
+use crate::{key::key, lang::Language};
 use super::vig_square::{VigSquare, vig_square_to_string};
 
 pub struct BellasoSquare {
@@ -43,8 +43,8 @@ impl VigSquare for BellasoSquare {
 }
 
 impl Key for BellasoSquare {
-    fn to_string(&self) -> String {
-        vig_square_to_string(&self.square, 26, 26)
+    fn to_string(&self, language: &Language) -> String {
+        vig_square_to_string(language, &self.square, 26, 26)
     }
     fn new() -> BellasoSquare {
         let mut vig_square = BellasoSquare {

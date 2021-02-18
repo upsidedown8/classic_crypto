@@ -1,6 +1,6 @@
-use key::{Key, SetKey, StatefulKey};
+use key::{Key, SetKey, StatefulKey, KeyFrom};
 
-use crate::convert;
+use crate::lang::Language;
 use crate::util;
 use crate::key::key;
 
@@ -14,33 +14,28 @@ impl Keyword {
     }
 }
 
-impl From<&str> for Keyword {
-    fn from(string: &str) -> Keyword {
-        Keyword::from(&String::from(string))
-    }
-}
-impl From<&String> for Keyword {
-    fn from(string: &String) -> Keyword {
+impl KeyFrom<&String> for Keyword {
+    fn from(language: &Language, string: &String) -> Keyword {
         Keyword {
-            value: convert::from_string(&string)
+            value: language.string_to_vec(&string)
         }
     }
 }
 
 impl SetKey<&String> for Keyword {
-    fn set(&mut self, string: &String) {
-        self.value = convert::from_string(&string);
+    fn set_key(&mut self, language: &Language, string: &String) {
+        self.value = language.string_to_vec(&string);
     }
 }
 impl SetKey<&Vec<i16>> for Keyword {
-    fn set(&mut self, key: &Vec<i16>) {
+    fn set_key(&mut self, _language: &Language, key: &Vec<i16>) {
         self.value = key.clone();
     }
 }
 
 impl Key for Keyword {
-    fn to_string(&self) -> String {
-        convert::to_string(&self.value)
+    fn to_string(&self, language: &Language) -> String {
+        language.vec_to_string(&self.value)
     }
     fn new() -> Keyword {
         Keyword {

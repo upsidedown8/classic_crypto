@@ -1,5 +1,5 @@
 use key::Key;
-use crate::key::key;
+use crate::{key::key, lang::Language};
 use super::vig_square::{VigSquare, vig_square_to_string};
 
 pub struct PortaSquare {
@@ -38,8 +38,8 @@ impl VigSquare for PortaSquare {
 }
 
 impl Key for PortaSquare {
-    fn to_string(&self) -> String {
-        vig_square_to_string(&self.square, 13, 26)
+    fn to_string(&self, language: &Language) -> String {
+        vig_square_to_string(language, &self.square, 13, 26)
     }
     fn new() -> PortaSquare {
         let mut vig_square = PortaSquare {

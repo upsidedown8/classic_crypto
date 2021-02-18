@@ -1,6 +1,6 @@
-use key::{Key, SetKey, StatefulKey};
+use key::{Key, SetKey, StatefulKey, KeyFrom};
 
-use crate::convert;
+use crate::lang::Language;
 use crate::util;
 use crate::key::key;
 
@@ -22,14 +22,9 @@ impl Alphabet {
     }
 }
 
-impl From<&str> for Alphabet {
-    fn from(string: &str) -> Alphabet {
-        Alphabet::from(&String::from(string))
-    }
-}
-impl From<&String> for Alphabet {
-    fn from(string: &String) -> Alphabet {
-        let alphabet: Vec<i16> = convert::from_string(&string);
+impl KeyFrom<&String> for Alphabet {
+    fn from(language: &Language, string: &String) -> Alphabet {
+        let alphabet: Vec<i16> = language.string_to_vec(&string);
         let my_value = util::fill_alphabet_from_start(&alphabet, 26);
         let my_inverse = util::invert(&my_value);
         Alphabet {
@@ -38,8 +33,8 @@ impl From<&String> for Alphabet {
         }
     }
 }
-impl From<&Vec<i16>> for Alphabet {
-    fn from(vec: &Vec<i16>) -> Alphabet {
+impl KeyFrom<&Vec<i16>> for Alphabet {
+    fn from(_language: &Language, vec: &Vec<i16>) -> Alphabet {
         Alphabet {
             value: vec.clone(),
             inverse: util::invert(vec)
@@ -48,22 +43,22 @@ impl From<&Vec<i16>> for Alphabet {
 }
 
 impl SetKey<&String> for Alphabet {
-    fn set(&mut self, string: &String) {
-        let alphabet: Vec<i16> = convert::from_string(&string);
+    fn set_key(&mut self, language: &Language, string: &String) {
+        let alphabet: Vec<i16> = language.string_to_vec(&string);
         self.value = util::fill_alphabet_from_start(&alphabet, 26);
         self.update_inverse();
     }
 }
 impl SetKey<&Vec<i16>> for Alphabet {
-    fn set(&mut self, vec: &Vec<i16>) {
+    fn set_key(&mut self, _language: &Language, vec: &Vec<i16>) {
         self.value = vec.clone();
         self.update_inverse();
     }
 }
 
 impl Key for Alphabet {
-    fn to_string(&self) -> String {
-        convert::to_string(&self.value)
+    fn to_string(&self, language: &Language) -> String {
+        language.vec_to_string(&self.value)
     }
     fn new() -> Alphabet {
         let mut alphabet = vec![0; 26];

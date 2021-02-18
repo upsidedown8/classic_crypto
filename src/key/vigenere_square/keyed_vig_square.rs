@@ -1,7 +1,7 @@
 use std::usize;
 
 use key::{Key, StatefulKey};
-use crate::{key::key, util};
+use crate::{key::key, lang::Language, util};
 use super::vig_square::{VigSquare, vig_square_to_string};
 
 pub struct KeyedVigSquare {
@@ -35,8 +35,8 @@ impl VigSquare for KeyedVigSquare {
 }
 
 impl Key for KeyedVigSquare {
-    fn to_string(&self) -> String {
-        vig_square_to_string(&self.square, 26, 26)
+    fn to_string(&self, language: &Language) -> String {
+        vig_square_to_string(language, &self.square, 26, 26)
     }
     fn new() -> KeyedVigSquare {
         let my_square = vec![vec![0; 26]; 26];

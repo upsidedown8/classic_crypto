@@ -1,8 +1,7 @@
-use key::{Key, SetKey, StatefulKey};
+use crate::key::key::{Key, KeyFrom, SetKey, StatefulKey};
 
-use crate::convert;
+use crate::lang::Language;
 use crate::util;
-use crate::key::key;
 
 pub struct Matrix {
     value: Vec<Vec<i16>>,
@@ -24,7 +23,7 @@ impl Matrix {
             26
         )
     }
-    fn x2_inv_matrix(matrix: &Vec<Vec<i16>>) -> i16 {
+    fn x2_inv_matrix(matrix: &Vec<Vec<i16>>) -> Option<i16> {
         util::mmi(
             Matrix::x2_det_matrix(&matrix),
             26
@@ -36,7 +35,7 @@ impl Matrix {
             26
         )
     }
-    fn x3_inv_matrix(matrix: &Vec<Vec<i16>>) -> i16 {
+    fn x3_inv_matrix(matrix: &Vec<Vec<i16>>) -> Option<i16> {
         util::mmi(
             Matrix::x3_det_matrix(&matrix),
             26
@@ -93,6 +92,8 @@ impl Matrix {
                     }
                 }
 
+                let inv = inv.expect("Failed to calculate matrix inverse");
+
                 for i in 0..self.dim_size {
                     for j in 0..self.dim_size {
                         matrix[i][j] = util::modulo(adj[i*self.dim_size + j] * inv, 26);
@@ -117,7 +118,7 @@ impl Matrix {
                 panic!("dim_size must be either 2 (2x2) or 3 (3x3)");
             }
         };
-        inv > 0
+        inv != None
     }
 
     pub fn at(&self, x: usize, y: usize) -> i16 {
@@ -125,27 +126,21 @@ impl Matrix {
     }
 }
 
-impl From<&str> for Matrix {
-    fn from(string: &str) -> Matrix {
-        let string = String::from(string);
-        Matrix::from(&string)
+impl KeyFrom<&String> for Matrix {
+    fn from(language: &Language, string: &String) -> Matrix {
+        let arr: Vec<i16> = language.string_to_vec(&string);
+        KeyFrom::from(language, &arr)
     }
 }
-impl From<&String> for Matrix {
-    fn from(string: &String) -> Matrix {
-        let arr = convert::from_str(&string);
-        Matrix::from(&arr)
-    }
-}
-impl From<&Vec<i16>> for Matrix {
-    fn from(arr: &Vec<i16>) -> Matrix {
+impl KeyFrom<&Vec<i16>> for Matrix {
+    fn from(language: &Language, arr: &Vec<i16>) -> Matrix {
         let mut matrix = Matrix::new();
-        matrix.set(arr);
+        matrix.set_key(language, arr);
         matrix
     }
 }
-impl From<&Vec<Vec<i16>>> for Matrix {
-    fn from(arr: &Vec<Vec<i16>>) -> Matrix {
+impl KeyFrom<&Vec<Vec<i16>>> for Matrix {
+    fn from(_language: &Language, arr: &Vec<Vec<i16>>) -> Matrix {
         Matrix {
             value: arr.clone(),
             dim_size: arr.len()
@@ -154,13 +149,13 @@ impl From<&Vec<Vec<i16>>> for Matrix {
 }
 
 impl SetKey<&String> for Matrix {
-    fn set(&mut self, string: &String) {
-        let arr = convert::from_string(string);
-        self.set(&arr);
+    fn set_key(&mut self, language: &Language, string: &String) {
+        let arr = language.string_to_vec(string);
+        self.set_key(language, &arr);
     }
 }
 impl SetKey<&Vec<i16>> for Matrix {
-    fn set(&mut self, vec: &Vec<i16>) {
+    fn set_key(&mut self, _language: &Language, vec: &Vec<i16>) {
         let dim_size = match vec.len() {
             4 => { 2 },
             9 => { 3 },
@@ -180,17 +175,17 @@ impl SetKey<&Vec<i16>> for Matrix {
     }
 }
 impl SetKey<&Vec<Vec<i16>>> for Matrix {
-    fn set(&mut self, vec: &Vec<Vec<i16>>) {
+    fn set_key(&mut self, _language: &Language, vec: &Vec<Vec<i16>>) {
         self.value = vec.clone();
         self.dim_size = vec.len();
     }
 }
 
 impl Key for Matrix {
-    fn to_string(&self) -> String {
+    fn to_string(&self, language: &Language) -> String {
         let mut result = String::new();
         for arr in &self.value {
-            result.push_str(convert::to_string(&arr).as_str());
+            result.push_str(language.vec_to_string(&arr).as_str());
         }
         result
     }

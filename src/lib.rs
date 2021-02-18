@@ -1,6 +1,6 @@
 pub mod cipher;
-pub mod convert;
 pub mod key;
+pub mod lang;
 pub mod util;
 
 #[cfg(test)]

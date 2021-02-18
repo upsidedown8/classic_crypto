@@ -1,3 +1,5 @@
+use crate::lang::Language;
+
 pub trait VigSquare {
     fn init_squares(&mut self);
 
@@ -5,7 +7,7 @@ pub trait VigSquare {
     fn decrypt(&self, x: i16, y: i16) -> i16;
 }
 
-pub fn vig_square_to_string(square: &Vec<Vec<i16>>, max_y: usize, max_x: usize) -> String {
+pub fn vig_square_to_string(_language: &Language, square: &Vec<Vec<i16>>, max_y: usize, max_x: usize) -> String {
     let mut square_as_string = String::new();
 
     // left padding

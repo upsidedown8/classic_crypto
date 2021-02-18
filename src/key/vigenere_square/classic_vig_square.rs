@@ -1,5 +1,5 @@
 use key::Key;
-use crate::key::key;
+use crate::{key::key, lang::Language};
 use super::vig_square::{VigSquare, vig_square_to_string};
 
 pub struct ClassicVigSquare {
@@ -33,8 +33,8 @@ impl VigSquare for ClassicVigSquare {
 }
 
 impl Key for ClassicVigSquare {
-    fn to_string(&self) -> String {
-        vig_square_to_string(&self.square, 26, 26)
+    fn to_string(&self, language: &Language) -> String {
+        vig_square_to_string(language, &self.square, 26, 26)
     }
     fn new() -> ClassicVigSquare {
         let my_square = vec![vec![0; 26]; 26];
