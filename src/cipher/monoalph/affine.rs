@@ -70,6 +70,6 @@ impl Keyed for Affine {
         self.b = rng.gen_range(0..language.cp_count());
     }
     fn to_string(&self, _language: &Language) -> String {
-        format!("Affine: A({}) B({})", self.a, self.b)
+        format!("A:{}, B:{}", self.a, self.b)
     }
 }
