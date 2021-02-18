@@ -12,10 +12,10 @@ pub trait SetKey<T> {
 pub trait Key {
     fn to_string(&self, language: &Language) -> String;
 
-    fn new() -> Self;
+    fn new(language: &Language) -> Self;
 }
 
 pub trait StatefulKey {
-    fn reset(&mut self);
-    fn randomize(&mut self, rnd: &mut impl Rng);
+    fn reset(&mut self, language: &Language);
+    fn randomize(&mut self, language: &Language, rnd: &mut impl Rng);
 }

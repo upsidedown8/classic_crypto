@@ -38,7 +38,8 @@ impl Key for KeyedVigSquare {
     fn to_string(&self, language: &Language) -> String {
         vig_square_to_string(language, &self.square, 26, 26)
     }
-    fn new() -> KeyedVigSquare {
+    fn new(language: &Language) -> KeyedVigSquare {
+        assert_eq!(language.alphabet_len(), 26);
         let my_square = vec![vec![0; 26]; 26];
         let mut vig_square = KeyedVigSquare {
             square: my_square.clone(),
@@ -50,10 +51,11 @@ impl Key for KeyedVigSquare {
 }
 
 impl StatefulKey for KeyedVigSquare {
-    fn reset(&mut self) {
+    fn reset(&mut self, language: &Language) {
+        assert_eq!(language.alphabet_len(), 26);
         self.init_squares();
     }
-    fn randomize(&mut self, rnd: &mut impl rand::Rng) {
+    fn randomize(&mut self, _language: &Language, rnd: &mut impl rand::Rng) {
         let mut alphabet = vec![0; 26];
         util::fill_consecutive_vec(&mut alphabet, 0, 26);
         util::shuffle(&mut alphabet, rnd);

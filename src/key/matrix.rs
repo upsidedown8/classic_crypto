@@ -134,7 +134,7 @@ impl KeyFrom<&String> for Matrix {
 }
 impl KeyFrom<&Vec<i16>> for Matrix {
     fn create_from(language: &Language, arr: &Vec<i16>) -> Matrix {
-        let mut matrix = Matrix::new();
+        let mut matrix = Matrix::new(language);
         matrix.set_key(language, arr);
         matrix
     }
@@ -189,7 +189,8 @@ impl Key for Matrix {
         }
         result
     }
-    fn new() -> Matrix {
+    fn new(language: &Language) -> Matrix {
+        assert_eq!(language.alphabet_len(), 26);
         Matrix {
             value: {
                 vec![vec![0; 2]; 2]
@@ -200,13 +201,14 @@ impl Key for Matrix {
 }
 
 impl StatefulKey for Matrix {
-    fn reset(&mut self) {
+    fn reset(&mut self, language: &Language) {
+        assert_eq!(language.alphabet_len(), 26);
         self.value = vec![vec![0; self.dim_size]; self.dim_size];
         for i in 0..self.dim_size {
             self.value[i][i] = 1;
         }
     }
-    fn randomize(&mut self, rnd: &mut impl rand::Rng) {
+    fn randomize(&mut self, _language: &Language, rnd: &mut impl rand::Rng) {
         loop {
             for i in 0..self.dim_size {
                 for j in 0..self.dim_size {

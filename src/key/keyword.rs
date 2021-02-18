@@ -37,7 +37,7 @@ impl Key for Keyword {
     fn to_string(&self, language: &Language) -> String {
         language.vec_to_string(&self.value)
     }
-    fn new() -> Keyword {
+    fn new(_language: &Language) -> Keyword {
         Keyword {
             value: vec![0]
         }
@@ -45,12 +45,12 @@ impl Key for Keyword {
 }
 
 impl StatefulKey for Keyword {
-    fn reset(&mut self) {
+    fn reset(&mut self, _language: &Language) {
         self.value = vec![0];
     }
-    fn randomize(&mut self, rnd: &mut impl rand::Rng) {
+    fn randomize(&mut self, language: &Language, rnd: &mut impl rand::Rng) {
         let length = rnd.gen_range(3..12);
         self.value.resize(length, 0);
-        util::fill_random_array(&mut self.value, rnd, 26);
+        util::fill_random_array(&mut self.value, rnd, language.cp_count());
     }
 }

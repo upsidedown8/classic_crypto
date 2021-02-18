@@ -39,9 +39,11 @@ impl VigSquare for PortaSquare {
 
 impl Key for PortaSquare {
     fn to_string(&self, language: &Language) -> String {
+        assert_eq!(language.alphabet_len(), 26);
         vig_square_to_string(language, &self.square, 13, 26)
     }
-    fn new() -> PortaSquare {
+    fn new(language: &Language) -> PortaSquare {
+        assert_eq!(language.alphabet_len(), 26);
         let mut vig_square = PortaSquare {
             square: vec![vec![0; 26]; 26]
         };

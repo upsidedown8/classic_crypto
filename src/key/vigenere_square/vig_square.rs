@@ -7,7 +7,8 @@ pub trait VigSquare {
     fn decrypt(&self, x: i16, y: i16) -> i16;
 }
 
-pub fn vig_square_to_string(_language: &Language, square: &Vec<Vec<i16>>, max_y: usize, max_x: usize) -> String {
+pub fn vig_square_to_string(language: &Language, square: &Vec<Vec<i16>>, max_y: usize, max_x: usize) -> String {
+    assert_eq!(language.alphabet_len(), 26);
     let mut square_as_string = String::new();
 
     // left padding

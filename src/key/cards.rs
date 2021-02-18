@@ -113,7 +113,7 @@ impl Cards {
 
 impl KeyFrom<&String> for Cards {
     fn create_from(language: &Language, string: &String) -> Cards {
-        let mut cards = Cards::new();
+        let mut cards = Cards::new(language);
         cards.set_key(language, string);
         cards
     }
@@ -170,7 +170,7 @@ impl Key for Cards {
 
         result
     }
-    fn new() -> Cards {
+    fn new(_language: &Language) -> Cards {
         let mut cards = vec![0; 54];
         util::fill_consecutive_vec(&mut cards, 0, 54);
         Cards {
@@ -180,21 +180,10 @@ impl Key for Cards {
 }
 
 impl StatefulKey for Cards {
-    fn reset(&mut self) {
+    fn reset(&mut self, _language: &Language) {
         util::fill_consecutive_vec(&mut self.value, 0, 54);
     }
-    fn randomize(&mut self, rnd: &mut impl rand::Rng) {
+    fn randomize(&mut self, _language: &Language, rnd: &mut impl rand::Rng) {
         util::shuffle(&mut self.value, rnd);
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn cards_from_string() {
-        // let cards_as_string = "H12 H13 S1 S2 C2 D1 S4 S9 S10 S11 S12 C3 C4 C5 C6 S13 C9 C10 C11 C12 C1 D2 D3 C8 JokerA C7 C13 S5 S6 S7 S8 JokerB D4 D5 D6 D7 D8 D9 D10 D11 D12 D13 H1 H2 H3 H4 H5 H6 H7 H8 H9 H10 H11 S3 ";
-        // assert_eq!(cards_as_string, Cards::from("Keyword").to_string());
     }
 }

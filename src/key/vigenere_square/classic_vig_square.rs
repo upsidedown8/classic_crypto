@@ -34,9 +34,11 @@ impl VigSquare for ClassicVigSquare {
 
 impl Key for ClassicVigSquare {
     fn to_string(&self, language: &Language) -> String {
+        assert_eq!(language.alphabet_len(), 26);
         vig_square_to_string(language, &self.square, 26, 26)
     }
-    fn new() -> ClassicVigSquare {
+    fn new(language: &Language) -> ClassicVigSquare {
+        assert_eq!(language.alphabet_len(), 26);
         let my_square = vec![vec![0; 26]; 26];
         let mut vig_square = ClassicVigSquare {
             square: my_square.clone(),
