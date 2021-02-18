@@ -11,6 +11,16 @@ pub struct Affine {
     b: i16
 }
 
+impl Affine {
+    pub fn solve_known_pair(&mut self, language: &Language, plain0: i16, plain1: i16, cipher0: i16, cipher1: i16) {
+        let d = util::modulo(plain0 - plain1, language.cp_count());
+        let inv_d = util::mmi(d, language.cp_count())
+            .expect("Failed to calculate modular inverse");
+        self.a = util::modulo(inv_d * (cipher0 - cipher1), language.cp_count());
+        self.b = util::modulo(inv_d * (plain0*cipher1 - plain1*cipher0), language.cp_count());
+    }
+}
+
 impl Asymmetric for Affine {
     fn encrypt(&self, language: &Language, msg: &String) -> String {
         msg
