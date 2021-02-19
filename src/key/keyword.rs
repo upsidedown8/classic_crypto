@@ -12,6 +12,10 @@ impl Keyword {
     pub fn len(&self) -> usize {
         self.value.len()
     }
+    pub fn at(&self, idx: usize) -> i16 {
+        assert!(idx < self.value.len());
+        self.value[idx]
+    }
 }
 
 impl KeyFrom<&String> for Keyword {
