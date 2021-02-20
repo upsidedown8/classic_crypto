@@ -22,7 +22,6 @@ impl Asymmetric for Autokey {
         let mut pt_vec = vec![0; self.keyword.len()];
         msg.chars()
             .map(|c| {
-                // ptArray[i], i < key.size() ? key[i] : ptArray[i - key.size()]
                 if language.is_letter(&c) {
                     let idx = count % self.keyword.len();
                     let cp = language.get_cp(&c);
