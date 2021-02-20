@@ -4,6 +4,7 @@ use crate::lang::Language;
 
 pub mod alphabet;
 pub mod cards;
+pub mod enigma;
 pub mod keyword;
 pub mod matrix;
 pub mod polybius_square;
