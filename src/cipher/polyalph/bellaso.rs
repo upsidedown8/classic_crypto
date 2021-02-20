@@ -1,5 +1,4 @@
 use crate::key::{keyword::Keyword, vigenere_square::vig_square::VigSquare};
-use crate::key::vigenere_square::classic_vig_square::ClassicVigSquare;
 use crate::lang::Language;
 use crate::{
     cipher::cipher::{Symmetric, Keyed},
