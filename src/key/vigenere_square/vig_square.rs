@@ -11,22 +11,34 @@ pub fn vig_square_to_string(language: &Language, square: &Vec<Vec<i16>>, max_y: 
     assert_eq!(language.alphabet_len(), 26);
     let mut square_as_string = String::new();
 
+    let is_porta = max_y == 13;
+
     // left padding
-    square_as_string.push_str("  | ");
+    square_as_string.push_str(if is_porta {"    | "} else {"  | "});
 
     // print headers
     for i in 0..26 {
-        square_as_string.push((i as u8+65) as char);
+        square_as_string.push(language.cp_to_upper(i));
         square_as_string.push(' ');
     }
-    square_as_string.push_str("\n==|====================================================\n");
+    if is_porta {
+        square_as_string.push_str("\n====|====================================================\n");
+    } else {
+        square_as_string.push_str("\n==|====================================================\n");
+    }
 
     // main square
-    for y in 0..max_y {
-        square_as_string.push((y as u8+65) as char);
+    for y in 0..max_y as i16 {
+        if is_porta {
+            square_as_string.push(language.cp_to_upper(y/2));
+            square_as_string.push(',');
+            square_as_string.push(language.cp_to_upper(y/2 + 1));
+        } else {
+            square_as_string.push(language.cp_to_upper(y));
+        }
         square_as_string.push_str(" | ");
         for x in 0..max_x {
-            square_as_string.push((square[y][x] as u8+65) as char);
+            square_as_string.push(language.cp_to_upper(square[y as usize][x]));
             square_as_string.push(' ');
         }
         square_as_string.push('\n')
