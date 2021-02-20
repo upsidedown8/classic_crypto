@@ -1,6 +1,6 @@
 use rand::prelude::SliceRandom;
 
-use crate::cipher::cipher::{Asymmetric, Keyed};
+use crate::cipher::{Asymmetric, Keyed};
 use crate::lang::Language;
 use crate::util;
 

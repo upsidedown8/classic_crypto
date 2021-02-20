@@ -2,7 +2,7 @@ use key::{Key, SetKey, StatefulKey, KeyFrom};
 
 use crate::lang::Language;
 use crate::util;
-use crate::key::key;
+use crate::key;
 
 pub struct Keyword {
     value: Vec<i16>

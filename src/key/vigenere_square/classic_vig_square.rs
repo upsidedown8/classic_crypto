@@ -1,6 +1,6 @@
 use key::Key;
-use crate::{key::key, lang::Language};
-use super::vig_square::{VigSquare, vig_square_to_string};
+use crate::{key, lang::Language};
+use super::{VigSquare, vig_square_to_string};
 
 pub struct ClassicVigSquare {
     square: Vec<Vec<i16>>,

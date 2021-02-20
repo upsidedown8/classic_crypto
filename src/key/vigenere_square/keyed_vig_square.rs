@@ -1,8 +1,8 @@
 use std::usize;
 
 use key::{Key, StatefulKey};
-use crate::{key::key, lang::Language, util};
-use super::vig_square::{VigSquare, vig_square_to_string};
+use crate::{key, lang::Language, util};
+use super::{VigSquare, vig_square_to_string};
 
 pub struct KeyedVigSquare {
     square: Vec<Vec<i16>>,

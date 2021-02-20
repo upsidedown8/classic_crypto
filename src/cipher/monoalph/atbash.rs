@@ -1,4 +1,4 @@
-use crate::cipher::cipher::Symmetric;
+use crate::cipher::Symmetric;
 use crate::lang::Language;
 
 pub struct Atbash {}

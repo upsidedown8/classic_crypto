@@ -1,4 +1,4 @@
-use crate::key::key::{Key, KeyFrom, SetKey, StatefulKey};
+use crate::key::{Key, KeyFrom, SetKey, StatefulKey};
 
 use crate::lang::Language;
 use crate::util;

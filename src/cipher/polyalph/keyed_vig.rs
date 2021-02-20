@@ -2,10 +2,10 @@ use crate::key::keyword::Keyword;
 use crate::key::vigenere_square::keyed_vig_square::KeyedVigSquare;
 use crate::lang::Language;
 use crate::{
-    cipher::cipher::{Asymmetric, Keyed},
+    cipher::{Asymmetric, Keyed},
     key::{
-        key::{Key, StatefulKey},
-        vigenere_square::vig_square::VigSquare,
+        {Key, StatefulKey},
+        vigenere_square::VigSquare,
     },
 };
 

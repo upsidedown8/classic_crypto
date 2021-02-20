@@ -1,3 +1,6 @@
+pub mod monoalph;
+pub mod polyalph;
+
 use crate::lang::Language;
 
 pub trait Symmetric {

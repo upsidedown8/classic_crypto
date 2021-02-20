@@ -1,9 +1,9 @@
-use crate::key::{keyword::Keyword, vigenere_square::vig_square::VigSquare};
+use crate::key::{keyword::Keyword, vigenere_square::VigSquare};
 use crate::lang::Language;
 use crate::{
-    cipher::cipher::{Symmetric, Keyed},
+    cipher::{Symmetric, Keyed},
     key::{
-        key::{Key, StatefulKey},
+        {Key, StatefulKey},
         vigenere_square::bellaso_square::BellasoSquare,
     },
 };

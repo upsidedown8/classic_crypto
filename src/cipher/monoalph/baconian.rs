@@ -1,4 +1,4 @@
-use crate::cipher::cipher::Asymmetric;
+use crate::cipher::Asymmetric;
 use crate::lang::Language;
 
 pub struct Baconian { }
