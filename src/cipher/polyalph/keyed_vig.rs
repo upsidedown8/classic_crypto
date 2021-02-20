@@ -10,7 +10,7 @@ use crate::{
 };
 
 pub struct KeyedVigenere {
-    square: KeyedVigSquare,
+    pub square: KeyedVigSquare,
     pub keyword: Keyword,
 }
 
