@@ -9,7 +9,7 @@ use crate::{
 };
 
 pub struct Porta {
-    pub square: PortaSquare,
+    square: PortaSquare,
     pub keyword: Keyword,
 }
 
