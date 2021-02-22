@@ -7,7 +7,7 @@ pub struct Caesar {
 }
 
 impl Asymmetric for Caesar {
-    fn encrypt(&self, language: &Language, msg: &String) -> String {
+    fn encrypt(&self, language: &Language, msg: &str) -> String {
         msg.chars()
             .map(|c| {
                 if language.is_letter(&c) {
@@ -20,7 +20,7 @@ impl Asymmetric for Caesar {
             })
             .collect()
     }
-    fn decrypt(&self, language: &Language, msg: &String) -> String {
+    fn decrypt(&self, language: &Language, msg: &str) -> String {
         msg.chars()
             .map(|c| {
                 if language.is_letter(&c) {

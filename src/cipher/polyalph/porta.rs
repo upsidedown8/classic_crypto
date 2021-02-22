@@ -16,7 +16,7 @@ pub struct Porta {
 impl Porta {}
 
 impl Symmetric for Porta {
-    fn run(&self, language: &Language, msg: &String) -> String {
+    fn run(&self, language: &Language, msg: &str) -> String {
         let mut count = 0;
         msg.chars()
             .map(|c| {

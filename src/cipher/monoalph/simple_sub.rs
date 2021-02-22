@@ -10,7 +10,7 @@ pub struct SimpleSubstitution {
 }
 
 impl Asymmetric for SimpleSubstitution {
-    fn encrypt(&self, language: &Language, msg: &String) -> String {
+    fn encrypt(&self, language: &Language, msg: &str) -> String {
         msg.chars()
             .map(|c| {
                 if language.is_letter(&c) {
@@ -23,7 +23,7 @@ impl Asymmetric for SimpleSubstitution {
             })
             .collect()
     }
-    fn decrypt(&self, language: &Language, msg: &String) -> String {
+    fn decrypt(&self, language: &Language, msg: &str) -> String {
         msg.chars()
             .map(|c| {
                 if language.is_letter(&c) {

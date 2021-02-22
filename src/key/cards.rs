@@ -29,7 +29,7 @@ impl Cards {
                 self.value[1] = joker;
             }
             _ => {
-                util::swap(&mut self.value, joker_pos, joker_pos + 1);
+                self.value.swap(joker_pos, joker_pos + 1);
             }
         }
     }
@@ -71,10 +71,7 @@ impl Cards {
                 tmp[idx] = self.value[i as usize];
                 idx += 1;
             }
-            for i in 0..53 {
-                // leave last card
-                self.value[i] = tmp[i];
-            }
+            self.value.copy_from_slice(&tmp[0..53]);
         }
     }
 
@@ -105,7 +102,7 @@ impl Cards {
                 idx += 1;
             }
         }
-        return stream;
+        stream
     }
 }
 
@@ -132,13 +129,13 @@ impl SetKey<&String> for Cards {
 }
 impl SetKey<&Vec<i16>> for Cards {
     fn set_key(&mut self, _language: &Language, vec: &Vec<i16>) {
-        for i in 0..vec.len() {
+        for card in vec {
             self.shift_joker(A_JOKER);
             self.shift_joker(B_JOKER);
             self.shift_joker(B_JOKER);
             self.triple_cut();
             self.count_cut(self.value[53] + 1);
-            self.count_cut(vec[i] + 1);
+            self.count_cut(card + 1);
         }
     }
 }

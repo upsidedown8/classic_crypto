@@ -17,7 +17,7 @@ pub struct KeyedVigenere {
 impl KeyedVigenere {}
 
 impl Asymmetric for KeyedVigenere {
-    fn encrypt(&self, language: &Language, msg: &String) -> String {
+    fn encrypt(&self, language: &Language, msg: &str) -> String {
         let mut count = 0;
         msg.chars()
             .map(|c| {
@@ -34,7 +34,7 @@ impl Asymmetric for KeyedVigenere {
             })
             .collect()
     }
-    fn decrypt(&self, language: &Language, msg: &String) -> String {
+    fn decrypt(&self, language: &Language, msg: &str) -> String {
         let mut count = 0;
         msg.chars()
             .map(|c| {

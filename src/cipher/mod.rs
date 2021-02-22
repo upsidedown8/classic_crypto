@@ -7,12 +7,12 @@ pub mod polyalph;
 use crate::lang::Language;
 
 pub trait Symmetric {
-    fn run(&self, language: &Language, msg: &String) -> String;
+    fn run(&self, language: &Language, msg: &str) -> String;
 }
 
 pub trait Asymmetric {
-    fn encrypt(&self, language: &Language, msg: &String) -> String;
-    fn decrypt(&self, language: &Language, msg: &String) -> String;
+    fn encrypt(&self, language: &Language, msg: &str) -> String;
+    fn decrypt(&self, language: &Language, msg: &str) -> String;
 }
 
 pub trait Keyed {

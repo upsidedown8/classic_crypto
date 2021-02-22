@@ -61,14 +61,14 @@ impl StatefulKey for KeyedVigSquare {
         util::shuffle(&mut alphabet, rng);
         for row in 0..26 {
             let mut idx: usize = 0;
-            for col in row..26 {
-                self.inverse[row][alphabet[col] as usize] = idx as i16;
-                self.square[row][idx] = alphabet[col] as i16;
+            for letter in &alphabet[row..26] {
+                self.inverse[row][*letter as usize] = idx as i16;
+                self.square[row][idx] = *letter;
                 idx += 1;
             }
-            for col in 0..row {
-                self.inverse[row][alphabet[col] as usize] = idx as i16;
-                self.square[row][idx] = alphabet[col] as i16;
+            for letter in &alphabet[0..row] {
+                self.inverse[row][*letter as usize] = idx as i16;
+                self.square[row][idx] = *letter;
                 idx += 1;
             }
         }

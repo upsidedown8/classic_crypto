@@ -3,7 +3,7 @@ use std::collections::HashMap;
 extern crate serde;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Default)]
 pub struct Language {
     /* Current language details */
     pub name: String,
@@ -21,17 +21,6 @@ pub struct Language {
 }
 
 impl Language {
-    pub fn new() -> Language {
-        Language {
-            name: String::new(),
-            char_to_cp: HashMap::new(),
-            upper_alphabet: Vec::new(),
-            lower_alphabet: Vec::new(),
-            alphabet_len: 0,
-            substitution_table: HashMap::new(),
-        }
-    }
-
     /* Alphabet setup */
     pub fn new_cp(&mut self, upper: &char, lower: &char) -> i16 {
         assert!(!self.char_to_cp.contains_key(upper));
@@ -85,10 +74,10 @@ impl Language {
     }
 
     /* Substitution table setup */
-    pub fn add_substitution(&mut self, from: &char, to: &String) {
+    pub fn add_substitution(&mut self, from: &char, to: &str) {
         assert!(!self.substitution_table.contains_key(from));
 
-        self.substitution_table.insert(*from, to.clone());
+        self.substitution_table.insert(*from, String::from(to));
     }
     pub fn del_substitution(&mut self, from: &char) {
         self.substitution_table.remove(from);
@@ -121,13 +110,13 @@ impl Language {
     }
 
     /* String conversions */
-    pub fn vec_to_string(&self, arr: &Vec<i16>) -> String {
+    pub fn vec_to_string(&self, arr: &[i16]) -> String {
         arr.iter().map(|&i| self.cp_to_upper(i)).collect()
     }
     pub fn str_to_vec(&self, string: &str) -> Vec<i16> {
         self.string_to_vec(&String::from(string))
     }
-    pub fn string_to_vec(&self, string: &String) -> Vec<i16> {
+    pub fn string_to_vec(&self, string: &str) -> Vec<i16> {
         string
             .chars()
             .filter(|i| self.is_letter(i))
@@ -136,7 +125,7 @@ impl Language {
     }
 
     /* Substitution table */
-    pub fn substitute_string(&self, string: &String) -> String {
+    pub fn substitute_string(&self, string: &str) -> String {
         let mut result: String = String::new();
         string.chars().for_each(|c| {
             if self.substitution_table.contains_key(&c) {

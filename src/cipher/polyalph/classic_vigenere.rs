@@ -17,7 +17,7 @@ pub struct ClassicVigenere {
 impl ClassicVigenere {}
 
 impl Asymmetric for ClassicVigenere {
-    fn encrypt(&self, language: &Language, msg: &String) -> String {
+    fn encrypt(&self, language: &Language, msg: &str) -> String {
         let mut count = 0;
         msg.chars()
             .map(|c| {
@@ -34,7 +34,7 @@ impl Asymmetric for ClassicVigenere {
             })
             .collect()
     }
-    fn decrypt(&self, language: &Language, msg: &String) -> String {
+    fn decrypt(&self, language: &Language, msg: &str) -> String {
         let mut count = 0;
         msg.chars()
             .map(|c| {

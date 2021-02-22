@@ -4,7 +4,7 @@ use crate::lang::Language;
 pub struct Baconian {}
 
 impl Asymmetric for Baconian {
-    fn encrypt(&self, language: &Language, msg: &String) -> String {
+    fn encrypt(&self, language: &Language, msg: &str) -> String {
         let mut result = String::new();
         msg.chars().filter(|c| language.is_letter(c)).for_each(|c| {
             let cp = language.get_cp(&c);
@@ -16,7 +16,7 @@ impl Asymmetric for Baconian {
         });
         result
     }
-    fn decrypt(&self, language: &Language, msg: &String) -> String {
+    fn decrypt(&self, language: &Language, msg: &str) -> String {
         let mut result = String::new();
         let mut value = 0;
         let mut count = 0;

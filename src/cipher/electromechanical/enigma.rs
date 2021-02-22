@@ -19,7 +19,7 @@ pub struct Enigma {
 }
 
 impl Enigma {
-    pub fn run_mut(&mut self, language: &Language, msg: &String) -> String {
+    pub fn run_mut(&mut self, language: &Language, msg: &str) -> String {
         msg.chars()
             .map(|c| {
                 if language.is_letter(&c) {
@@ -67,7 +67,7 @@ impl Enigma {
 }
 
 impl Symmetric for Enigma {
-    fn run(&self, language: &Language, msg: &String) -> String {
+    fn run(&self, language: &Language, msg: &str) -> String {
         let mut enigma_mut = self.clone();
         enigma_mut.run_mut(language, msg)
     }

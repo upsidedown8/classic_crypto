@@ -4,7 +4,7 @@ use crate::lang::Language;
 pub struct ROT13 {}
 
 impl Symmetric for ROT13 {
-    fn run(&self, language: &Language, msg: &String) -> String {
+    fn run(&self, language: &Language, msg: &str) -> String {
         assert_eq!(language.cp_count() % 2, 0);
         msg.chars()
             .map(|c| {

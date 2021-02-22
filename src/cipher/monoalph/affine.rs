@@ -31,7 +31,7 @@ impl Affine {
 }
 
 impl Asymmetric for Affine {
-    fn encrypt(&self, language: &Language, msg: &String) -> String {
+    fn encrypt(&self, language: &Language, msg: &str) -> String {
         msg.chars()
             .map(|c| {
                 if language.is_letter(&c) {
@@ -44,7 +44,7 @@ impl Asymmetric for Affine {
             })
             .collect()
     }
-    fn decrypt(&self, language: &Language, msg: &String) -> String {
+    fn decrypt(&self, language: &Language, msg: &str) -> String {
         let mmi = util::mmi(self.a, language.cp_count())
             .expect("Alphabet length should be coprime to the value of A");
         msg.chars()

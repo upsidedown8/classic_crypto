@@ -17,7 +17,7 @@ pub struct Beaufort {
 impl Beaufort {}
 
 impl Symmetric for Beaufort {
-    fn run(&self, language: &Language, msg: &String) -> String {
+    fn run(&self, language: &Language, msg: &str) -> String {
         let mut count = 0;
         msg.chars()
             .map(|c| {

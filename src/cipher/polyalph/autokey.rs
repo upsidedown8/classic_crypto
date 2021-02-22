@@ -17,7 +17,7 @@ pub struct Autokey {
 impl Autokey {}
 
 impl Asymmetric for Autokey {
-    fn encrypt(&self, language: &Language, msg: &String) -> String {
+    fn encrypt(&self, language: &Language, msg: &str) -> String {
         let mut count = 0;
         let mut pt_vec = vec![0; self.keyword.len()];
         msg.chars()
@@ -42,7 +42,7 @@ impl Asymmetric for Autokey {
             })
             .collect()
     }
-    fn decrypt(&self, language: &Language, msg: &String) -> String {
+    fn decrypt(&self, language: &Language, msg: &str) -> String {
         let mut count = 0;
         let mut pt_vec = vec![0; self.keyword.len()];
         msg.chars()

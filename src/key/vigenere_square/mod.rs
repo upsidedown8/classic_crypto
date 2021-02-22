@@ -14,7 +14,7 @@ pub trait VigSquare {
 
 pub fn vig_square_to_string(
     language: &Language,
-    square: &Vec<Vec<i16>>,
+    square: &[Vec<i16>],
     max_y: usize,
     max_x: usize,
 ) -> String {
