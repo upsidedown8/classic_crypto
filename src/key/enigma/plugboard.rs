@@ -1,6 +1,7 @@
 use crate::{key::{Key, StatefulKey}, lang::Language, util};
 use rand::Rng;
 
+#[derive(Clone)]
 pub struct Plugboard {
     substitution: Vec<i16>
 }
@@ -60,7 +61,7 @@ impl Key for Plugboard {
                 tmp[t as usize] = t;
             }
         }
-        data.trim().to_string()
+        format!("Plugboard:{}", data.trim())
     }
 
     fn new(_language: &Language) -> Plugboard {

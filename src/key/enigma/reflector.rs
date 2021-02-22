@@ -33,6 +33,7 @@ const WIRINGS: [[i16; 26]; 5] = [
     [ 17,  3, 14,  1,  9, 13, 19, 10, 21,  4,  7, 12, 11,  5,  2, 22, 25,  0, 23,  6, 24,  8, 15, 18, 20, 16 ]
 ];
 
+#[derive(Clone, Copy)]
 pub struct Reflector {
     wiring_type: ReflectorType
 }
