@@ -1,11 +1,10 @@
 use crate::{
-    cipher::{Symmetric, Keyed},
+    cipher::{Keyed, Symmetric},
     key::{
         ClassicVigSquare, Keyword, VigSquare, {Key, StatefulKey},
     },
     lang::Language,
 };
-
 
 pub struct Beaufort {
     square: ClassicVigSquare,

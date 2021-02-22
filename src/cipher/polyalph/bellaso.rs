@@ -1,11 +1,10 @@
 use crate::{
-    cipher::{Symmetric, Keyed},
+    cipher::{Keyed, Symmetric},
     key::{
         BellasoSquare, Keyword, VigSquare, {Key, StatefulKey},
     },
     lang::Language,
 };
-
 
 pub struct Bellaso {
     square: BellasoSquare,

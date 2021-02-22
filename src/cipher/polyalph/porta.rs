@@ -1,7 +1,7 @@
 use crate::{
-    cipher::{Symmetric, Keyed},
+    cipher::{Keyed, Symmetric},
     key::{
-        PortaSquare, Keyword, VigSquare, {Key, StatefulKey},
+        Keyword, PortaSquare, VigSquare, {Key, StatefulKey},
     },
     lang::Language,
 };

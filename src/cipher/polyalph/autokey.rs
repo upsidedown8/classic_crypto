@@ -6,7 +6,6 @@ use crate::{
     lang::Language,
 };
 
-
 pub struct Autokey {
     square: ClassicVigSquare,
     pub keyword: Keyword,
