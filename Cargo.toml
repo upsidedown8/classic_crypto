@@ -4,8 +4,13 @@ version = "0.1.0"
 authors = ["Tom Thorogood <tomthorogood@outlook.com>"]
 edition = "2018"
 license-file = "LICENSE"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+readme = "README.md"
+repository = "https://github.com/upsidedown8/classic_crypto"
+documentation = "https://docs.rs/classic_crypto"
+homepage = "https://github.com/upsidedown8/classic_crypto"
+description = "Classical ciphers in rust, with a focus on multi-lingual support."
+keywords = ["crypto", "classical", "cipher"]
+categories = ["cryptography"]
 
 [dependencies]
 rand = "0.8.3"
