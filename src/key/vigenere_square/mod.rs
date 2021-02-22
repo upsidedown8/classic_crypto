@@ -5,13 +5,44 @@ pub mod porta_square;
 
 use crate::lang::Language;
 
+/// Trait implemented by vigenere square type `Key`s
 pub trait VigSquare {
+    /// All vigenere squares need a method to initialize the table
+    ///
     fn init_squares(&mut self);
 
+    /// Encrypts a letter `x` using key `y` typically by looking up on the `square`
+    /// member of the struct.
+    ///
+    /// # Arguments
+    ///
+    /// * `x` The letter (code point) to encrypt
+    /// * `y` The key (code point) to encrypt `x` with
+    ///
     fn encrypt(&self, x: i16, y: i16) -> i16;
+
+    /// Decrypts a letter `x` using key `y` typically by looking up on the `inverse`
+    /// member of the struct. For `Symmetrical` ciphers, the `VigSquare` implementation
+    /// calls `self.encrypt(x, y)` from the `decrypt` method.
+    ///
+    /// # Arguments
+    ///
+    /// * `x` The letter (code point) to decrypt
+    /// * `y` The key (code point) to decrypt `x` with
+    ///
     fn decrypt(&self, x: i16, y: i16) -> i16;
 }
 
+/// Single method used by all `VigSquare` implementations that converts the square to a `String`
+/// representation.
+///
+/// # Arguments
+///
+/// * `language` A borrowed instance of the currently loaded Language
+/// * `square` A borrowed slice of vectors representing the square
+/// * `max_y` The vertical maximum bound (exclusive)
+/// * `max_x` The horizontal maximum bound (exclusive)
+///  
 pub fn vig_square_to_string(
     language: &Language,
     square: &[Vec<i16>],
