@@ -7,23 +7,27 @@ use rand::{
     Rng,
 };
 
+// Wiring details from: https://en.wikipedia.org/wiki/Enigma_rotor_details#Rotor_wiring_tables
+
+/// Collection of all Enigma Reflector types from the M3 and M4 Enigma
+/// machines. (See Enigma cipher)
+///
 #[derive(Clone, Copy)]
 pub enum ReflectorType {
     A = 0,
     B = 1,
     C = 2,
-    BThin = 3,
-    CThin = 4,
+    BThin = 3, // M4
+    CThin = 4, // M4
 }
 
 impl Distribution<ReflectorType> for Standard {
+    /// BThin and CThin are a special case for M4 Enigma
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> ReflectorType {
         match rng.gen_range(0..5) {
             0 => ReflectorType::A,
             1 => ReflectorType::B,
-            2 => ReflectorType::C,
-            3 => ReflectorType::BThin,
-            _ => ReflectorType::CThin,
+            _ => ReflectorType::C,
         }
     }
 }
@@ -37,12 +41,22 @@ const WIRINGS: [[i16; 26]; 5] = [
     [ 17, 3, 14, 1, 9, 13, 19, 10, 21, 4, 7, 12, 11, 5, 2, 22, 25, 0, 23, 6, 24, 8, 15, 18, 20, 16, ],
 ];
 
+/// Represents an Enigma Reflector (See Enigma cipher)
+///
 #[derive(Clone, Copy)]
 pub struct Reflector {
+    /// The current internal wiring of the reflector
     wiring_type: ReflectorType,
 }
 
 impl Reflector {
+    /// Sends a letter through the wiring of the reflector and returns
+    /// the output
+    ///
+    /// # Arguments
+    ///
+    /// * `letter` The letter to input to the reflector
+    ///
     pub fn input(&self, letter: i16) -> i16 {
         WIRINGS[self.wiring_type as usize][letter as usize]
     }

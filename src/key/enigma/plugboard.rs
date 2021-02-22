@@ -5,18 +5,36 @@ use crate::{
 };
 use rand::Rng;
 
+/// Represents an Enigma Plugboard (See Enigma cipher)
+///
 #[derive(Clone)]
 pub struct Plugboard {
     substitution: Vec<i16>,
 }
 
 impl Plugboard {
+    /// Creates a new plug between two letters, provided that
+    /// the plug is valid
+    ///
+    /// # Arguments
+    ///
+    /// * `letter1` The first letter of the plug
+    /// * `letter2` The second letter of the plug
+    ///
     pub fn add_plug(&mut self, letter1: i16, letter2: i16) {
         assert!(self.is_valid_plug(letter1, letter2));
 
         self.substitution[letter1 as usize] = letter2;
         self.substitution[letter2 as usize] = letter1;
     }
+
+    /// Removes a plug between two letters, provided that the plug exists
+    ///
+    /// # Arguments
+    ///
+    /// * `letter1` The first letter of the plug
+    /// * `letter2` The second letter of the plug
+    ///
     pub fn del_plug(&mut self, letter1: i16, letter2: i16) {
         assert!(self.is_existing_plug(letter1, letter2));
 
@@ -24,22 +42,51 @@ impl Plugboard {
         self.substitution[letter2 as usize] = letter2;
     }
 
+    /// Sends a letter through the plugboard and returns the output
+    /// letter. If the letter is not plugged, returns that letter.
+    ///
+    /// # Arguments
+    ///
+    /// * `letter` The letter to input to the plug
+    ///
     pub fn input(&self, letter: i16) -> i16 {
         self.substitution[letter as usize]
     }
 
+    /// Checks whether creating a plug between letter1 and letter2 is allowed.
+    ///
+    /// # Arguments
+    ///
+    /// * `letter1` The first letter of the plug
+    /// * `letter2` The second letter of the plug
+    ///
     pub fn is_valid_plug(&self, letter1: i16, letter2: i16) -> bool {
         let idx1 = letter1 as usize;
         let idx2 = letter2 as usize;
 
         self.substitution[idx1] == letter1 && self.substitution[idx2] == letter2 && idx1 != idx2
     }
+
+    /// Checks whether two letters are plugged together
+    ///
+    /// # Arguments
+    ///
+    /// * `letter1` The first letter of the plug
+    /// * `letter2` The second letter of the plug
+    ///
     pub fn is_existing_plug(&self, letter1: i16, letter2: i16) -> bool {
         let idx1 = letter1 as usize;
         let idx2 = letter2 as usize;
 
         self.substitution[idx1] == letter2 && self.substitution[idx2] == letter1 && idx1 != idx2
     }
+
+    /// Checks whether a letter is used in a plug
+    ///
+    /// # Arguments
+    ///
+    /// * `letter` The letter to check
+    ///
     pub fn is_letter_used(&self, letter: i16) -> bool {
         self.substitution[letter as usize] != letter
     }

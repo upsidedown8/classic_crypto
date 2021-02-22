@@ -2,6 +2,8 @@ use super::{vig_square_to_string, VigSquare};
 use crate::{key, lang::Language};
 use key::Key;
 
+/// Represents a Vigenere tableau. (See Classic Vigenere cipher)
+///
 pub struct ClassicVigSquare {
     square: Vec<Vec<i16>>,
     inverse: Vec<Vec<i16>>,

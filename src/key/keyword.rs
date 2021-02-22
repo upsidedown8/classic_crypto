@@ -4,17 +4,31 @@ use crate::key;
 use crate::lang::Language;
 use crate::util;
 
+/// Represents a Keyword (See Vigenere ciphers)
+///
 pub struct Keyword {
     value: Vec<i16>,
 }
 
 impl Keyword {
+    /// Returns the length of the keyword
+    ///
     pub fn len(&self) -> usize {
         self.value.len()
     }
+
+    /// Is the keyword empty?
+    ///
     pub fn is_empty(&self) -> bool {
         self.value.is_empty()
     }
+
+    /// Get the value of the keyword at `idx` as a code point
+    ///
+    /// # Arguments
+    ///
+    /// * `idx` The index to get
+    ///
     pub fn at(&self, idx: usize) -> i16 {
         assert!(idx < self.value.len());
         self.value[idx]

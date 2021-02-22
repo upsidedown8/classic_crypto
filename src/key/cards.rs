@@ -6,6 +6,8 @@ use crate::key;
 use crate::lang::Language;
 use crate::util;
 
+/// Represents a deck of cards (See Solitaire cipher)
+///
 pub struct Cards {
     value: Vec<i16>,
 }
@@ -17,6 +19,12 @@ const B_JOKER: i16 = 53;
 const SUITES: &str = "CDHS";
 
 impl Cards {
+    /// Moves the joker one place
+    ///
+    /// # Arguments
+    ///
+    /// * `joker` The joker to move (A_JOKER or B_JOKER)
+    ///
     fn shift_joker(&mut self, joker: i16) {
         let joker_pos = self.value.iter().position(|&x| x == joker).unwrap();
         match joker_pos {
@@ -33,6 +41,9 @@ impl Cards {
             }
         }
     }
+
+    /// Performs a triple cut on the deck
+    ///
     fn triple_cut(&mut self) {
         let mut tmp = vec![0; 54];
 
@@ -58,6 +69,14 @@ impl Cards {
 
         self.value = tmp;
     }
+
+    /// Performs a count cut on the deck
+    ///
+    /// # Arguments
+    ///
+    /// * `length` The length of the count cut
+    ///
+    ///
     fn count_cut(&mut self, length: i16) {
         if self.value[53] < 52 {
             let mut tmp = vec![0; 54];
@@ -75,6 +94,8 @@ impl Cards {
         }
     }
 
+    /// Calculates the output card of the deck (used for the key stream)
+    ///
     fn output_card(&self) -> i16 {
         if self.value[0] < 52 {
             let x = 1 + self.value[(self.value[0] + 1) as usize];
@@ -83,6 +104,14 @@ impl Cards {
         // return last card if it is a joker
         std::cmp::min(self.value[53] + 1, 53)
     }
+
+    /// Calculates the key stream of the deck, which is then used to shift
+    /// the plaintext letters
+    ///
+    /// # Arguments
+    ///
+    /// * `stream_len` The required length of the key stream
+    ///
     pub fn key_stream(&mut self, stream_len: usize) -> Vec<i16> {
         let mut stream = vec![0; stream_len];
 

@@ -38,7 +38,7 @@ pub trait VigSquare {
 ///
 /// # Arguments
 ///
-/// * `language` A borrowed instance of the currently loaded Language
+/// * `language` A borrowed instance of the currently loaded `Language`
 /// * `square` A borrowed slice of vectors representing the square
 /// * `max_y` The vertical maximum bound (exclusive)
 /// * `max_x` The horizontal maximum bound (exclusive)

@@ -4,19 +4,36 @@ use crate::key;
 use crate::lang::Language;
 use crate::util;
 
+/// Represents a substitution alphabet (See Simple Substitution cipher)
+///
 pub struct Alphabet {
     value: Vec<i16>,
     inverse: Vec<i16>,
 }
 
 impl Alphabet {
+    /// Calculates the inverse of `value`, then assigns to `inverse`
+    ///  
     fn update_inverse(&mut self) {
         self.inverse = util::invert(&self.value);
     }
 
+    /// Encrypts `letter` using the alphabet
+    ///
+    /// # Arguments
+    ///
+    /// * `letter` The letter to encrypt
+    ///
     pub fn encrypt(&self, letter: i16) -> i16 {
         self.value[letter as usize]
     }
+
+    /// Decrypts `letter` using the alphabet
+    ///
+    /// # Arguments
+    ///
+    /// * `letter` The letter to decrypt
+    ///
     pub fn decrypt(&self, letter: i16) -> i16 {
         self.inverse[letter as usize]
     }

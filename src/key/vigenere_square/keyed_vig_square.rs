@@ -4,6 +4,8 @@ use super::{vig_square_to_string, VigSquare};
 use crate::{key, lang::Language, util};
 use key::{Key, StatefulKey};
 
+/// Represents a Keyed Vigenere tableau. (See Keyed Vigenere cipher)
+///
 pub struct KeyedVigSquare {
     square: Vec<Vec<i16>>,
     inverse: Vec<Vec<i16>>,

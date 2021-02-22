@@ -2,6 +2,8 @@ use super::{vig_square_to_string, VigSquare};
 use crate::{key, lang::Language};
 use key::Key;
 
+/// Represents a Porta tableau. (See Porta cipher)
+///
 pub struct PortaSquare {
     square: Vec<Vec<i16>>,
 }

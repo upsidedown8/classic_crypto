@@ -2,6 +2,8 @@ use super::{vig_square_to_string, VigSquare};
 use crate::{key, lang::Language};
 use key::Key;
 
+/// Represents a Bellaso tableau. (See Bellaso cipher)
+///
 pub struct BellasoSquare {
     square: Vec<Vec<i16>>,
 }

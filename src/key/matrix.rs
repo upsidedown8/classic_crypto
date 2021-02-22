@@ -3,41 +3,96 @@ use crate::key::{Key, KeyFrom, SetKey, StatefulKey};
 use crate::lang::Language;
 use crate::util;
 
+/// Represents a Matrix (See Hill Cipher)
+///
 pub struct Matrix {
     value: Vec<Vec<i16>>,
     dim_size: usize,
 }
 
 impl Matrix {
+    /// Determinant of a 2x2 matrix
+    ///
+    /// # Arguments
+    ///
+    /// * `a` The first element
+    /// * `b` The second element
+    /// * `c` The third element
+    /// * `d` The fourth element
+    ///
     fn x2_det(a: i16, b: i16, c: i16, d: i16) -> i16 {
         a * d - b * c
     }
+
+    /// Determinant of a 2x2 matrix
+    ///
+    /// # Arguments
+    ///
+    /// * `matrix` The matrix to calculate determinant of
+    ///
     fn x2_det_matrix(matrix: &[Vec<i16>]) -> i16 {
         util::modulo(
             Matrix::x2_det(matrix[0][0], matrix[0][1], matrix[1][0], matrix[1][1]),
             26,
         )
     }
+
+    /// MMI of a 2x2 matrix
+    ///
+    /// # Arguments
+    ///
+    /// * `matrix` The matrix to calculate MMI of
+    ///
     fn x2_inv_matrix(matrix: &[Vec<i16>]) -> Option<i16> {
         util::mmi(Matrix::x2_det_matrix(&matrix), 26)
     }
+
+    /// Determinant of a 3x3 matrix
+    ///
+    /// # Arguments
+    ///
+    /// * `matrix` The matrix to calculate determinant of
+    ///
     fn x3_det_matrix(matrix: &[Vec<i16>]) -> i16 {
         util::modulo(Matrix::calc_a(matrix) - Matrix::calc_b(matrix), 26)
     }
+
+    /// MMI of a 3x3 matrix
+    ///
+    /// # Arguments
+    ///
+    /// * `matrix` The matrix to calculate MMI of
+    ///
     fn x3_inv_matrix(matrix: &[Vec<i16>]) -> Option<i16> {
         util::mmi(Matrix::x3_det_matrix(&matrix), 26)
     }
+
+    /// Helper for x3_det_matrix
+    ///
+    /// # Arguments
+    ///
+    /// * `matrix` The matrix to calculate A from
+    ///
     fn calc_a(matrix: &[Vec<i16>]) -> i16 {
         matrix[0][0] * matrix[1][1] * matrix[2][2]
             + matrix[0][1] * matrix[1][2] * matrix[2][0]
             + matrix[0][2] * matrix[1][0] * matrix[2][1]
     }
+
+    /// Helper for x3_det_matrix
+    ///
+    /// # Arguments
+    ///
+    /// * `matrix` The matrix to calculate B from
+    ///
     fn calc_b(matrix: &[Vec<i16>]) -> i16 {
         matrix[0][0] * matrix[1][2] * matrix[2][1]
             + matrix[0][1] * matrix[1][0] * matrix[2][2]
             + matrix[0][2] * matrix[1][1] * matrix[2][0]
     }
 
+    /// Inverts the matrix, if possible to do so
+    ///
     pub fn invert(&self) -> Matrix {
         Matrix {
             value: {
@@ -162,6 +217,8 @@ impl Matrix {
         }
     }
 
+    /// Is this matrix invertible?
+    ///
     pub fn is_invertible(&self) -> bool {
         let inv = match self.dim_size {
             2 => Matrix::x3_inv_matrix(&self.value),
@@ -173,6 +230,13 @@ impl Matrix {
         inv != None
     }
 
+    /// Gets the element at [x,y] in the matrix
+    ///
+    /// # Arguments
+    ///
+    /// * `x` The horizontal coordinate
+    /// * `y` The vertical coordinate
+    ///
     pub fn at(&self, x: usize, y: usize) -> i16 {
         self.value[x][y]
     }
