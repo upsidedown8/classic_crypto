@@ -23,12 +23,4 @@ jobs:
     - name: Check formatting
       run: cargo fmt --all -- --check
     - name: Cargo Clippy
-      run: cargo clippy \
-          --all-targets \
-          --all-features \
-          -- \
-          --forbid warnings \
-          --forbid clippy::all \
-          --forbid clippy::pedantic \
-          --forbid clippy::cargo \
-          --forbid clippy::nursery
+      run: cargo clippy --all-targets --all-features
