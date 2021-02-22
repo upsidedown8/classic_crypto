@@ -1,10 +1,8 @@
-use rand::prelude::SliceRandom;
+use rand::prelude::IteratorRandom;
 
 use crate::cipher::{Asymmetric, Keyed};
 use crate::lang::Language;
 use crate::util;
-
-const A_VALUES: [i16; 12] = [1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25];
 
 pub struct Affine {
     pub a: i16,
@@ -70,7 +68,10 @@ impl Keyed for Affine {
         self.b = 0;
     }
     fn randomize(&mut self, language: &Language, rng: &mut impl rand::Rng) {
-        self.a = *A_VALUES.choose(rng).unwrap_or(&1);
+        self.a = (1..language.cp_count())
+            .filter(|n| util::mmi(*n, language.cp_count()) != None)
+            .choose(rng)
+            .unwrap_or(1);
         self.b = rng.gen_range(0..language.cp_count());
     }
     fn to_string(&self, _language: &Language) -> String {
