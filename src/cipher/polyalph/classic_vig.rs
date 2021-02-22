@@ -1,12 +1,9 @@
-use crate::key::keyword::Keyword;
-use crate::key::vigenere_square::classic_vig_square::ClassicVigSquare;
-use crate::lang::Language;
 use crate::{
     cipher::{Asymmetric, Keyed},
     key::{
-        vigenere_square::VigSquare,
-        {Key, StatefulKey},
+        ClassicVigSquare, Keyword, VigSquare, {Key, StatefulKey},
     },
+    lang::Language,
 };
 
 pub struct ClassicVigenere {

@@ -1,12 +1,11 @@
-use crate::key::{keyword::Keyword, vigenere_square::VigSquare};
-use crate::lang::Language;
 use crate::{
-    cipher::{Keyed, Symmetric},
+    cipher::{Symmetric, Keyed},
     key::{
-        vigenere_square::bellaso_square::BellasoSquare,
-        {Key, StatefulKey},
+        BellasoSquare, Keyword, VigSquare, {Key, StatefulKey},
     },
+    lang::Language,
 };
+
 
 pub struct Bellaso {
     square: BellasoSquare,

@@ -1,14 +1,8 @@
+use crate::cipher::{Keyed, Symmetric};
+use crate::key::{
+    Key, KeyFrom, Plugboard, Reflector, ReflectorType, Rotor, RotorType, StatefulKey,
+};
 use crate::lang::Language;
-use crate::{
-    cipher::{Keyed, Symmetric},
-    key::{Key, KeyFrom, StatefulKey},
-};
-
-use crate::key::enigma::{
-    plugboard::Plugboard,
-    reflector::{Reflector, ReflectorType},
-    rotor::{Rotor, RotorType},
-};
 
 #[derive(Clone)]
 pub struct Enigma {

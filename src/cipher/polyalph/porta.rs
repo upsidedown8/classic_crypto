@@ -1,11 +1,9 @@
-use crate::key::{keyword::Keyword, vigenere_square::VigSquare};
-use crate::lang::Language;
 use crate::{
-    cipher::{Keyed, Symmetric},
+    cipher::{Symmetric, Keyed},
     key::{
-        vigenere_square::porta_square::PortaSquare,
-        {Key, StatefulKey},
+        PortaSquare, Keyword, VigSquare, {Key, StatefulKey},
     },
+    lang::Language,
 };
 
 pub struct Porta {

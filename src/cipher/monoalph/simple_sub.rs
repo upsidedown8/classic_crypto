@@ -1,4 +1,4 @@
-use crate::key::alphabet::Alphabet;
+use crate::key::Alphabet;
 use crate::lang::Language;
 use crate::{
     cipher::{Asymmetric, Keyed},
