@@ -1,3 +1,4 @@
+pub mod electromechanical;
 pub mod monoalph;
 pub mod polyalph;
 
