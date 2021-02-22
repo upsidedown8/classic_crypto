@@ -103,6 +103,7 @@ pub fn mmi(a: i16, b: i16) -> Option<i16> {
         _ => None,
     }
 }
+#[allow(clippy::clippy::many_single_char_names)]
 pub fn extended_gcd(a: i32, b: i32) -> (i32, i32, i32) {
     match a {
         0 => (b, 0, 1),
