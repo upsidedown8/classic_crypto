@@ -1,9 +1,9 @@
-use key::Key;
+use super::{vig_square_to_string, VigSquare};
 use crate::{key, lang::Language};
-use super::{VigSquare, vig_square_to_string};
+use key::Key;
 
 pub struct BellasoSquare {
-    square: Vec<Vec<i16>>
+    square: Vec<Vec<i16>>,
 }
 
 impl VigSquare for BellasoSquare {
@@ -18,7 +18,7 @@ impl VigSquare for BellasoSquare {
                 self.square[row][idx] = (13 + col - row) as i16;
                 idx += 1;
             }
-            for col in 0..13-row {
+            for col in 0..13 - row {
                 self.square[row][idx] = (col + row) as i16;
                 idx += 1;
             }
@@ -50,7 +50,7 @@ impl Key for BellasoSquare {
     fn new(language: &Language) -> BellasoSquare {
         assert_eq!(language.alphabet_len(), 26);
         let mut vig_square = BellasoSquare {
-            square: vec![vec![0; 26]; 26]
+            square: vec![vec![0; 26]; 26],
         };
         vig_square.init_squares();
         vig_square

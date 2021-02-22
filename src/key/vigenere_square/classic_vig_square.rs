@@ -1,10 +1,10 @@
-use key::Key;
+use super::{vig_square_to_string, VigSquare};
 use crate::{key, lang::Language};
-use super::{VigSquare, vig_square_to_string};
+use key::Key;
 
 pub struct ClassicVigSquare {
     square: Vec<Vec<i16>>,
-    inverse: Vec<Vec<i16>>
+    inverse: Vec<Vec<i16>>,
 }
 
 impl VigSquare for ClassicVigSquare {
@@ -42,7 +42,7 @@ impl Key for ClassicVigSquare {
         let my_square = vec![vec![0; 26]; 26];
         let mut vig_square = ClassicVigSquare {
             square: my_square.clone(),
-            inverse: my_square
+            inverse: my_square,
         };
         vig_square.init_squares();
         vig_square

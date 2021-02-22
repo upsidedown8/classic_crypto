@@ -1,12 +1,12 @@
-use key::{Key, SetKey, StatefulKey, KeyFrom};
+use key::{Key, KeyFrom, SetKey, StatefulKey};
 
+use crate::key;
 use crate::lang::Language;
 use crate::util;
-use crate::key;
 
 pub struct Alphabet {
     value: Vec<i16>,
-    inverse: Vec<i16>
+    inverse: Vec<i16>,
 }
 
 impl Alphabet {
@@ -29,7 +29,7 @@ impl KeyFrom<&String> for Alphabet {
         let my_inverse = util::invert(&my_value);
         Alphabet {
             value: my_value,
-            inverse: my_inverse
+            inverse: my_inverse,
         }
     }
 }
@@ -37,7 +37,7 @@ impl KeyFrom<&Vec<i16>> for Alphabet {
     fn create_from(_language: &Language, vec: &Vec<i16>) -> Alphabet {
         Alphabet {
             value: vec.clone(),
-            inverse: util::invert(vec)
+            inverse: util::invert(vec),
         }
     }
 }
@@ -65,7 +65,7 @@ impl Key for Alphabet {
         util::fill_consecutive_vec(&mut alphabet, 0, language.cp_count());
         Alphabet {
             value: alphabet.clone(),
-            inverse: alphabet
+            inverse: alphabet,
         }
     }
 }

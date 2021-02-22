@@ -4,8 +4,8 @@ use crate::lang::Language;
 use crate::{
     cipher::{Asymmetric, Keyed},
     key::{
-        {Key, StatefulKey},
         vigenere_square::VigSquare,
+        {Key, StatefulKey},
     },
 };
 
@@ -31,7 +31,7 @@ impl Asymmetric for Autokey {
                             self.keyword.at(count)
                         } else {
                             pt_vec[idx]
-                        }
+                        },
                     );
                     pt_vec[idx] = cp;
                     count += 1;
@@ -55,7 +55,7 @@ impl Asymmetric for Autokey {
                         } else {
                             pt_vec[idx]
                         },
-                        language.get_cp(&c)
+                        language.get_cp(&c),
                     );
                     count += 1;
                     language.update_cp(&c, pt_vec[idx])

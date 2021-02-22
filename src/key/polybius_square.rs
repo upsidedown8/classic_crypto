@@ -14,8 +14,8 @@
 // impl PolybiusSquare {
 //     fn from_string(square: &String, col_labels: &String, row_labels: &String) -> PolybiusSquare {
 //         PolybiusSquare::from_vector(
-//             &convert::from_string(square), 
-//             &convert::from_string(col_labels), 
+//             &convert::from_string(square),
+//             &convert::from_string(col_labels),
 //             &convert::from_string(row_labels)
 //         )
 //     }
@@ -37,7 +37,7 @@
 //                 PolybiusSquare {
 //                     square: {
 //                         let mut square = vec![vec![0; 6]; 6];
-                        
+
 //                         square
 //                     },
 //                     dim_size: 5,

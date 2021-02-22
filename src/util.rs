@@ -11,7 +11,7 @@ pub fn fill_alphabet_continue(key: &Vec<i16>, alphabet_size: usize) -> Vec<i16> 
         existing[key[j] as usize] = true;
     }
 
-    let val_start = result[std::cmp::max(i-1, 0)] as usize;
+    let val_start = result[std::cmp::max(i - 1, 0)] as usize;
     let mut val = val_start;
     while val < alphabet_size {
         if !existing[val] {
@@ -104,14 +104,12 @@ pub fn mmi(a: i16, b: i16) -> Option<i16> {
     let (g, x, _) = extended_gcd(a as i32, b as i32);
     match g {
         1 => Some(modulo(x as i16, b)),
-        _ => None
+        _ => None,
     }
 }
 pub fn extended_gcd(a: i32, b: i32) -> (i32, i32, i32) {
     match a {
-        0 => {
-            (b, 0, 1)
-        }
+        0 => (b, 0, 1),
         _ => {
             let (g, x, y) = extended_gcd(b % a, a);
             (g, y - (b / a) * x, x)
@@ -119,7 +117,11 @@ pub fn extended_gcd(a: i32, b: i32) -> (i32, i32, i32) {
     }
 }
 pub fn gcd(a: i16, b: i16) -> i16 {
-    if b == 0 { a } else { gcd(b, a%b) }
+    if b == 0 {
+        a
+    } else {
+        gcd(b, a % b)
+    }
 }
 pub fn modulo(a: i16, b: i16) -> i16 {
     (b + (a % b)) % b

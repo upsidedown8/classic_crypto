@@ -1,11 +1,11 @@
-use key::{Key, SetKey, StatefulKey, KeyFrom};
+use key::{Key, KeyFrom, SetKey, StatefulKey};
 
+use crate::key;
 use crate::lang::Language;
 use crate::util;
-use crate::key;
 
 pub struct Keyword {
-    value: Vec<i16>
+    value: Vec<i16>,
 }
 
 impl Keyword {
@@ -21,7 +21,7 @@ impl Keyword {
 impl KeyFrom<&String> for Keyword {
     fn create_from(language: &Language, string: &String) -> Keyword {
         Keyword {
-            value: language.string_to_vec(&string)
+            value: language.string_to_vec(&string),
         }
     }
 }
@@ -42,9 +42,7 @@ impl Key for Keyword {
         language.vec_to_string(&self.value)
     }
     fn new(_language: &Language) -> Keyword {
-        Keyword {
-            value: vec![0]
-        }
+        Keyword { value: vec![0] }
     }
 }
 

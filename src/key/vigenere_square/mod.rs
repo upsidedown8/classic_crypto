@@ -12,14 +12,19 @@ pub trait VigSquare {
     fn decrypt(&self, x: i16, y: i16) -> i16;
 }
 
-pub fn vig_square_to_string(language: &Language, square: &Vec<Vec<i16>>, max_y: usize, max_x: usize) -> String {
+pub fn vig_square_to_string(
+    language: &Language,
+    square: &Vec<Vec<i16>>,
+    max_y: usize,
+    max_x: usize,
+) -> String {
     assert_eq!(language.alphabet_len(), 26);
     let mut square_as_string = String::new();
 
     let is_porta = max_y == 13;
 
     // left padding
-    square_as_string.push_str(if is_porta {"    | "} else {"  | "});
+    square_as_string.push_str(if is_porta { "    | " } else { "  | " });
 
     // print headers
     for i in 0..26 {
@@ -35,9 +40,9 @@ pub fn vig_square_to_string(language: &Language, square: &Vec<Vec<i16>>, max_y: 
     // main square
     for y in 0..max_y as i16 {
         if is_porta {
-            square_as_string.push(language.cp_to_upper(y/2));
+            square_as_string.push(language.cp_to_upper(y / 2));
             square_as_string.push(',');
-            square_as_string.push(language.cp_to_upper(y/2 + 1));
+            square_as_string.push(language.cp_to_upper(y / 2 + 1));
         } else {
             square_as_string.push(language.cp_to_upper(y));
         }

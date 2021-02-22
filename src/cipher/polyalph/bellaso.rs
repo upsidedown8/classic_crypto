@@ -1,10 +1,10 @@
 use crate::key::{keyword::Keyword, vigenere_square::VigSquare};
 use crate::lang::Language;
 use crate::{
-    cipher::{Symmetric, Keyed},
+    cipher::{Keyed, Symmetric},
     key::{
-        {Key, StatefulKey},
         vigenere_square::bellaso_square::BellasoSquare,
+        {Key, StatefulKey},
     },
 };
 
@@ -23,7 +23,7 @@ impl Symmetric for Bellaso {
                 if language.is_letter(&c) {
                     let new_cp = self.square.encrypt(
                         self.keyword.at(count % self.keyword.len()),
-                        language.get_cp(&c)
+                        language.get_cp(&c),
                     );
                     count += 1;
                     language.update_cp(&c, new_cp)

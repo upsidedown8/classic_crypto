@@ -1,6 +1,5 @@
-
-use rand::Rng;
 use crate::lang::Language;
+use rand::Rng;
 
 pub mod alphabet;
 pub mod cards;

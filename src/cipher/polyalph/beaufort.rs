@@ -2,10 +2,10 @@ use crate::key::keyword::Keyword;
 use crate::key::vigenere_square::classic_vig_square::ClassicVigSquare;
 use crate::lang::Language;
 use crate::{
-    cipher::{Symmetric, Keyed},
+    cipher::{Keyed, Symmetric},
     key::{
-        {Key, StatefulKey},
         vigenere_square::VigSquare,
+        {Key, StatefulKey},
     },
 };
 
@@ -24,7 +24,7 @@ impl Symmetric for Beaufort {
                 if language.is_letter(&c) {
                     let new_cp = self.square.decrypt(
                         language.get_cp(&c),
-                        self.keyword.at(count % self.keyword.len())
+                        self.keyword.at(count % self.keyword.len()),
                     );
                     count += 1;
                     language.update_cp(&c, new_cp)

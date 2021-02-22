@@ -4,8 +4,8 @@ use crate::lang::Language;
 use crate::{
     cipher::{Asymmetric, Keyed},
     key::{
-        {Key, StatefulKey},
         vigenere_square::VigSquare,
+        {Key, StatefulKey},
     },
 };
 
@@ -24,7 +24,7 @@ impl Asymmetric for ClassicVigenere {
                 if language.is_letter(&c) {
                     let new_cp = self.square.encrypt(
                         language.get_cp(&c),
-                        self.keyword.at(count % self.keyword.len())
+                        self.keyword.at(count % self.keyword.len()),
                     );
                     count += 1;
                     language.update_cp(&c, new_cp)
@@ -41,7 +41,7 @@ impl Asymmetric for ClassicVigenere {
                 if language.is_letter(&c) {
                     let new_cp = self.square.decrypt(
                         self.keyword.at(count % self.keyword.len()),
-                        language.get_cp(&c)
+                        language.get_cp(&c),
                     );
                     count += 1;
                     language.update_cp(&c, new_cp)

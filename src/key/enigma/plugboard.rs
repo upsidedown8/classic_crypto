@@ -1,9 +1,13 @@
-use crate::{key::{Key, StatefulKey}, lang::Language, util};
+use crate::{
+    key::{Key, StatefulKey},
+    lang::Language,
+    util,
+};
 use rand::Rng;
 
 #[derive(Clone)]
 pub struct Plugboard {
-    substitution: Vec<i16>
+    substitution: Vec<i16>,
 }
 
 impl Plugboard {
@@ -28,17 +32,13 @@ impl Plugboard {
         let idx1 = letter1 as usize;
         let idx2 = letter2 as usize;
 
-        self.substitution[idx1] == letter1 &&
-        self.substitution[idx2] == letter2 &&
-        idx1 != idx2
+        self.substitution[idx1] == letter1 && self.substitution[idx2] == letter2 && idx1 != idx2
     }
     pub fn is_existing_plug(&self, letter1: i16, letter2: i16) -> bool {
         let idx1 = letter1 as usize;
         let idx2 = letter2 as usize;
 
-        self.substitution[idx1] == letter2 &&
-        self.substitution[idx2] == letter1 &&
-        idx1 != idx2
+        self.substitution[idx1] == letter2 && self.substitution[idx2] == letter1 && idx1 != idx2
     }
     pub fn is_letter_used(&self, letter: i16) -> bool {
         self.substitution[letter as usize] != letter
@@ -66,7 +66,7 @@ impl Key for Plugboard {
 
     fn new(_language: &Language) -> Plugboard {
         let mut result = Plugboard {
-            substitution: vec![0; 26]
+            substitution: vec![0; 26],
         };
         result.reset(_language);
         result
@@ -84,7 +84,7 @@ impl StatefulKey for Plugboard {
         util::shuffle(&mut values, rng);
         let num_plugs = rng.gen_range(5..13);
         for i in 0..num_plugs {
-            self.add_plug(values[i*2], values[i*2 + 1]);
+            self.add_plug(values[i * 2], values[i * 2 + 1]);
         }
     }
 }

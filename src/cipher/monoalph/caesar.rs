@@ -3,13 +3,12 @@ use crate::lang::Language;
 use crate::util;
 
 pub struct Caesar {
-    pub shift: i16
+    pub shift: i16,
 }
 
 impl Asymmetric for Caesar {
     fn encrypt(&self, language: &Language, msg: &String) -> String {
-        msg
-            .chars()
+        msg.chars()
             .map(|c| {
                 if language.is_letter(&c) {
                     let mut cp = language.get_cp(&c);
@@ -22,8 +21,7 @@ impl Asymmetric for Caesar {
             .collect()
     }
     fn decrypt(&self, language: &Language, msg: &String) -> String {
-        msg
-            .chars()
+        msg.chars()
             .map(|c| {
                 if language.is_letter(&c) {
                     let mut cp = language.get_cp(&c);
@@ -39,9 +37,7 @@ impl Asymmetric for Caesar {
 
 impl Keyed for Caesar {
     fn new(_language: &Language) -> Caesar {
-        Caesar {
-            shift: 0
-        }
+        Caesar { shift: 0 }
     }
     fn reset(&mut self, _language: &Language) {
         self.shift = 0;

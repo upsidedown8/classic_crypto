@@ -1,13 +1,13 @@
 use std::usize;
 
-use key::{Key, SetKey, StatefulKey, KeyFrom};
+use key::{Key, KeyFrom, SetKey, StatefulKey};
 
+use crate::key;
 use crate::lang::Language;
 use crate::util;
-use crate::key;
 
 pub struct Cards {
-    value: Vec<i16>
+    value: Vec<i16>,
 }
 
 const CARDS_PER_SUITE: i16 = 13;
@@ -18,23 +18,18 @@ const SUITES: &str = "CDHS";
 
 impl Cards {
     fn shift_joker(&mut self, joker: i16) {
-        let joker_pos = self.value
-            .iter()
-            .position(|&x| {
-                x == joker
-            })
-            .unwrap();
+        let joker_pos = self.value.iter().position(|&x| x == joker).unwrap();
         match joker_pos {
             53 => {
                 let mut i = 53;
                 while i > 1 {
-                    self.value[i] = self.value[i-1];
+                    self.value[i] = self.value[i - 1];
                     i -= 1;
                 }
                 self.value[1] = joker;
-            },
+            }
             _ => {
-                util::swap(&mut self.value, joker_pos, joker_pos+1);
+                util::swap(&mut self.value, joker_pos, joker_pos + 1);
             }
         }
     }
@@ -48,11 +43,11 @@ impl Cards {
         let max = std::cmp::max(a_joker_pos, b_joker_pos);
 
         let mut idx = 0;
-        for i in max+1..54 {
+        for i in max + 1..54 {
             tmp[idx] = self.value[i];
             idx += 1;
         }
-        for i in min..max+1 {
+        for i in min..max + 1 {
             tmp[idx] = self.value[i];
             idx += 1;
         }
@@ -67,7 +62,8 @@ impl Cards {
         if self.value[53] < 52 {
             let mut tmp = vec![0; 54];
             let mut idx = 0;
-            for i in length..53 { // leave last card
+            for i in length..53 {
+                // leave last card
                 tmp[idx] = self.value[i as usize];
                 idx += 1;
             }
@@ -75,7 +71,8 @@ impl Cards {
                 tmp[idx] = self.value[i as usize];
                 idx += 1;
             }
-            for i in 0..53 { // leave last card
+            for i in 0..53 {
+                // leave last card
                 self.value[i] = tmp[i];
             }
         }
@@ -84,10 +81,10 @@ impl Cards {
     fn output_card(&self) -> i16 {
         if self.value[0] < 52 {
             let x = 1 + self.value[(self.value[0] + 1) as usize];
-            return std::cmp::min(x, 53)
+            return std::cmp::min(x, 53);
         }
         // return last card if it is a joker
-        std::cmp::min(self.value[53]+1, 53)
+        std::cmp::min(self.value[53] + 1, 53)
     }
     pub fn key_stream(&mut self, stream_len: usize) -> Vec<i16> {
         let mut stream = vec![0; stream_len];
@@ -98,8 +95,9 @@ impl Cards {
             self.shift_joker(B_JOKER);
             self.shift_joker(B_JOKER);
             self.triple_cut();
-            if self.value[53] < 52 { // not a joker
-                self.count_cut( self.value[53] + 1);
+            if self.value[53] < 52 {
+                // not a joker
+                self.count_cut(self.value[53] + 1);
             }
             let output_card = self.output_card();
             if output_card < 53 {
@@ -121,7 +119,7 @@ impl KeyFrom<&String> for Cards {
 impl KeyFrom<&Vec<i16>> for Cards {
     fn create_from(_language: &Language, cards: &Vec<i16>) -> Cards {
         Cards {
-            value: cards.clone()
+            value: cards.clone(),
         }
     }
 }
@@ -153,15 +151,15 @@ impl Key for Cards {
             match self.value[i] {
                 A_JOKER => {
                     result.push_str("JokerA");
-                },
+                }
                 B_JOKER => {
                     result.push_str("JokerB");
-                },
+                }
                 _ => {
-                    let pos: usize = (self.value[i]/CARDS_PER_SUITE) as usize;
+                    let pos: usize = (self.value[i] / CARDS_PER_SUITE) as usize;
                     result.push(SUITES.as_bytes()[pos] as char);
 
-                    let num: i16 = (self.value[i]%CARDS_PER_SUITE)+1;
+                    let num: i16 = (self.value[i] % CARDS_PER_SUITE) + 1;
                     result.push_str(&num.to_string());
                 }
             };
@@ -173,9 +171,7 @@ impl Key for Cards {
     fn new(_language: &Language) -> Cards {
         let mut cards = vec![0; 54];
         util::fill_consecutive_vec(&mut cards, 0, 54);
-        Cards {
-            value: cards
-        }
+        Cards { value: cards }
     }
 }
 

@@ -1,12 +1,12 @@
 use std::usize;
 
-use key::{Key, StatefulKey};
+use super::{vig_square_to_string, VigSquare};
 use crate::{key, lang::Language, util};
-use super::{VigSquare, vig_square_to_string};
+use key::{Key, StatefulKey};
 
 pub struct KeyedVigSquare {
     square: Vec<Vec<i16>>,
-    inverse: Vec<Vec<i16>>
+    inverse: Vec<Vec<i16>>,
 }
 
 impl VigSquare for KeyedVigSquare {
@@ -43,7 +43,7 @@ impl Key for KeyedVigSquare {
         let my_square = vec![vec![0; 26]; 26];
         let mut vig_square = KeyedVigSquare {
             square: my_square.clone(),
-            inverse: my_square
+            inverse: my_square,
         };
         vig_square.init_squares();
         vig_square

@@ -1,10 +1,13 @@
-use crate::{cipher::{Keyed, Symmetric}, key::{Key, KeyFrom, StatefulKey}};
 use crate::lang::Language;
+use crate::{
+    cipher::{Keyed, Symmetric},
+    key::{Key, KeyFrom, StatefulKey},
+};
 
 use crate::key::enigma::{
     plugboard::Plugboard,
     reflector::{Reflector, ReflectorType},
-    rotor::{Rotor, RotorType}
+    rotor::{Rotor, RotorType},
 };
 
 #[derive(Clone)]
@@ -12,25 +15,27 @@ pub struct Enigma {
     pub plugboard: Plugboard,
     // 0=Rightmost ... 2/3=Leftmost rotor
     pub rotors: Vec<Rotor>,
-    pub reflector: Reflector
+    pub reflector: Reflector,
 }
 
 impl Enigma {
     pub fn run_mut(&mut self, language: &Language, msg: &String) -> String {
-        msg.chars().map(|c| {
-            if language.is_letter(&c) {
-                let mut cp = language.get_cp(&c);
-                self.step_rotors();
-                cp = self.plugboard.input(cp);
-                cp = self.rotor_pass(cp, false);
-                cp = self.reflector.input(cp);
-                cp = self.rotor_pass(cp, true);
-                cp = self.plugboard.input(cp);
-                language.update_cp(&c, cp)
-            } else {
-                c
-            }
-        }).collect()
+        msg.chars()
+            .map(|c| {
+                if language.is_letter(&c) {
+                    let mut cp = language.get_cp(&c);
+                    self.step_rotors();
+                    cp = self.plugboard.input(cp);
+                    cp = self.rotor_pass(cp, false);
+                    cp = self.reflector.input(cp);
+                    cp = self.rotor_pass(cp, true);
+                    cp = self.plugboard.input(cp);
+                    language.update_cp(&c, cp)
+                } else {
+                    c
+                }
+            })
+            .collect()
     }
 
     fn step_rotors(&mut self) {
@@ -49,7 +54,11 @@ impl Enigma {
         let mut out_letter = letter;
 
         for i in 0..self.rotors.len() {
-            let rotor_idx = if reverse { self.rotors.len()-1-i } else { i };
+            let rotor_idx = if reverse {
+                self.rotors.len() - 1 - i
+            } else {
+                i
+            };
             out_letter = self.rotors[rotor_idx].input(out_letter, reverse);
         }
 
@@ -71,9 +80,9 @@ impl Keyed for Enigma {
             rotors: vec![
                 Rotor::create_from(language, RotorType::I),
                 Rotor::create_from(language, RotorType::II),
-                Rotor::create_from(language, RotorType::III)
+                Rotor::create_from(language, RotorType::III),
             ],
-            reflector: Reflector::create_from(language, ReflectorType::B)
+            reflector: Reflector::create_from(language, ReflectorType::B),
         }
     }
     fn reset(&mut self, language: &Language) {
@@ -83,7 +92,9 @@ impl Keyed for Enigma {
     }
     fn randomize(&mut self, language: &Language, rng: &mut impl rand::Rng) {
         self.plugboard.randomize(language, rng);
-        self.rotors.iter_mut().for_each(|r| r.randomize(language, rng));
+        self.rotors
+            .iter_mut()
+            .for_each(|r| r.randomize(language, rng));
         self.reflector.randomize(language, rng);
     }
     fn to_string(&self, language: &Language) -> String {

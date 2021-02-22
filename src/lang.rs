@@ -17,7 +17,7 @@ pub struct Language {
     alphabet_len: i16,
 
     /* diacritics -> standard letter(s) */
-    substitution_table: HashMap<char, String>
+    substitution_table: HashMap<char, String>,
 }
 
 impl Language {
@@ -28,7 +28,7 @@ impl Language {
             upper_alphabet: Vec::new(),
             lower_alphabet: Vec::new(),
             alphabet_len: 0,
-            substitution_table: HashMap::new()
+            substitution_table: HashMap::new(),
         }
     }
 
@@ -53,9 +53,7 @@ impl Language {
     pub fn edit_cp(&mut self, cp: i16, upper: &char, lower: &char) {
         assert!(self.valid_cp(cp));
 
-        self.char_to_cp.retain(|_, v| {
-            *v != cp
-        });
+        self.char_to_cp.retain(|_, v| *v != cp);
         self.char_to_cp.insert(*upper, cp);
         self.char_to_cp.insert(*lower, cp);
         self.upper_alphabet[cp as usize] = *upper;
@@ -71,12 +69,10 @@ impl Language {
         let cp = self.max_cp();
 
         assert!(cp >= 0);
-        
+
         self.upper_alphabet.pop();
         self.lower_alphabet.pop();
-        self.char_to_cp.retain(|_, v|{
-            *v != cp
-        });
+        self.char_to_cp.retain(|_, v| *v != cp);
         self.alphabet_len -= 1;
 
         cp
@@ -126,12 +122,7 @@ impl Language {
 
     /* String conversions */
     pub fn vec_to_string(&self, arr: &Vec<i16>) -> String {
-        arr
-            .iter()
-            .map(|&i| {
-                self.cp_to_upper(i)
-            })
-            .collect()
+        arr.iter().map(|&i| self.cp_to_upper(i)).collect()
     }
     pub fn str_to_vec(&self, string: &str) -> Vec<i16> {
         self.string_to_vec(&String::from(string))
@@ -139,27 +130,21 @@ impl Language {
     pub fn string_to_vec(&self, string: &String) -> Vec<i16> {
         string
             .chars()
-            .filter(|i|{
-                self.is_letter(i)
-            })
-            .map(|i| {
-                self.get_cp(&i)
-            })
+            .filter(|i| self.is_letter(i))
+            .map(|i| self.get_cp(&i))
             .collect()
     }
 
     /* Substitution table */
     pub fn substitute_string(&self, string: &String) -> String {
         let mut result: String = String::new();
-        string
-            .chars()
-            .for_each(|c| {
-                if self.substitution_table.contains_key(&c) {
-                    result.push_str(&self.substitution_table[&c]);
-                } else {
-                    result.push(c);
-                }
-            });
+        string.chars().for_each(|c| {
+            if self.substitution_table.contains_key(&c) {
+                result.push_str(&self.substitution_table[&c]);
+            } else {
+                result.push(c);
+            }
+        });
         result
     }
 
@@ -187,12 +172,10 @@ impl Language {
         !self.is_letter(letter)
     }
     pub fn is_upper(&self, letter: &char) -> bool {
-        self.is_letter(letter) &&
-        self.upper_alphabet.contains(letter)
+        self.is_letter(letter) && self.upper_alphabet.contains(letter)
     }
     pub fn is_lower(&self, letter: &char) -> bool {
-        self.is_letter(letter) &&
-        self.lower_alphabet.contains(letter)
+        self.is_letter(letter) && self.lower_alphabet.contains(letter)
     }
     pub fn valid_cp(&self, cp: i16) -> bool {
         0 <= cp && cp <= self.max_cp()

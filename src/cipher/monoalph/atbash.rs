@@ -5,8 +5,7 @@ pub struct Atbash {}
 
 impl Symmetric for Atbash {
     fn run(&self, language: &Language, msg: &String) -> String {
-        msg
-            .chars()
+        msg.chars()
             .map(|c| {
                 if language.is_letter(&c) {
                     let mut cp = language.get_cp(&c);

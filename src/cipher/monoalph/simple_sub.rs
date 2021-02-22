@@ -1,15 +1,17 @@
-use crate::{cipher::{Asymmetric, Keyed}, key::{Key, StatefulKey}};
-use crate::lang::Language;
 use crate::key::alphabet::Alphabet;
+use crate::lang::Language;
+use crate::{
+    cipher::{Asymmetric, Keyed},
+    key::{Key, StatefulKey},
+};
 
 pub struct SimpleSubstitution {
-    pub alphabet: Alphabet
+    pub alphabet: Alphabet,
 }
 
 impl Asymmetric for SimpleSubstitution {
     fn encrypt(&self, language: &Language, msg: &String) -> String {
-        msg
-            .chars()
+        msg.chars()
             .map(|c| {
                 if language.is_letter(&c) {
                     let mut cp = language.get_cp(&c);
@@ -22,8 +24,7 @@ impl Asymmetric for SimpleSubstitution {
             .collect()
     }
     fn decrypt(&self, language: &Language, msg: &String) -> String {
-        msg
-            .chars()
+        msg.chars()
             .map(|c| {
                 if language.is_letter(&c) {
                     let mut cp = language.get_cp(&c);
@@ -40,7 +41,7 @@ impl Asymmetric for SimpleSubstitution {
 impl Keyed for SimpleSubstitution {
     fn new(language: &Language) -> SimpleSubstitution {
         SimpleSubstitution {
-            alphabet: Alphabet::new(language)
+            alphabet: Alphabet::new(language),
         }
     }
     fn reset(&mut self, language: &Language) {
