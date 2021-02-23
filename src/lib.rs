@@ -27,7 +27,7 @@ pub use cipher::monoalph::atbash::Atbash;
 pub use cipher::monoalph::baconian::Baconian;
 pub use cipher::monoalph::caesar::Caesar;
 pub use cipher::monoalph::morse::Morse;
-pub use cipher::monoalph::rot13::ROT13;
+pub use cipher::monoalph::rot13::Rot13;
 pub use cipher::monoalph::simple_sub::SimpleSubstitution;
 
 /* -------------------------------------------------------------------------- */
