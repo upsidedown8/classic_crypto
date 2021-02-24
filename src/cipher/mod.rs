@@ -2,6 +2,7 @@ pub mod electromechanical;
 pub mod monoalph;
 pub mod polyalph;
 pub mod polygraph;
+pub mod stream;
 pub mod transpos;
 
 use crate::lang::Language;

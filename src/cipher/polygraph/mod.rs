@@ -1,8 +1,9 @@
 pub mod adfgvx;
 pub mod adfgx;
 pub mod bifid;
+pub mod four_square;
 pub mod fracmorse;
 pub mod hill;
-pub mod solitaire;
 pub mod trifid;
+pub mod two_square;
 pub mod vic;

@@ -3,8 +3,5 @@ pub mod beaufort;
 pub mod bellaso;
 pub mod chaocipher;
 pub mod classic_vig;
-pub mod four_square;
 pub mod keyed_vig;
 pub mod porta;
-pub mod running_key;
-pub mod two_square;
