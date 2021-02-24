@@ -230,7 +230,7 @@ impl Matrix {
         inv != None
     }
 
-    /// Gets the element at [x,y] in the matrix
+    /// Gets the element at (x,y) in the matrix
     ///
     /// # Arguments
     ///
