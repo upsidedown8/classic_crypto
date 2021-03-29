@@ -1,6 +1,6 @@
 use std::usize;
 
-use super::{vig_square_to_string, VigSquare};
+use super::VigSquare;
 use crate::{key, lang::Language, util};
 use key::{Key, StatefulKey};
 
@@ -38,7 +38,7 @@ impl VigSquare for KeyedVigSquare {
 
 impl Key for KeyedVigSquare {
     fn to_string(&self, language: &Language) -> String {
-        vig_square_to_string(language, &self.square, 26, 26)
+        KeyedVigSquare::vig_square_to_string(language, &self.square, 26, 26)
     }
     fn new(language: &Language) -> KeyedVigSquare {
         assert_eq!(language.alphabet_len(), 26);

@@ -1,4 +1,4 @@
-use super::{vig_square_to_string, VigSquare};
+use super::VigSquare;
 use crate::{key, lang::Language};
 use key::Key;
 
@@ -42,7 +42,7 @@ impl VigSquare for PortaSquare {
 impl Key for PortaSquare {
     fn to_string(&self, language: &Language) -> String {
         assert_eq!(language.alphabet_len(), 26);
-        vig_square_to_string(language, &self.square, 13, 26)
+        PortaSquare::vig_square_to_string(language, &self.square, 13, 26)
     }
     fn new(language: &Language) -> PortaSquare {
         assert_eq!(language.alphabet_len(), 26);

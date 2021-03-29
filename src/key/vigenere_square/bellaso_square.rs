@@ -1,4 +1,4 @@
-use super::{vig_square_to_string, VigSquare};
+use super::VigSquare;
 use crate::{key, lang::Language};
 use key::Key;
 
@@ -47,7 +47,7 @@ impl VigSquare for BellasoSquare {
 impl Key for BellasoSquare {
     fn to_string(&self, language: &Language) -> String {
         assert_eq!(language.alphabet_len(), 26);
-        vig_square_to_string(language, &self.square, 26, 26)
+        BellasoSquare::vig_square_to_string(language, &self.square, 26, 26)
     }
     fn new(language: &Language) -> BellasoSquare {
         assert_eq!(language.alphabet_len(), 26);
