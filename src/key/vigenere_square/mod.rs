@@ -62,9 +62,11 @@ pub trait VigSquare {
             square_as_string.push(' ');
         }
         if is_porta {
-            square_as_string.push_str("\n====|====================================================\n");
+            square_as_string
+                .push_str("\n====|====================================================\n");
         } else {
-            square_as_string.push_str("\n==|====================================================\n");
+            square_as_string
+                .push_str("\n==|====================================================\n");
         }
 
         // main square
