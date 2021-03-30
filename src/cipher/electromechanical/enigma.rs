@@ -72,9 +72,9 @@ impl Keyed for Enigma {
         Enigma {
             plugboard: Plugboard::new(language),
             rotors: vec![
-                Rotor::create_from(language, RotorType::I),
-                Rotor::create_from(language, RotorType::II),
                 Rotor::create_from(language, RotorType::III),
+                Rotor::create_from(language, RotorType::II),
+                Rotor::create_from(language, RotorType::I),
             ],
             reflector: Reflector::create_from(language, ReflectorType::B),
         }
