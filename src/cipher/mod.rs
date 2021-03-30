@@ -14,7 +14,7 @@ pub trait Symmetric {
     ///
     /// # Arguments
     ///
-    /// * `language` A borrowed instance of the currently loaded `Language`
+    /// * [`Language`] A borrowed instance of the currently loaded [`Language`]
     /// * `msg` The message to encrypt/decrypt
     ///
     fn run(&self, language: &Language, msg: &str) -> String;
@@ -26,7 +26,7 @@ pub trait Asymmetric {
     ///
     /// # Arguments
     ///
-    /// * `language` A borrowed instance of the currently loaded `Language`
+    /// * [`Language`] A borrowed instance of the currently loaded [`Language`]
     /// * `msg` The message to encrypt
     ///
     fn encrypt(&self, language: &Language, msg: &str) -> String;
@@ -35,7 +35,7 @@ pub trait Asymmetric {
     ///
     /// # Arguments
     ///
-    /// * `language` A borrowed instance of the currently loaded `Language`
+    /// * [`Language`] A borrowed instance of the currently loaded [`Language`]
     /// * `msg` The message to decrypt
     ///
     fn decrypt(&self, language: &Language, msg: &str) -> String;
@@ -48,7 +48,7 @@ pub trait Keyed {
     ///
     /// # Arguments
     ///
-    /// * `language` A borrowed instance of the currently loaded `Language`
+    /// * [`Language`] A borrowed instance of the currently loaded [`Language`]
     ///
     fn new(language: &Language) -> Self;
 
@@ -56,7 +56,7 @@ pub trait Keyed {
     ///
     /// # Arguments
     ///
-    /// * `language` A borrowed instance of the currently loaded `Language`
+    /// * [`Language`] A borrowed instance of the currently loaded [`Language`]
     ///
     fn reset(&mut self, language: &Language);
 
@@ -64,7 +64,7 @@ pub trait Keyed {
     ///
     /// # Arguments
     ///
-    /// * `language` A borrowed instance of the currently loaded `Language`
+    /// * [`Language`] A borrowed instance of the currently loaded [`Language`]
     /// * `rng` A rand::Rng implementation to generate random numbers
     ///
     fn randomize(&mut self, language: &Language, rng: &mut impl rand::Rng);
@@ -73,7 +73,7 @@ pub trait Keyed {
     ///
     /// # Arguments
     ///
-    /// * `language` A borrowed instance of the currently loaded `Language`
+    /// * [`Language`] A borrowed instance of the currently loaded [`Language`]
     ///
     fn to_string(&self, language: &Language) -> String;
 }

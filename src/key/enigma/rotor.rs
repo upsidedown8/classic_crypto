@@ -156,7 +156,7 @@ impl SetKey<RotorType> for Rotor {
 impl Key for Rotor {
     fn to_string(&self, _language: &Language) -> String {
         format!(
-            "Rotor:{}, grund:{}, rings:{}",
+            "Rotor: {}, grund:{}, rings:{}",
             match self.wiring_type {
                 RotorType::I => "I",
                 RotorType::II => "II",

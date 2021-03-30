@@ -1,6 +1,6 @@
 //!
 //! Implementations of numerous classical ciphers. Supports configuration for
-//! an arbitrary `Language` defined in `JSON` config files.
+//! an arbitrary [`Language`] defined in `JSON` config files.
 //!
 
 mod cipher;

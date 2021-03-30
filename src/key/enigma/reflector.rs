@@ -79,7 +79,7 @@ impl SetKey<ReflectorType> for Reflector {
 impl Key for Reflector {
     fn to_string(&self, _language: &Language) -> String {
         format!(
-            "Reflector:{}",
+            "Reflector: {}",
             match self.wiring_type {
                 ReflectorType::A => "A",
                 ReflectorType::B => "B",

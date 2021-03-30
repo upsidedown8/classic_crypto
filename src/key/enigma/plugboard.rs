@@ -108,7 +108,7 @@ impl Key for Plugboard {
                 tmp[t as usize] = t;
             }
         }
-        format!("Plugboard:{}", data.trim())
+        format!("Plugboard: {}", data.trim())
     }
 
     fn new(_language: &Language) -> Plugboard {
