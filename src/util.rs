@@ -9,7 +9,7 @@
 /// * string The string to check
 ///
 /// # Examples
-/// 
+///
 /// ```rust
 /// # use classic_crypto::util;
 /// assert!(!util::is_unique("abca"));
@@ -20,9 +20,9 @@
 /// ```
 ///
 pub fn is_unique(string: &str) -> bool {
-    !string.char_indices().any(|(idx, ch)| {
-        string.chars().skip(idx + 1).any(|x| x == ch)
-    })
+    !string
+        .char_indices()
+        .any(|(idx, ch)| string.chars().skip(idx + 1).any(|x| x == ch))
 }
 
 ///

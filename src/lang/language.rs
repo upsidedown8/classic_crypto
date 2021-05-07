@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
 extern crate serde;
-use serde::{Deserialize, Serialize};
 use crate::lang::LangAlphabet;
+use serde::{Deserialize, Serialize};
 
 /// Provides compatability with different cipher alphabet lengths, performs conversions
 /// from letters to code points (from `0..alphabet_size`), scores plaintext data (Coming soon),
@@ -19,7 +19,7 @@ pub struct Language {
     pub alphabet_len: i16,
 
     /// Stores all supported alphabets
-    /// 
+    ///
     pub alphabets: Vec<LangAlphabet>,
 
     /// Maps diacritics -> standard letter(s)
@@ -32,17 +32,17 @@ pub struct Language {
 
 impl Language {
     /// Gets the currently selected alphabet
-    /// 
+    ///
     fn alph(&self) -> &LangAlphabet {
         &self.alphabets[self.selected_alph_idx]
     }
 
     /// Sets the current length of the alphabet. Returns true if the operation suceeded.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * len The desired length of the alphabet
-    /// 
+    ///
     pub fn set_alph_len(&mut self, len: usize) -> bool {
         if let Some(idx) = self.alphabets.iter().position(|x| x.length() == len) {
             self.selected_alph_idx = idx;
@@ -57,15 +57,15 @@ impl Language {
     /* -------------------------------------------------------------------------- */
 
     /// Converts a letter to its code point
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * letter The letter to convert
-    /// 
+    ///
     /// # Panics
-    /// 
+    ///
     /// If the char provided does not satisfy `self.is_letter()`
-    /// 
+    ///
     pub fn get_cp(&self, letter: &char) -> i16 {
         assert!(self.is_letter(letter));
 
@@ -73,16 +73,16 @@ impl Language {
     }
 
     /// Updates the code point of a letter, whilst keeping the correct case
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * old_letter A letter occupying the same space in the string, in the past.
     /// * new_cp The new code point to change the letter to
-    /// 
+    ///
     /// # Panics
-    /// 
+    ///
     /// If the char provided is not a letter (`self.is_letter()`) or `new_cp` does not satisfy `self.valid_cp()`.
-    /// 
+    ///
     pub fn update_cp(&self, old_letter: &char, new_cp: i16) -> char {
         assert!(self.valid_cp(new_cp));
         assert!(self.is_letter(old_letter));
@@ -95,11 +95,11 @@ impl Language {
     }
 
     /// Converts from a code point to its uppercase equivalant
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * cp The code point to convert
-    /// 
+    ///
     pub fn cp_to_upper(&self, cp: i16) -> char {
         assert!(self.valid_cp(cp));
 
@@ -107,11 +107,11 @@ impl Language {
     }
 
     /// Converts from a code point to its lowercase equivalant
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * cp The code point to convert
-    /// 
+    ///
     pub fn cp_to_lower(&self, cp: i16) -> char {
         assert!(self.valid_cp(cp));
 
@@ -119,9 +119,9 @@ impl Language {
     }
 
     /// Converts a letter to lowercase
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * letter The letter to convert to lowercase
     ///
     pub fn to_lower(&self, letter: &char) -> char {
@@ -133,9 +133,9 @@ impl Language {
     }
 
     /// Converts a letter to uppercase
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * letter The letter to convert to uppercase
     ///
     pub fn to_upper(&self, letter: &char) -> char {
@@ -147,65 +147,73 @@ impl Language {
     }
 
     /// Is a particular char a letter?
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * letter The char to check
-    /// 
+    ///
     pub fn is_letter(&self, letter: &char) -> bool {
         self.alph().char_to_cp.contains_key(&letter)
     }
 
     /// Is a particular letter punctuation (not a letter)?
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * letter The letter to check
-    /// 
+    ///
     pub fn is_punct(&self, letter: &char) -> bool {
         !self.is_letter(letter)
     }
 
     /// Is a particular letter uppercaes?
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * letter The letter to check
-    /// 
+    ///
     pub fn is_upper(&self, letter: &char) -> bool {
-        self.alph().upper.contains(*letter) ||
-        self.alph().upper_substitutions.iter().any(|x| x.chars().next().unwrap() == *letter)
+        self.alph().upper.contains(*letter)
+            || self
+                .alph()
+                .upper_substitutions
+                .iter()
+                .any(|x| x.chars().next().unwrap() == *letter)
     }
 
     /// Is a particular letter lowercase?
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * letter The letter to check
-    /// 
+    ///
     pub fn is_lower(&self, letter: &char) -> bool {
-        self.alph().lower.contains(*letter) ||
-        self.alph().lower_substitutions.iter().any(|x| x.chars().next().unwrap() == *letter)
+        self.alph().lower.contains(*letter)
+            || self
+                .alph()
+                .lower_substitutions
+                .iter()
+                .any(|x| x.chars().next().unwrap() == *letter)
     }
 
     /// Is the code point valid?
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * cp The code point to validate
-    /// 
+    ///
     pub fn valid_cp(&self, cp: i16) -> bool {
         0 <= cp && cp <= self.max_cp()
     }
 
     /// Returns the max value of a code point
-    /// 
+    ///
     pub fn max_cp(&self) -> i16 {
         self.cp_count() - 1
     }
 
     /// Returns the number of distinct code points
-    /// 
+    ///
     pub fn cp_count(&self) -> i16 {
         self.alphabet_len() as i16
     }
@@ -215,7 +223,6 @@ impl Language {
     pub fn alphabet_len(&self) -> usize {
         self.alph().length()
     }
-
 
     /* -------------------------------------------------------------------------- */
     /*                             String conversions                             */
@@ -251,13 +258,17 @@ impl Language {
     /* -------------------------------------------------------------------------- */
     /// Adds an alphabet to the [`Language`]. For more information on alphabets, see [`LangAlphabet`].
     /// Returns Err if an alphabet with the same length already exists.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * alphabet The alphabet to add
-    /// 
+    ///
     pub fn add_alphabet(&mut self, alphabet: LangAlphabet) -> Result<(), &str> {
-        if self.alphabets.iter().any(|x| x.length() == alphabet.length()) {
+        if self
+            .alphabets
+            .iter()
+            .any(|x| x.length() == alphabet.length())
+        {
             Err("Alphabet with given length already exists")
         } else {
             self.alphabets.push(alphabet);
@@ -267,11 +278,11 @@ impl Language {
 
     /// Removes an alphabet from the [`Language`]. For more information on alphabets, see [`LangAlphabet`].
     /// No errors occur if there is no such alphabet in the [`Language`].
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * alphabet_len The length of alphabet to remove
-    /// 
+    ///
     pub fn del_alphabet(&mut self, alphabet_len: usize) {
         self.alphabets.retain(|x| x.length() != alphabet_len);
     }

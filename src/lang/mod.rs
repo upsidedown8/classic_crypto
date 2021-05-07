@@ -4,8 +4,8 @@
 //! number of letters needed.
 //!
 
-mod language;
 mod lang_alphabet;
+mod language;
 
-pub use language::Language;
 pub use lang_alphabet::LangAlphabet;
+pub use language::Language;

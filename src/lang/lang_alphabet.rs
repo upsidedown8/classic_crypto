@@ -53,7 +53,8 @@ impl LangAlphabet {
         } else if !util::is_unique(&lower) {
             Err("Lower alphabet has repeated letters")
         } else if lower_substitutions.iter().any(|x| x.chars().count() != 2)
-            || upper_substitutions.iter().any(|x| x.chars().count() != 2) {
+            || upper_substitutions.iter().any(|x| x.chars().count() != 2)
+        {
             Err("Substitutions must be pairs of letters")
         } else if !util::is_unique(
             lower_substitutions
@@ -113,7 +114,7 @@ impl LangAlphabet {
                 for &list in &[&result.lower_substitutions, &result.upper_substitutions] {
                     for sub in list {
                         let mut iter = sub.chars();
-    
+
                         // find the pair of chars, then add both upper & lower alternatives to char_to_cp
                         if let Some(char1) = iter.next() {
                             if let Some(char2) = iter.next() {

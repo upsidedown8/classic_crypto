@@ -15,6 +15,7 @@ use rand::{
 /// can be simulated using combinations of these rotors. (See Enigma cipher)
 ///
 #[derive(Clone, Copy)]
+#[allow(clippy::clippy::upper_case_acronyms)]
 pub enum RotorType {
     I = 0,
     II = 1,
