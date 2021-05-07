@@ -46,44 +46,66 @@ impl LangAlphabet {
         lower_substitutions: Vec<String>,
         upper_substitutions: Vec<String>,
     ) -> Result<LangAlphabet, &'static str> {
-        if upper.chars().count() != lower.chars().count() {
+        let mut result = LangAlphabet {
+            upper,
+            lower,
+            lower_substitutions,
+            upper_substitutions,
+            char_to_cp: HashMap::new(),
+        };
+
+        result.init()?;
+
+        Ok(result)
+    }
+
+    pub fn init(&mut self) -> Result<(), &'static str> {
+        self.char_to_cp.clear();
+
+        if self.upper.chars().count() != self.lower.chars().count() {
             Err("Upper and Lower alphabets must have equal length")
-        } else if !util::is_unique(&upper) {
+        } else if !util::is_unique(&self.upper) {
             Err("Upper alphabet has repeated letters")
-        } else if !util::is_unique(&lower) {
+        } else if !util::is_unique(&self.lower) {
             Err("Lower alphabet has repeated letters")
-        } else if lower_substitutions.iter().any(|x| x.chars().count() != 2)
-            || upper_substitutions.iter().any(|x| x.chars().count() != 2)
+        } else if self
+            .lower_substitutions
+            .iter()
+            .any(|x| x.chars().count() != 2)
+            || self
+                .upper_substitutions
+                .iter()
+                .any(|x| x.chars().count() != 2)
         {
             Err("Substitutions must be pairs of letters")
         } else if !util::is_unique(
-            lower_substitutions
+            self.lower_substitutions
                 .iter()
                 .fold(String::new(), |acc, x| acc + x)
                 .as_str(),
         ) || !util::is_unique(
-            upper_substitutions
+            self.upper_substitutions
                 .iter()
                 .fold(String::new(), |acc, x| acc + x)
                 .as_str(),
         ) {
             Err("Substitutions must be unique")
         } else {
-            let any_invalid_letters = lower_substitutions.iter().any(|sub| {
+            let any_invalid_letters = self.lower_substitutions.iter().any(|sub| {
                 let mut iter = sub.chars();
 
                 if let Some(char2) = iter.nth(1) {
                     // check whether the target char exists in the alphabet
-                    !lower.contains(char2)
+                    !self.lower.contains(char2)
                 } else {
                     false
                 }
-            }) || upper_substitutions.iter().any(|sub| {
+            }) || self.upper_substitutions.iter().any(|sub| {
                 let mut iter = sub.chars();
 
                 if let Some(char2) = iter.nth(1) {
                     // check whether the target char exists in the alphabet
-                    !upper.contains(char2)
+                    !self.upper.contains(char2)
                 } else {
                     false
                 }
@@ -92,26 +114,16 @@ impl LangAlphabet {
             if any_invalid_letters {
                 Err("Some letters in the substitutions were not present in the alphabet")
             } else {
-                let mut result = LangAlphabet {
-                    upper,
-                    lower,
-                    lower_substitutions,
-                    upper_substitutions,
-                    char_to_cp: HashMap::new(),
-                };
-
                 // insert all upper & lower chars
-                for i in 0..result.upper.chars().count() {
-                    result
-                        .char_to_cp
-                        .insert(result.upper.chars().nth(i).unwrap(), i as i16);
-                    result
-                        .char_to_cp
-                        .insert(result.lower.chars().nth(i).unwrap(), i as i16);
+                for i in 0..self.length() {
+                    self.char_to_cp
+                        .insert(self.upper.chars().nth(i).unwrap(), i as i16);
+                    self.char_to_cp
+                        .insert(self.lower.chars().nth(i).unwrap(), i as i16);
                 }
 
                 // insert substitutions
-                for &list in &[&result.lower_substitutions, &result.upper_substitutions] {
+                for &list in &[&self.lower_substitutions, &self.upper_substitutions] {
                     for sub in list {
                         let mut iter = sub.chars();
 
@@ -119,13 +131,13 @@ impl LangAlphabet {
                         if let Some(char1) = iter.next() {
                             if let Some(char2) = iter.next() {
                                 // add the pair
-                                result.char_to_cp.insert(char1, result.char_to_cp[&char2]);
+                                self.char_to_cp.insert(char1, self.char_to_cp[&char2]);
                             }
                         }
                     }
                 }
 
-                Ok(result)
+                Ok(())
             }
         }
     }

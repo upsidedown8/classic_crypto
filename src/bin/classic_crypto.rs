@@ -13,7 +13,7 @@ fn main() {
 
     let contents = std::fs::read_to_string("examples/data/english.json")
         .expect("Something went wrong reading the file");
-    let lang: Language = serde_json::from_str(&contents).unwrap();
+    let lang: Language = Language::from_json(contents).unwrap();
 
     let json = serde_json::to_string_pretty(&lang).unwrap();
 

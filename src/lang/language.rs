@@ -31,6 +31,22 @@ pub struct Language {
 }
 
 impl Language {
+    /// Creates a new Language from a JSON string
+    ///
+    pub fn from_json(json: String) -> Result<Language, String> {
+        // deserialize
+        let mut lang: Language = serde_json::from_str(&json).map_err(|err| err.to_string())?;
+
+        // init all alphabets
+        for i in 0..lang.alphabets.len() {
+            if let Err(msg) = lang.alphabets[i].init() {
+                return Err(msg.to_string());
+            }
+        }
+
+        Ok(lang)
+    }
+
     /// Gets the currently selected alphabet
     ///
     fn alph(&self) -> &LangAlphabet {
