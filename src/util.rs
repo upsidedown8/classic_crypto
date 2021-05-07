@@ -2,6 +2,29 @@
 //! Contains functions that are used across the library
 //!
 
+/// Returns true if the string contains any repeated characters
+///
+/// # Arguments
+///
+/// * string The string to check
+///
+/// # Examples
+/// 
+/// ```rust
+/// # use classic_crypto::util;
+/// assert!(!util::is_unique("abca"));
+/// assert!(!util::is_unique("AbcA"));
+/// assert!(util::is_unique("Abca"));
+/// assert!(util::is_unique("abcdefghijklmn"));
+/// assert!(util::is_unique(""));
+/// ```
+///
+pub fn is_unique(string: &str) -> bool {
+    !string.char_indices().any(|(idx, ch)| {
+        string.chars().skip(idx + 1).any(|x| x == ch)
+    })
+}
+
 ///
 /// Returns a vector of size `alphabet_size` containing all the values in the
 /// range `0..alphabet_size`, keyed by the slice `key`.  
