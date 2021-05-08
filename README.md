@@ -42,15 +42,15 @@ fn main() {
 | ADFGX                             | ⬜️              | ⬜️   |
 | Affine                            | ✅              | ✅   |
 | Atbash                            | ✅              | N/A  |
-| Autokey                           | ✅              | ⬜️   |
+| Autokey                           | ✅              | ✅   |
 | Baconian                          | ✅              | N/A  |
-| Beaufort                          | ✅              | ⬜️   |
-| Bellaso                           | ✅              | ⬜️   |
+| Beaufort                          | ✅              | ✅   |
+| Bellaso                           | ✅              | ✅   |
 | Bifid                             | ⬜️              | ⬜️   |
 | Block Transposition               | ⬜️              | ⬜️   |
 | Caesar                            | ✅              | ✅   |
 | Chaocipher                        | ⬜️              | ⬜️   |
-| Classic Vigenère                  | ✅              | ⬜️   |
+| Classic Vigenère                  | ✅              | ✅   |
 | Column Transposition              | ⬜️              | ⬜️   |
 | Enigma M3/M4                      | ✅              | ⬜️   |
 | Fialka                            | ⬜️              | ⬜️   |
@@ -64,12 +64,12 @@ fn main() {
 | Myszkowski Transposition          | ⬜️              | ⬜️   |
 | Playfair                          | ⬜️              | ⬜️   |
 | Polybius Square                   | ⬜️              | ⬜️   |
-| Porta                             | ✅              | ⬜️   |
+| Porta                             | ✅              | ✅   |
 | Purple                            | ⬜️              | ⬜️   |
 | Railfence                         | ⬜️              | ⬜️   |
 | Rot13                             | ✅              | N/A  |
 | Scytale                           | ⬜️              | ⬜️   |
-| Simple Substitution               | ✅              | ⬜️   |
+| Simple Substitution               | ✅              | ✅   |
 | Solitaire                         | ⬜️              | ⬜️   |
 | Straddle Checkerboard             | ⬜️              | ⬜️   |
 | Trifid                            | ⬜️              | ⬜️   |
