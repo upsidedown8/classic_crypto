@@ -24,7 +24,7 @@ pub enum ScoreSize {
 
 impl ScoreSize {
     /// Returns the length of plaintext substrings that each [`ScoreSize`] uses
-    /// 
+    ///
     pub fn length(&self) -> usize {
         match *self {
             ScoreSize::Unigrams => 1,
@@ -35,7 +35,7 @@ impl ScoreSize {
     }
 
     /// Returns the mask to use over 32 bit indexes for this scoring statistic
-    /// 
+    ///
     pub fn mask(&self) -> usize {
         match *self {
             ScoreSize::Unigrams => UNIGRAM_MASK,
@@ -85,12 +85,12 @@ pub struct Language {
     substitution_table: HashMap<char, String>,
 
     /// Stores the probability of each code point occuring
-    /// 
+    ///
     #[serde(skip)]
     unigram_probabilities: Vec<f64>,
 
     /// The index of [`LangAlphabet`] that is currently selected.
-    /// 
+    ///
     #[serde(skip)]
     selected_alph_idx: usize,
 }
@@ -106,26 +106,27 @@ impl Language {
     /// * corpus The text corpus to base frequency statistics on.
     ///
     /// # Examples
-    /// 
+    ///
     /// ```rust
     /// // read in the text corpus
-    /// let corpus = std::fs::read_to_string("corpus.txt").unwrap();
-    /// 
+    /// # use classic_crypto::lang::{Language,LangAlphabet};
+    /// let corpus = std::fs::read_to_string("examples/data/corpus.txt").unwrap();
+    ///
     /// let lang = Language::new(
     ///     "English".to_string(),
     ///     26,
     ///     vec![
     ///         LangAlphabet::new(
-    ///             "ABCDEFGHIJKLMNOPQRSTUVWXYZ".to_string(), 
-    ///             "abcdefghijklmnopqrstuvwxyz".to_string(), 
-    ///             vec![], 
+    ///             "ABCDEFGHIJKLMNOPQRSTUVWXYZ".to_string(),
+    ///             "abcdefghijklmnopqrstuvwxyz".to_string(),
+    ///             vec![],
     ///             vec![],
     ///             (0..26).collect(),
     ///         ).unwrap(),
     ///         LangAlphabet::new(
-    ///             "ABCDEFGHIKLMNOPQRSTUVWXYZ".to_string(), 
-    ///             "abcdefghiklmnopqrstuvwxyz".to_string(), 
-    ///             vec!["ji".to_string()], 
+    ///             "ABCDEFGHIKLMNOPQRSTUVWXYZ".to_string(),
+    ///             "abcdefghiklmnopqrstuvwxyz".to_string(),
+    ///             vec!["ji".to_string()],
     ///             vec!["JI".to_string()],
     ///             // since J is missed out
     ///             (0..25).map(|x| if x > 8 {x+1} else {x}).collect(),
@@ -133,13 +134,13 @@ impl Language {
     ///     ],
     ///     corpus
     /// ).unwrap();
-    /// 
+    ///
     /// // write to file
     /// let encoded: Vec<u8> = bincode::serialize(&lang).unwrap();
     /// std::fs::write("examples/data/english.bin", encoded).unwrap();
-    /// 
+    ///
     /// ```
-    /// 
+    ///
     pub fn new(
         name: String,
         alphabet_len: usize,
@@ -255,19 +256,19 @@ impl Language {
     /* -------------------------------------------------------------------------- */
     /// Calculates the Index of Coincedence of a given slice of code points, using the
     /// currently selected alphabet.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * data The slice to analyse
-    /// 
+    ///
     pub fn index_of_coincedence(&self, data: &[i16]) -> f64 {
         let mut counts = [0; MAX_ALPHABET_LEN];
-        
+
         // count each letter
         for &cp in data {
             counts[cp as usize] += 1;
         }
-        
+
         let mut total = 0;
         // total f(f-1) where f is the frequency of a particular letter
         for &f in counts.iter().take(self.alphabet_len()) {
@@ -280,12 +281,12 @@ impl Language {
     /// Calculates the Index of Coincedence of a given slice of code points given
     /// a particular cipher period, by averaging the IOC for each column. IOC is
     /// calculated using the currently selected alphabet.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * data The slice to analyse
     /// * period_length The length of the cipher period
-    /// 
+    ///
     pub fn periodic_ioc(&self, data: &[i16], period_length: usize) -> f64 {
         let mut total = 0.0;
 
@@ -304,9 +305,9 @@ impl Language {
 
     /// Calculates the chi-squared value for a slice of code points,
     /// comparing it to generated frequency percentages from the corpus.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * data The slice to analyse
     ///
     pub fn chi_squared(&self, data: &[i16]) -> f64 {
@@ -328,27 +329,24 @@ impl Language {
     }
 
     /// Calculates the unigram, bigram, trigram or quadgram score, based on score_size, of data
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `data` The data to score
     /// * `score_size` Which variety of statistic to use
-    /// 
+    ///
     pub fn score(&self, data: &[i16], score_size: ScoreSize) -> f64 {
-        self.score_iter(
-            data.iter().copied(),
-            score_size
-        )
+        self.score_iter(data.iter().copied(), score_size)
     }
 
     /// Calculates the unigram, bigram, trigram or quadgram score, based on score_size, given
     /// an iterator over code points. (Removes the need to use memory to store decryptions).
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `iter` An iterator over code points
     /// * `score_size` Which variety of statistic to use
-    /// 
+    ///
     pub fn score_iter(&self, mut iter: impl Iterator<Item = i16>, score_size: ScoreSize) -> f64 {
         // initial value of idx
         let mut idx = 0;
@@ -370,7 +368,7 @@ impl Language {
             score += stats_vec[idx & mask];
             idx = (idx << 5) | (self.alph().scoring_sub_table[cp as usize] as usize);
         }
-        
+
         score
     }
 
