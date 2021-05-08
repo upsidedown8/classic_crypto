@@ -1,4 +1,4 @@
-use classic_crypto::{Asymmetric, Bellaso, Keyed, Solve, Symmetric, key::SetKey, lang::Language};
+use classic_crypto::{lang::Language, Bellaso, Keyed, Solve, Symmetric};
 
 fn main() {
     let mut language = Language::from_file("examples/data/english.bin").unwrap();
@@ -6,8 +6,7 @@ fn main() {
 
     let ciphertext = r#"ojpkiajwibvfhdxoxsfbiblwcxxxvnmqtjgbbxswrvnclzpavjrrzlugwljiubmfgpsthsxwvrbkuivkityljwrfmyfgpxscpskrjcttlagbidjjeanuultpbkljlnpvhilsityqikbhdjjwjlsmzgdhmwsularnwyepnopsfvsxschqpnowxlkjrywlzphecytmlucwgxnbtvrklfpoigbkrpgcyfhdtvqblvhqgitwxscowifnsutzkutuzbsnnakyfjblwxpdhnjrvxxegcfnilrshiljdgalzpgbsbuhakbugiinkitmtfqnnfydsnzjrvuisckudzgcyelnpbsuaiubnuvzttsiknzvhnseztfkisaibnzjejpiinpjxrrshikavcqzsorpalyubotnxsivsisygcqfiysfhkudvzimpwfupgsqjtdxoiigelubbgijavcepwcglwnfgcagwzbtamabykspbsualvingyujtfyzaeesdfjzfvajjrygkjymwxonepjiubgavzpjfblzplcjpfzyplwqmxrbbfzotdpwviousesyxxvnsxbiubrruqyknzzapcfyjuljdgrvbpffmjmwcmnjxjxzzifkvsmfiyudbpvfzvsmrmgoppnacyxxpbsuaqbpkavlfbkkvbtamjytpjbscfbglfmjmljdgugiiektrtqyknjvqdpfqkiajfskuwcgsxcyxafkhvbtbtsyjqypbmfsivsiabqzdnngiyackuyuxpkiochrsxrlmypzygdpetsykzavcrzrzrpagehciiwujhgdjbamyinnzalrlsqigrrpctwhntvhyajrtnfyzbcgazdxvbuviubkiazywdpbqutcfbjefbuobqxcbnscbgiuzmlwyzosyjhuujwxbhozbfhdxoxsfbyaztrzlrbsrzryvhskjjjqonlzyfnjmizartwyxtacjrtpxzkigcgzbrmijtjkkkwngkjykgbeziqbaykidu"#;
 
-    let key = language.string_to_vec("fortification");
-    cipher.keyword.set_key(&mut language, &key);
+    cipher.solve(&mut language, ciphertext);
 
     println!("{}", cipher.to_string(&mut language));
 
