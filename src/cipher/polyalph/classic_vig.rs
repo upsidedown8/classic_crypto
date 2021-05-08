@@ -1,7 +1,7 @@
 use crate::{
-    cipher::{Asymmetric, Keyed},
+    cipher::{Asymmetric, Keyed, Solve},
     key::{
-        ClassicVigSquare, Keyword, VigSquare, {Key, StatefulKey},
+        ClassicVigSquare, Keyword, SetKey, VigSquare, {Key, StatefulKey},
     },
     lang::Language,
 };
@@ -65,5 +65,17 @@ impl Keyed for ClassicVigenere {
     }
     fn to_string(&self, language: &mut Language) -> String {
         format!("Keyword:{}", self.keyword.to_string(language))
+    }
+}
+
+impl Solve for ClassicVigenere {
+    fn solve(&mut self, language: &mut Language, msg: &str) {
+        let ciphertext = language.string_to_vec(msg);
+        self.keyword.set_key(
+            language,
+            &crate::cipher::polyalph::vig_solve(&ciphertext, 1, language, |cp, shift| {
+                self.square.decrypt(shift, cp)
+            }, false),
+        )
     }
 }
