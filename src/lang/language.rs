@@ -331,19 +331,30 @@ impl Language {
     /// 
     /// # Arguments
     /// 
-    /// * data The data to score
-    /// * score_size Which variety of statistic to use
+    /// * `data` The data to score
+    /// * `score_size` Which variety of statistic to use
     /// 
     pub fn score(&self, data: &[i16], score_size: ScoreSize) -> f64 {
-        let mut iter = 
-            data
-                .iter()
-                .map(|&x| self.alph().scoring_sub_table[x as usize] as usize);
+        self.score_iter(
+            data.iter().copied(),
+            score_size
+        )
+    }
+
+    /// Calculates the unigram, bigram, trigram or quadgram score, based on score_size, given
+    /// an iterator over code points. (Removes the need to use memory to store decryptions).
+    /// 
+    /// # Arguments
+    /// 
+    /// * `iter` An iterator over code points
+    /// * `score_size` Which variety of statistic to use
+    /// 
+    pub fn score_iter(&self, mut iter: impl Iterator<Item = i16>, score_size: ScoreSize) -> f64 {
         // initial value of idx
         let mut idx = 0;
         for _ in 0..score_size.length() {
             if let Some(cp) = iter.next() {
-                idx = (idx << 5) | cp;
+                idx = (idx << 5) | (cp as usize);
             }
         }
         // calculate score
@@ -357,7 +368,7 @@ impl Language {
         let mask = score_size.mask();
         for cp in iter {
             score += stats_vec[idx & mask];
-            idx = (idx << 5) | cp;
+            idx = (idx << 5) | (self.alph().scoring_sub_table[cp as usize] as usize);
         }
         
         score
