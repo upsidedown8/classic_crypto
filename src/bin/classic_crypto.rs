@@ -1,21 +1,16 @@
-use classic_crypto::lang::Language;
+use classic_crypto::{Asymmetric, Bellaso, Keyed, Solve, Symmetric, key::SetKey, lang::Language};
 
 fn main() {
-    // let mut enigma = Enigma::new(&language)
+    let mut language = Language::from_file("examples/data/english.bin").unwrap();
+    let mut cipher = Bellaso::new(&mut language);
 
-    // let mut cipher = Affine::new(&language);
-    // cipher.randomize(&language, &mut rand::thread_rng());
+    let ciphertext = r#"ojpkiajwibvfhdxoxsfbiblwcxxxvnmqtjgbbxswrvnclzpavjrrzlugwljiubmfgpsthsxwvrbkuivkityljwrfmyfgpxscpskrjcttlagbidjjeanuultpbkljlnpvhilsityqikbhdjjwjlsmzgdhmwsularnwyepnopsfvsxschqpnowxlkjrywlzphecytmlucwgxnbtvrklfpoigbkrpgcyfhdtvqblvhqgitwxscowifnsutzkutuzbsnnakyfjblwxpdhnjrvxxegcfnilrshiljdgalzpgbsbuhakbugiinkitmtfqnnfydsnzjrvuisckudzgcyelnpbsuaiubnuvzttsiknzvhnseztfkisaibnzjejpiinpjxrrshikavcqzsorpalyubotnxsivsisygcqfiysfhkudvzimpwfupgsqjtdxoiigelubbgijavcepwcglwnfgcagwzbtamabykspbsualvingyujtfyzaeesdfjzfvajjrygkjymwxonepjiubgavzpjfblzplcjpfzyplwqmxrbbfzotdpwviousesyxxvnsxbiubrruqyknzzapcfyjuljdgrvbpffmjmwcmnjxjxzzifkvsmfiyudbpvfzvsmrmgoppnacyxxpbsuaqbpkavlfbkkvbtamjytpjbscfbglfmjmljdgugiiektrtqyknjvqdpfqkiajfskuwcgsxcyxafkhvbtbtsyjqypbmfsivsiabqzdnngiyackuyuxpkiochrsxrlmypzygdpetsykzavcrzrzrpagehciiwujhgdjbamyinnzalrlsqigrrpctwhntvhyajrtnfyzbcgazdxvbuviubkiazywdpbqutcfbjefbuobqxcbnscbgiuzmlwyzosyjhuujwxbhozbfhdxoxsfbyaztrzlrbsrzryvhskjjjqonlzyfnjmizartwyxtacjrtpxzkigcgzbrmijtjkkkwngkjykgbeziqbaykidu"#;
 
-    // let plaintext = "Some plaintext";
-    // let ciphertext = cipher.encrypt(&language, plaintext);
+    let key = language.string_to_vec("fortification");
+    cipher.keyword.set_key(&mut language, &key);
 
-    // println!("{}", ciphertext);
+    println!("{}", cipher.to_string(&mut language));
 
-    let contents = std::fs::read_to_string("examples/data/english.json")
-        .expect("Something went wrong reading the file");
-    let lang: Language = Language::from_json(contents).unwrap();
-
-    let json = serde_json::to_string_pretty(&lang).unwrap();
-
-    println!("{}", json);
+    let plaintext = cipher.run(&mut language, &ciphertext);
+    println!("plaintext {}", plaintext);
 }
