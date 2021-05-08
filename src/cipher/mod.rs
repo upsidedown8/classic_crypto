@@ -82,11 +82,11 @@ pub trait Keyed {
 pub trait Solve {
     /// Solve the ciphertext given in msg, the cipher instance will be updated with the
     /// key of the best solution.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `language` A borrowed instance of the currently loaded [`Language`]
     /// * `msg` The message to solve
-    /// 
+    ///
     fn solve(&mut self, language: &mut Language, msg: &str);
 }

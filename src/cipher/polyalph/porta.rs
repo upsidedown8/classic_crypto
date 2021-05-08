@@ -1,4 +1,10 @@
-use crate::{cipher::{Keyed, Symmetric, Solve}, key::{{Key, StatefulKey}, Keyword, PortaSquare, SetKey, VigSquare}, lang::Language};
+use crate::{
+    cipher::{Keyed, Solve, Symmetric},
+    key::{
+        Keyword, PortaSquare, SetKey, VigSquare, {Key, StatefulKey},
+    },
+    lang::Language,
+};
 
 pub struct Porta {
     square: PortaSquare,
@@ -50,9 +56,13 @@ impl Solve for Porta {
         let ciphertext = language.string_to_vec(msg);
         self.keyword.set_key(
             language,
-            &crate::cipher::polyalph::vig_solve(&ciphertext, 2, language, |cp, shift| {
-                self.square.encrypt(shift / 2, cp)
-            }, false),
+            &crate::cipher::polyalph::vig_solve(
+                &ciphertext,
+                2,
+                language,
+                |cp, shift| self.square.encrypt(shift / 2, cp),
+                false,
+            ),
         )
     }
 }

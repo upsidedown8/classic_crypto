@@ -51,10 +51,16 @@ where
 
                         language.score_iter(
                             msg.iter().enumerate().map(|(idx, &cp)| {
-                                plain[idx%len] =
-                                    decrypt_one(cp, if idx < len { key[idx] } else { plain[idx%len] });
-    
-                                plain[idx%len]
+                                plain[idx % len] = decrypt_one(
+                                    cp,
+                                    if idx < len {
+                                        key[idx]
+                                    } else {
+                                        plain[idx % len]
+                                    },
+                                );
+
+                                plain[idx % len]
                             }),
                             ScoreSize::Quadgrams,
                         )

@@ -1,8 +1,12 @@
-use crate::{key::{Alphabet, SetKey}, lang::ScoreSize, util};
 use crate::lang::Language;
 use crate::{
     cipher::{Asymmetric, Keyed, Solve},
     key::{Key, StatefulKey},
+};
+use crate::{
+    key::{Alphabet, SetKey},
+    lang::ScoreSize,
+    util,
 };
 
 pub struct SimpleSubstitution {
@@ -76,14 +80,12 @@ impl Solve for SimpleSubstitution {
             while improved {
                 improved = false;
 
-                for i in 0..language.alphabet_len()-1 {
+                for i in 0..language.alphabet_len() - 1 {
                     for j in i..language.alphabet_len() {
                         inv_key.swap(i, j);
 
                         let score = language.score_iter(
-                            ciphertext
-                                .iter()
-                                .map(|&x| inv_key[x as usize]),
+                            ciphertext.iter().map(|&x| inv_key[x as usize]),
                             ScoreSize::Quadgrams,
                         );
 

@@ -1,4 +1,10 @@
-use crate::{cipher::{Keyed, Symmetric, Solve}, key::{{Key, StatefulKey}, ClassicVigSquare, Keyword, SetKey, VigSquare}, lang::Language};
+use crate::{
+    cipher::{Keyed, Solve, Symmetric},
+    key::{
+        ClassicVigSquare, Keyword, SetKey, VigSquare, {Key, StatefulKey},
+    },
+    lang::Language,
+};
 
 pub struct Beaufort {
     square: ClassicVigSquare,
@@ -50,9 +56,13 @@ impl Solve for Beaufort {
         let ciphertext = language.string_to_vec(msg);
         self.keyword.set_key(
             language,
-            &crate::cipher::polyalph::vig_solve(&ciphertext, 1, language, |cp, shift| {
-                self.square.decrypt(cp, shift)
-            }, false),
+            &crate::cipher::polyalph::vig_solve(
+                &ciphertext,
+                1,
+                language,
+                |cp, shift| self.square.decrypt(cp, shift),
+                false,
+            ),
         )
     }
 }

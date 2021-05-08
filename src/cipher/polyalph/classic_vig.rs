@@ -73,9 +73,13 @@ impl Solve for ClassicVigenere {
         let ciphertext = language.string_to_vec(msg);
         self.keyword.set_key(
             language,
-            &crate::cipher::polyalph::vig_solve(&ciphertext, 1, language, |cp, shift| {
-                self.square.decrypt(shift, cp)
-            }, false),
+            &crate::cipher::polyalph::vig_solve(
+                &ciphertext,
+                1,
+                language,
+                |cp, shift| self.square.decrypt(shift, cp),
+                false,
+            ),
         )
     }
 }

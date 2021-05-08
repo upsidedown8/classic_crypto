@@ -26,7 +26,7 @@ pub struct LangAlphabet {
 
     /// Maps the items in the alphabet back to the standard alphabet, so that the standard scoring arrays
     /// can be indexed
-    /// 
+    ///
     pub scoring_sub_table: Vec<i16>,
 
     /// Maps characters to code points
@@ -50,7 +50,7 @@ impl LangAlphabet {
         lower: String,
         lower_substitutions: Vec<String>,
         upper_substitutions: Vec<String>,
-        scoring_sub_table: Vec<i16>
+        scoring_sub_table: Vec<i16>,
     ) -> Result<LangAlphabet, &'static str> {
         let mut result = LangAlphabet {
             upper,

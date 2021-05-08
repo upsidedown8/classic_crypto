@@ -1,6 +1,9 @@
-use crate::{cipher::{Asymmetric, Keyed, Solve}, lang::ScoreSize};
 use crate::lang::Language;
 use crate::util;
+use crate::{
+    cipher::{Asymmetric, Keyed, Solve},
+    lang::ScoreSize,
+};
 
 pub struct Caesar {
     pub shift: i16,

@@ -1,8 +1,11 @@
 use rand::prelude::IteratorRandom;
 
-use crate::{cipher::{Asymmetric, Keyed, Solve}, lang::ScoreSize};
 use crate::lang::Language;
 use crate::util;
+use crate::{
+    cipher::{Asymmetric, Keyed, Solve},
+    lang::ScoreSize,
+};
 
 pub struct Affine {
     pub a: i16,
@@ -103,12 +106,12 @@ impl Solve for Affine {
                         .map(|&cp| Affine::decrypt_one(language, cp, mmi, b))
                         .collect();
                     let score = language.score(&plaintext, ScoreSize::Quadgrams);
-    
+
                     if score > best_score {
                         best_score = score;
                         self.a = a;
                         self.b = b;
-                    }    
+                    }
                 }
             }
         }

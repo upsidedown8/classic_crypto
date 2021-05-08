@@ -1,4 +1,10 @@
-use crate::{cipher::{Asymmetric, Keyed, Solve}, key::{{Key, StatefulKey}, ClassicVigSquare, Keyword, SetKey, VigSquare}, lang::Language};
+use crate::{
+    cipher::{Asymmetric, Keyed, Solve},
+    key::{
+        ClassicVigSquare, Keyword, SetKey, VigSquare, {Key, StatefulKey},
+    },
+    lang::Language,
+};
 
 pub struct Autokey {
     square: ClassicVigSquare,
@@ -81,9 +87,13 @@ impl Solve for Autokey {
         let ciphertext = language.string_to_vec(msg);
         self.keyword.set_key(
             language,
-            &crate::cipher::polyalph::vig_solve(&ciphertext, 1, language, |cp, shift| {
-                self.square.decrypt(shift, cp)
-            }, true),
+            &crate::cipher::polyalph::vig_solve(
+                &ciphertext,
+                1,
+                language,
+                |cp, shift| self.square.decrypt(shift, cp),
+                true,
+            ),
         )
     }
 }

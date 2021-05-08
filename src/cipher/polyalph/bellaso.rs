@@ -1,4 +1,10 @@
-use crate::{cipher::{Keyed, Symmetric, Solve}, key::{{Key, StatefulKey}, BellasoSquare, Keyword, SetKey, VigSquare}, lang::Language};
+use crate::{
+    cipher::{Keyed, Solve, Symmetric},
+    key::{
+        BellasoSquare, Keyword, SetKey, VigSquare, {Key, StatefulKey},
+    },
+    lang::Language,
+};
 
 pub struct Bellaso {
     square: BellasoSquare,
@@ -50,9 +56,13 @@ impl Solve for Bellaso {
         let ciphertext = language.string_to_vec(msg);
         self.keyword.set_key(
             language,
-            &crate::cipher::polyalph::vig_solve(&ciphertext, 1, language, |cp, shift| {
-                self.square.encrypt(shift, cp)
-            }, false),
+            &crate::cipher::polyalph::vig_solve(
+                &ciphertext,
+                1,
+                language,
+                |cp, shift| self.square.encrypt(shift, cp),
+                false,
+            ),
         )
     }
 }
