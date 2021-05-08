@@ -63,7 +63,7 @@ impl Reflector {
 }
 
 impl KeyFrom<ReflectorType> for Reflector {
-    fn create_from(_language: &Language, wiring: ReflectorType) -> Reflector {
+    fn create_from(_language: &mut Language, wiring: ReflectorType) -> Reflector {
         Reflector {
             wiring_type: wiring,
         }
@@ -71,13 +71,13 @@ impl KeyFrom<ReflectorType> for Reflector {
 }
 
 impl SetKey<ReflectorType> for Reflector {
-    fn set_key(&mut self, _language: &Language, wiring: ReflectorType) {
+    fn set_key(&mut self, _language: &mut Language, wiring: ReflectorType) {
         self.wiring_type = wiring;
     }
 }
 
 impl Key for Reflector {
-    fn to_string(&self, _language: &Language) -> String {
+    fn to_string(&self, _language: &mut Language) -> String {
         format!(
             "Reflector: {}",
             match self.wiring_type {
@@ -90,7 +90,7 @@ impl Key for Reflector {
         )
     }
 
-    fn new(_language: &Language) -> Reflector {
+    fn new(_language: &mut Language) -> Reflector {
         Reflector {
             wiring_type: ReflectorType::B,
         }
@@ -98,10 +98,10 @@ impl Key for Reflector {
 }
 
 impl StatefulKey for Reflector {
-    fn reset(&mut self, _language: &Language) {
+    fn reset(&mut self, _language: &mut Language) {
         self.wiring_type = ReflectorType::B;
     }
-    fn randomize(&mut self, _language: &Language, rng: &mut impl Rng) {
+    fn randomize(&mut self, _language: &mut Language, rng: &mut impl Rng) {
         self.wiring_type = rng.gen();
     }
 }

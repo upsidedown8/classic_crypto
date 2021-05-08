@@ -139,7 +139,7 @@ impl Rotor {
 }
 
 impl KeyFrom<RotorType> for Rotor {
-    fn create_from(_language: &Language, wiring: RotorType) -> Rotor {
+    fn create_from(_language: &mut Language, wiring: RotorType) -> Rotor {
         Rotor {
             wiring_type: wiring,
             grund: 0,
@@ -149,13 +149,13 @@ impl KeyFrom<RotorType> for Rotor {
 }
 
 impl SetKey<RotorType> for Rotor {
-    fn set_key(&mut self, _language: &Language, wiring: RotorType) {
+    fn set_key(&mut self, _language: &mut Language, wiring: RotorType) {
         self.wiring_type = wiring;
     }
 }
 
 impl Key for Rotor {
-    fn to_string(&self, _language: &Language) -> String {
+    fn to_string(&self, _language: &mut Language) -> String {
         format!(
             "Rotor: {}, grund:{}, rings:{}",
             match self.wiring_type {
@@ -175,7 +175,7 @@ impl Key for Rotor {
         )
     }
 
-    fn new(_language: &Language) -> Rotor {
+    fn new(_language: &mut Language) -> Rotor {
         Rotor {
             wiring_type: RotorType::I,
             grund: 0,
@@ -185,11 +185,11 @@ impl Key for Rotor {
 }
 
 impl StatefulKey for Rotor {
-    fn reset(&mut self, _language: &Language) {
+    fn reset(&mut self, _language: &mut Language) {
         self.wiring_type = RotorType::I;
         self.reset_positions();
     }
-    fn randomize(&mut self, _language: &Language, rng: &mut impl Rng) {
+    fn randomize(&mut self, _language: &mut Language, rng: &mut impl Rng) {
         self.wiring_type = rng.gen();
         self.grund = rng.gen_range(0..26);
         self.rings = rng.gen_range(0..26);

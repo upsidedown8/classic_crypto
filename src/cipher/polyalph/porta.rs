@@ -14,7 +14,7 @@ pub struct Porta {
 impl Porta {}
 
 impl Symmetric for Porta {
-    fn run(&self, language: &Language, msg: &str) -> String {
+    fn run(&self, language: &mut Language, msg: &str) -> String {
         let mut count = 0;
         msg.chars()
             .map(|c| {
@@ -34,19 +34,19 @@ impl Symmetric for Porta {
 }
 
 impl Keyed for Porta {
-    fn new(language: &Language) -> Porta {
+    fn new(language: &mut Language) -> Porta {
         Porta {
             square: PortaSquare::new(language),
             keyword: Keyword::new(language),
         }
     }
-    fn reset(&mut self, language: &Language) {
+    fn reset(&mut self, language: &mut Language) {
         self.keyword.reset(language);
     }
-    fn randomize(&mut self, language: &Language, rng: &mut impl rand::Rng) {
+    fn randomize(&mut self, language: &mut Language, rng: &mut impl rand::Rng) {
         self.keyword.randomize(language, rng);
     }
-    fn to_string(&self, language: &Language) -> String {
+    fn to_string(&self, language: &mut Language) -> String {
         format!("Keyword:{}", self.keyword.to_string(language))
     }
 }

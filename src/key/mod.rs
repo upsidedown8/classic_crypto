@@ -45,7 +45,7 @@ pub trait KeyFrom<T> {
     /// * [`Language`] A borrowed instance of the currently loaded [`Language`]
     /// * `_` The argument with which to initialize the `Key`
     ///
-    fn create_from(language: &Language, _: T) -> Self;
+    fn create_from(language: &mut Language, _: T) -> Self;
 }
 
 /// Trait to set the state of a key with a value of type `T`
@@ -58,7 +58,7 @@ pub trait SetKey<T> {
     /// * [`Language`] A borrowed instance of the currently loaded [`Language`]
     /// * `_` The argument with which to set the `Key` state
     ///
-    fn set_key(&mut self, language: &Language, _: T);
+    fn set_key(&mut self, language: &mut Language, _: T);
 }
 
 /// Trait implemented by all cipher keys
@@ -70,7 +70,7 @@ pub trait Key {
     ///
     /// * [`Language`] A borrowed instance of the currently loaded [`Language`]
     ///
-    fn to_string(&self, language: &Language) -> String;
+    fn to_string(&self, language: &mut Language) -> String;
 
     /// Initializes a new instance of the `Key` implementation with default values, which may be
     /// influenced by the [`Language`] config.
@@ -79,7 +79,7 @@ pub trait Key {
     ///
     /// * [`Language`] A borrowed instance of the currently loaded [`Language`]
     ///
-    fn new(language: &Language) -> Self;
+    fn new(language: &mut Language) -> Self;
 }
 
 /// Trait implemented by `Key` implementations with state
@@ -91,7 +91,7 @@ pub trait StatefulKey {
     ///
     /// * [`Language`] A borrowed instance of the currently loaded [`Language`]
     ///
-    fn reset(&mut self, language: &Language);
+    fn reset(&mut self, language: &mut Language);
 
     /// Randomizes the state of the key.
     ///
@@ -100,5 +100,5 @@ pub trait StatefulKey {
     /// * [`Language`] A borrowed instance of the currently loaded [`Language`]
     /// * `rng` A rand::Rng implementation to generate random numbers
     ///
-    fn randomize(&mut self, language: &Language, rng: &mut impl Rng);
+    fn randomize(&mut self, language: &mut Language, rng: &mut impl Rng);
 }

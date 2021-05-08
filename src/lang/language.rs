@@ -1,12 +1,54 @@
 use std::collections::HashMap;
 
-extern crate serde;
 use crate::lang::LangAlphabet;
 use serde::{Deserialize, Serialize};
 
+pub const MAX_ALPHABET_LEN: usize = 32;
+
+const UNIGRAM_LEN: usize = 32;
+const BIGRAM_LEN: usize = 32 * 32;
+const TRIGRAM_LEN: usize = 32 * 32 * 32;
+const QUADGRAM_LEN: usize = 32 * 32 * 32 * 32;
+
+const UNIGRAM_MASK: usize = 0b0000_0000_0000_0001_1111;
+const BIGRAM_MASK: usize = 0b0000_0000_0011_1111_1111;
+const TRIGRAM_MASK: usize = 0b0000_0111_1111_1111_1111;
+const QUADGRAM_MASK: usize = 0b1111_1111_1111_1111_1111;
+
+pub enum ScoreSize {
+    Unigrams,
+    Bigrams,
+    Trigrams,
+    Quadgrams,
+}
+
+impl ScoreSize {
+    /// Returns the length of plaintext substrings that each [`ScoreSize`] uses
+    /// 
+    pub fn length(&self) -> usize {
+        match *self {
+            ScoreSize::Unigrams => 1,
+            ScoreSize::Bigrams => 2,
+            ScoreSize::Trigrams => 3,
+            ScoreSize::Quadgrams => 4,
+        }
+    }
+
+    /// Returns the mask to use over 32 bit indexes for this scoring statistic
+    /// 
+    pub fn mask(&self) -> usize {
+        match *self {
+            ScoreSize::Unigrams => UNIGRAM_MASK,
+            ScoreSize::Bigrams => BIGRAM_MASK,
+            ScoreSize::Trigrams => TRIGRAM_MASK,
+            ScoreSize::Quadgrams => QUADGRAM_MASK,
+        }
+    }
+}
+
 /// Provides compatability with different cipher alphabet lengths, performs conversions
 /// from letters to code points (from `0..alphabet_size`), scores plaintext data (Coming soon),
-/// recognises letters/punctuation and can be configured from a single `JSON` file.
+/// recognises letters/punctuation and can be configured from a single binary data file.
 ///
 #[derive(Serialize, Deserialize, Default)]
 pub struct Language {
@@ -16,26 +58,166 @@ pub struct Language {
 
     /// Length of the standard alphabet
     ///
-    pub alphabet_len: i16,
+    alphabet_len: i16,
+
+    /// Stores single letter probabilities
+    ///
+    unigrams: Vec<f64>,
+
+    /// Stores double letter probabilities
+    ///
+    bigrams: Vec<f64>,
+
+    /// Stores triple letter probabilities
+    ///
+    trigrams: Vec<f64>,
+
+    /// Stores quadruple letter probabilities
+    ///
+    quadgrams: Vec<f64>,
 
     /// Stores all supported alphabets
     ///
-    pub alphabets: Vec<LangAlphabet>,
+    alphabets: Vec<LangAlphabet>,
 
     /// Maps diacritics -> standard letter(s)
     ///
-    pub substitution_table: HashMap<char, String>,
+    substitution_table: HashMap<char, String>,
 
+    /// Stores the probability of each code point occuring
+    /// 
+    #[serde(skip)]
+    unigram_probabilities: Vec<f64>,
+
+    /// The index of [`LangAlphabet`] that is currently selected.
+    /// 
     #[serde(skip)]
     selected_alph_idx: usize,
 }
 
 impl Language {
-    /// Creates a new Language from a JSON string
+    /// Creates a new [`Language`] with parameters
     ///
-    pub fn from_json(json: String) -> Result<Language, String> {
-        // deserialize
-        let mut lang: Language = serde_json::from_str(&json).map_err(|err| err.to_string())?;
+    /// # Arguments
+    ///
+    /// * name The name of the language
+    /// * alphabet_len The primary alphabet length for the language (english = 26)
+    /// * alphabets A Vec of [`LangAlphabet`]s, which should contain one with length alphabet_len.
+    /// * corpus The text corpus to base frequency statistics on.
+    ///
+    /// # Examples
+    /// 
+    /// ```rust
+    /// // read in the text corpus
+    /// let corpus = std::fs::read_to_string("corpus.txt").unwrap();
+    /// 
+    /// let lang = Language::new(
+    ///     "English".to_string(),
+    ///     26,
+    ///     vec![
+    ///         LangAlphabet::new(
+    ///             "ABCDEFGHIJKLMNOPQRSTUVWXYZ".to_string(), 
+    ///             "abcdefghijklmnopqrstuvwxyz".to_string(), 
+    ///             vec![], 
+    ///             vec![],
+    ///             (0..26).collect(),
+    ///         ).unwrap(),
+    ///         LangAlphabet::new(
+    ///             "ABCDEFGHIKLMNOPQRSTUVWXYZ".to_string(), 
+    ///             "abcdefghiklmnopqrstuvwxyz".to_string(), 
+    ///             vec!["ji".to_string()], 
+    ///             vec!["JI".to_string()],
+    ///             // since J is missed out
+    ///             (0..25).map(|x| if x > 8 {x+1} else {x}).collect(),
+    ///         ).unwrap(),
+    ///     ],
+    ///     corpus
+    /// ).unwrap();
+    /// 
+    /// // write to file
+    /// let encoded: Vec<u8> = bincode::serialize(&lang).unwrap();
+    /// std::fs::write("examples/data/english.bin", encoded).unwrap();
+    /// 
+    /// ```
+    /// 
+    pub fn new(
+        name: String,
+        alphabet_len: usize,
+        alphabets: Vec<LangAlphabet>,
+        corpus: String,
+    ) -> Result<Language, String> {
+        if let Some(selected_alph_idx) = alphabets.iter().position(|x| x.length() == alphabet_len) {
+            let mut lang = Language {
+                name,
+                alphabets,
+                alphabet_len: alphabet_len as i16,
+                substitution_table: HashMap::new(),
+                unigrams: vec![0.0; UNIGRAM_LEN],
+                bigrams: vec![0.0; BIGRAM_LEN],
+                trigrams: vec![0.0; TRIGRAM_LEN],
+                quadgrams: vec![0.0; QUADGRAM_LEN],
+                unigram_probabilities: vec![0.0; UNIGRAM_LEN],
+                selected_alph_idx,
+            };
+
+            // filter out punctuation from corpus
+            let corpus = lang.string_to_vec(&corpus);
+
+            // load corpus
+            if corpus.len() >= 4 {
+                // calculate initial value of idx for first 3 letters
+                let mut idx: usize = 0;
+                for &cp in corpus.iter().take(3) {
+                    idx = (idx << 5) | (cp as usize);
+                }
+                for &cp in corpus.iter().skip(3) {
+                    idx = (idx << 5) | (cp as usize);
+
+                    // increment counts for all 4
+                    lang.unigrams[idx & UNIGRAM_MASK] += 1.0;
+                    lang.bigrams[idx & BIGRAM_MASK] += 1.0;
+                    lang.trigrams[idx & TRIGRAM_MASK] += 1.0;
+                    lang.quadgrams[idx & QUADGRAM_MASK] += 1.0;
+                }
+
+                // now have frequencies stored. find probabilities
+                let uni_sum = lang.unigrams.iter().sum::<f64>();
+                let bg_sum = lang.bigrams.iter().sum::<f64>();
+                let tg_sum = lang.trigrams.iter().sum::<f64>();
+                let qg_sum = lang.quadgrams.iter().sum::<f64>();
+
+                // take the log to exploit
+                //      log(a*b)      =     log(a) + log(b)
+                //  log(P(A) * P(B))  =  log(P(A)) + log(P(B))
+                for i in 0..lang.unigrams.len() {
+                    // store probability
+                    lang.unigram_probabilities[i] = (lang.unigrams[i] + 1.0) / uni_sum;
+                    // store log(probability)
+                    lang.unigrams[i] = lang.unigram_probabilities[i].ln();
+                }
+                for i in 0..lang.bigrams.len() {
+                    lang.bigrams[i] = ((lang.bigrams[i] + 1.0) / bg_sum).ln();
+                }
+                for i in 0..lang.trigrams.len() {
+                    lang.trigrams[i] = ((lang.trigrams[i] + 1.0) / tg_sum).ln();
+                }
+                for i in 0..lang.quadgrams.len() {
+                    lang.quadgrams[i] = ((lang.quadgrams[i] + 1.0) / qg_sum).ln();
+                }
+            }
+
+            Ok(lang)
+        } else {
+            Err("None of the alphabets supplied match the given alphabet_len".to_string())
+        }
+    }
+
+    /// Creates a new [`Language`] from a binary file
+    ///
+    pub fn from_file(filename: &str) -> Result<Language, String> {
+        // read bytes then deserialize
+        let bytes = std::fs::read(filename).map_err(|err| err.to_string())?;
+        let mut lang: Language = bincode::deserialize(&bytes).map_err(|err| err.to_string())?;
 
         // init all alphabets
         for i in 0..lang.alphabets.len() {
@@ -69,9 +251,121 @@ impl Language {
     }
 
     /* -------------------------------------------------------------------------- */
+    /*                                 Scoring                                    */
+    /* -------------------------------------------------------------------------- */
+    /// Calculates the Index of Coincedence of a given slice of code points, using the
+    /// currently selected alphabet.
+    /// 
+    /// # Arguments
+    /// 
+    /// * data The slice to analyse
+    /// 
+    pub fn index_of_coincedence(&self, data: &[i16]) -> f64 {
+        let mut counts = [0; MAX_ALPHABET_LEN];
+        
+        // count each letter
+        for &cp in data {
+            counts[cp as usize] += 1;
+        }
+        
+        let mut total = 0;
+        // total f(f-1) where f is the frequency of a particular letter
+        for &f in counts.iter().take(self.alphabet_len()) {
+            total += f * (f - 1);
+        }
+
+        (total as f64) / ((data.len() * (data.len() - 1)) as f64)
+    }
+
+    /// Calculates the Index of Coincedence of a given slice of code points given
+    /// a particular cipher period, by averaging the IOC for each column. IOC is
+    /// calculated using the currently selected alphabet.
+    /// 
+    /// # Arguments
+    /// 
+    /// * data The slice to analyse
+    /// * period_length The length of the cipher period
+    /// 
+    pub fn periodic_ioc(&self, data: &[i16], period_length: usize) -> f64 {
+        let mut total = 0.0;
+
+        let mut temp = Vec::new();
+
+        for i in 0..period_length {
+            temp.clear();
+            for j in (i..).step_by(period_length) {
+                temp.push(data[j]);
+            }
+            total += self.index_of_coincedence(&temp);
+        }
+
+        total / (period_length as f64)
+    }
+
+    /// Calculates the chi-squared value for a slice of code points,
+    /// comparing it to generated frequency percentages from the corpus.
+    /// 
+    /// # Arguments
+    /// 
+    /// * data The slice to analyse
+    ///
+    pub fn chi_squared(&self, data: &[i16]) -> f64 {
+        let mut total = 0.0;
+        let mut counts = [0; MAX_ALPHABET_LEN];
+        for &cp in data {
+            counts[cp as usize] += 1;
+        }
+        for cp in 0..self.alphabet_len() {
+            // convert cp to standard alphabet index
+            let i = self.alph().scoring_sub_table[cp] as usize;
+
+            // calculate values
+            let expected = self.unigram_probabilities[i] * (data.len() as f64);
+            let diff = counts[i] as f64 - expected;
+            total += (diff * diff) / expected;
+        }
+        total
+    }
+
+    /// Calculates the unigram, bigram, trigram or quadgram score, based on score_size, of data
+    /// 
+    /// # Arguments
+    /// 
+    /// * data The data to score
+    /// * score_size Which variety of statistic to use
+    /// 
+    pub fn score(&self, data: &[i16], score_size: ScoreSize) -> f64 {
+        let mut iter = 
+            data
+                .iter()
+                .map(|&x| self.alph().scoring_sub_table[x as usize] as usize);
+        // initial value of idx
+        let mut idx = 0;
+        for _ in 0..score_size.length() {
+            if let Some(cp) = iter.next() {
+                idx = (idx << 5) | cp;
+            }
+        }
+        // calculate score
+        let mut score = 0.0;
+        let stats_vec = match score_size {
+            ScoreSize::Unigrams => &self.unigrams,
+            ScoreSize::Bigrams => &self.bigrams,
+            ScoreSize::Trigrams => &self.trigrams,
+            ScoreSize::Quadgrams => &self.quadgrams,
+        };
+        let mask = score_size.mask();
+        for cp in iter {
+            score += stats_vec[idx & mask];
+            idx = (idx << 5) | cp;
+        }
+        
+        score
+    }
+
+    /* -------------------------------------------------------------------------- */
     /*                             Current Alphabet                               */
     /* -------------------------------------------------------------------------- */
-
     /// Converts a letter to its code point
     ///
     /// # Arguments
@@ -262,11 +556,17 @@ impl Language {
     /// * `arr` The slice to convert
     ///
     pub fn string_to_vec(&self, string: &str) -> Vec<i16> {
-        string
-            .chars()
-            .filter(|i| self.is_letter(i))
-            .map(|i| self.get_cp(&i))
-            .collect()
+        let mut result = Vec::with_capacity(string.len());
+
+        for ch in string.chars() {
+            if self.is_letter(&ch) {
+                result.push(self.get_cp(&ch));
+            }
+        }
+
+        result.truncate(result.len());
+
+        result
     }
 
     /* -------------------------------------------------------------------------- */

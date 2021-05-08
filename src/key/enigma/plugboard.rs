@@ -93,7 +93,7 @@ impl Plugboard {
 }
 
 impl Key for Plugboard {
-    fn to_string(&self, language: &Language) -> String {
+    fn to_string(&self, language: &mut Language) -> String {
         let mut tmp = self.substitution.clone();
         let mut data = String::new();
         for i in 0..26 {
@@ -111,21 +111,21 @@ impl Key for Plugboard {
         format!("Plugboard: {}", data.trim())
     }
 
-    fn new(_language: &Language) -> Plugboard {
+    fn new(language: &mut Language) -> Plugboard {
         let mut result = Plugboard {
             substitution: vec![0; 26],
         };
-        result.reset(_language);
+        result.reset(language);
         result
     }
 }
 
 impl StatefulKey for Plugboard {
-    fn reset(&mut self, _language: &Language) {
+    fn reset(&mut self, _language: &mut Language) {
         util::fill_consecutive_vec(&mut self.substitution, 0, 26);
     }
-    fn randomize(&mut self, _language: &Language, rng: &mut impl Rng) {
-        self.reset(_language);
+    fn randomize(&mut self, language: &mut Language, rng: &mut impl Rng) {
+        self.reset(language);
         let mut values = vec![0; 26];
         util::fill_consecutive_vec(&mut values, 0, 26);
         util::shuffle(&mut values, rng);

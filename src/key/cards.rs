@@ -136,14 +136,14 @@ impl Cards {
 }
 
 impl KeyFrom<&String> for Cards {
-    fn create_from(language: &Language, string: &String) -> Cards {
+    fn create_from(language: &mut Language, string: &String) -> Cards {
         let mut cards = Cards::new(language);
         cards.set_key(language, string);
         cards
     }
 }
 impl KeyFrom<&Vec<i16>> for Cards {
-    fn create_from(_language: &Language, cards: &Vec<i16>) -> Cards {
+    fn create_from(_language: &mut Language, cards: &Vec<i16>) -> Cards {
         Cards {
             value: cards.clone(),
         }
@@ -151,13 +151,13 @@ impl KeyFrom<&Vec<i16>> for Cards {
 }
 
 impl SetKey<&String> for Cards {
-    fn set_key(&mut self, language: &Language, string: &String) {
+    fn set_key(&mut self, language: &mut Language, string: &String) {
         let vec = language.string_to_vec(&string);
         self.set_key(language, &vec);
     }
 }
 impl SetKey<&Vec<i16>> for Cards {
-    fn set_key(&mut self, _language: &Language, vec: &Vec<i16>) {
+    fn set_key(&mut self, _language: &mut Language, vec: &Vec<i16>) {
         for card in vec {
             self.shift_joker(A_JOKER);
             self.shift_joker(B_JOKER);
@@ -170,7 +170,7 @@ impl SetKey<&Vec<i16>> for Cards {
 }
 
 impl Key for Cards {
-    fn to_string(&self, _language: &Language) -> String {
+    fn to_string(&self, _language: &mut Language) -> String {
         let mut result = String::new();
 
         for i in 0..54 {
@@ -194,7 +194,7 @@ impl Key for Cards {
 
         result
     }
-    fn new(_language: &Language) -> Cards {
+    fn new(_language: &mut Language) -> Cards {
         let mut cards = vec![0; 54];
         util::fill_consecutive_vec(&mut cards, 0, 54);
         Cards { value: cards }
@@ -202,10 +202,10 @@ impl Key for Cards {
 }
 
 impl StatefulKey for Cards {
-    fn reset(&mut self, _language: &Language) {
+    fn reset(&mut self, _language: &mut Language) {
         util::fill_consecutive_vec(&mut self.value, 0, 54);
     }
-    fn randomize(&mut self, _language: &Language, rng: &mut impl rand::Rng) {
+    fn randomize(&mut self, _language: &mut Language, rng: &mut impl rand::Rng) {
         util::shuffle(&mut self.value, rng);
     }
 }

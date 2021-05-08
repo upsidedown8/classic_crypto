@@ -9,3 +9,4 @@ mod language;
 
 pub use lang_alphabet::LangAlphabet;
 pub use language::Language;
+pub use language::ScoreSize;

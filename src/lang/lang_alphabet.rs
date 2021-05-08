@@ -24,6 +24,11 @@ pub struct LangAlphabet {
     ///
     pub upper_substitutions: Vec<String>,
 
+    /// Maps the items in the alphabet back to the standard alphabet, so that the standard scoring arrays
+    /// can be indexed
+    /// 
+    pub scoring_sub_table: Vec<i16>,
+
     /// Maps characters to code points
     ///
     #[serde(skip)]
@@ -45,12 +50,14 @@ impl LangAlphabet {
         lower: String,
         lower_substitutions: Vec<String>,
         upper_substitutions: Vec<String>,
+        scoring_sub_table: Vec<i16>
     ) -> Result<LangAlphabet, &'static str> {
         let mut result = LangAlphabet {
             upper,
             lower,
             lower_substitutions,
             upper_substitutions,
+            scoring_sub_table,
             char_to_cp: HashMap::new(),
         };
 
@@ -64,6 +71,10 @@ impl LangAlphabet {
 
         if self.upper.chars().count() != self.lower.chars().count() {
             Err("Upper and Lower alphabets must have equal length")
+        } else if self.upper.chars().count() != self.scoring_sub_table.len() {
+            Err("scoring_sub_table must be of equal length to the alphabet")
+        } else if self.upper.chars().count() > crate::lang::language::MAX_ALPHABET_LEN {
+            Err("Maximum alphabet length is 32")
         } else if !util::is_unique(&self.upper) {
             Err("Upper alphabet has repeated letters")
         } else if !util::is_unique(&self.lower) {

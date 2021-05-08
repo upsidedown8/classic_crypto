@@ -1,6 +1,6 @@
 //!
 //! Implementations of numerous classical ciphers. Supports configuration for
-//! an arbitrary [`Language`] defined in `JSON` config files.
+//! an arbitrary [`Language`] defined in binary config files.
 //!
 
 mod cipher;
@@ -12,7 +12,7 @@ pub mod util;
 /* -------------------------------------------------------------------------- */
 /*                                   Cipher                                   */
 /* -------------------------------------------------------------------------- */
-pub use cipher::{Asymmetric, Keyed, Symmetric};
+pub use cipher::{Asymmetric, Keyed, Symmetric, Solve};
 
 /* -------------------------------------------------------------------------- */
 /*                              Electromechanical                             */

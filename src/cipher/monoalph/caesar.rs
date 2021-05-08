@@ -1,4 +1,4 @@
-use crate::cipher::{Asymmetric, Keyed};
+use crate::{cipher::{Asymmetric, Keyed, Solve}, lang::ScoreSize};
 use crate::lang::Language;
 use crate::util;
 
@@ -7,7 +7,7 @@ pub struct Caesar {
 }
 
 impl Asymmetric for Caesar {
-    fn encrypt(&self, language: &Language, msg: &str) -> String {
+    fn encrypt(&self, language: &mut Language, msg: &str) -> String {
         msg.chars()
             .map(|c| {
                 if language.is_letter(&c) {
@@ -20,7 +20,7 @@ impl Asymmetric for Caesar {
             })
             .collect()
     }
-    fn decrypt(&self, language: &Language, msg: &str) -> String {
+    fn decrypt(&self, language: &mut Language, msg: &str) -> String {
         msg.chars()
             .map(|c| {
                 if language.is_letter(&c) {
@@ -36,16 +36,37 @@ impl Asymmetric for Caesar {
 }
 
 impl Keyed for Caesar {
-    fn new(_language: &Language) -> Caesar {
+    fn new(_language: &mut Language) -> Caesar {
         Caesar { shift: 0 }
     }
-    fn reset(&mut self, _language: &Language) {
+    fn reset(&mut self, _language: &mut Language) {
         self.shift = 0;
     }
-    fn randomize(&mut self, language: &Language, rng: &mut impl rand::Rng) {
+    fn randomize(&mut self, language: &mut Language, rng: &mut impl rand::Rng) {
         self.shift = rng.gen_range(0..language.cp_count());
     }
-    fn to_string(&self, _language: &Language) -> String {
+    fn to_string(&self, _language: &mut Language) -> String {
         format!("shift:{}", self.shift)
+    }
+}
+
+impl Solve for Caesar {
+    fn solve(&mut self, language: &mut Language, msg: &str) {
+        let mut best_score = f64::MIN;
+
+        let ciphertext = language.string_to_vec(msg);
+
+        for shift in 0..language.cp_count() {
+            let plaintext: Vec<i16> = ciphertext
+                .iter()
+                .map(|&cp| util::modulo(cp - shift, language.cp_count()))
+                .collect();
+            let score = language.score(&plaintext, ScoreSize::Quadgrams);
+
+            if score > best_score {
+                best_score = score;
+                self.shift = shift;
+            }
+        }
     }
 }

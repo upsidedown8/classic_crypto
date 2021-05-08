@@ -40,7 +40,7 @@ impl Alphabet {
 }
 
 impl KeyFrom<&String> for Alphabet {
-    fn create_from(language: &Language, string: &String) -> Alphabet {
+    fn create_from(language: &mut Language, string: &String) -> Alphabet {
         let alphabet: Vec<i16> = language.string_to_vec(&string);
         let my_value = util::fill_alphabet_from_start(&alphabet, language.alphabet_len());
         let my_inverse = util::invert(&my_value);
@@ -51,7 +51,7 @@ impl KeyFrom<&String> for Alphabet {
     }
 }
 impl KeyFrom<&Vec<i16>> for Alphabet {
-    fn create_from(_language: &Language, vec: &Vec<i16>) -> Alphabet {
+    fn create_from(_language: &mut Language, vec: &Vec<i16>) -> Alphabet {
         Alphabet {
             value: vec.clone(),
             inverse: util::invert(vec),
@@ -60,24 +60,24 @@ impl KeyFrom<&Vec<i16>> for Alphabet {
 }
 
 impl SetKey<&String> for Alphabet {
-    fn set_key(&mut self, language: &Language, string: &String) {
+    fn set_key(&mut self, language: &mut Language, string: &String) {
         let alphabet: Vec<i16> = language.string_to_vec(&string);
         self.value = util::fill_alphabet_from_start(&alphabet, language.alphabet_len() as usize);
         self.update_inverse();
     }
 }
 impl SetKey<&Vec<i16>> for Alphabet {
-    fn set_key(&mut self, _language: &Language, vec: &Vec<i16>) {
+    fn set_key(&mut self, _language: &mut Language, vec: &Vec<i16>) {
         self.value = vec.clone();
         self.update_inverse();
     }
 }
 
 impl Key for Alphabet {
-    fn to_string(&self, language: &Language) -> String {
+    fn to_string(&self, language: &mut Language) -> String {
         language.vec_to_string(&self.value)
     }
-    fn new(language: &Language) -> Alphabet {
+    fn new(language: &mut Language) -> Alphabet {
         let mut alphabet = vec![0; language.alphabet_len()];
         util::fill_consecutive_vec(&mut alphabet, 0, language.cp_count());
         Alphabet {
@@ -88,11 +88,11 @@ impl Key for Alphabet {
 }
 
 impl StatefulKey for Alphabet {
-    fn reset(&mut self, language: &Language) {
+    fn reset(&mut self, language: &mut Language) {
         self.value = vec![0; language.alphabet_len()];
         self.update_inverse();
     }
-    fn randomize(&mut self, _language: &Language, rng: &mut impl rand::Rng) {
+    fn randomize(&mut self, _language: &mut Language, rng: &mut impl rand::Rng) {
         util::shuffle(&mut self.value, rng);
         self.update_inverse();
     }

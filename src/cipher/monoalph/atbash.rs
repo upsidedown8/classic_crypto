@@ -4,7 +4,7 @@ use crate::lang::Language;
 pub struct Atbash {}
 
 impl Symmetric for Atbash {
-    fn run(&self, language: &Language, msg: &str) -> String {
+    fn run(&self, language: &mut Language, msg: &str) -> String {
         msg.chars()
             .map(|c| {
                 if language.is_letter(&c) {

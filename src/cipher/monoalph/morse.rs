@@ -15,7 +15,7 @@ const MORSE: [&str; 37] = [
 pub struct Morse {}
 
 impl Asymmetric for Morse {
-    fn encrypt(&self, _language: &Language, msg: &str) -> String {
+    fn encrypt(&self, _language: &mut Language, msg: &str) -> String {
         msg.to_lowercase()
             .chars()
             .filter(|c| LETTERS.contains(c))
@@ -28,7 +28,7 @@ impl Asymmetric for Morse {
             .trim()
             .to_string()
     }
-    fn decrypt(&self, _language: &Language, msg: &str) -> String {
+    fn decrypt(&self, _language: &mut Language, msg: &str) -> String {
         msg.split('/')
             .map(|word| {
                 word.replace('_', "-")
@@ -59,18 +59,18 @@ mod tests {
     #[test]
     fn encrypt() {
         let msg = String::from("morse code");
-        let language = Default::default();
+        let mut language = Default::default();
         let morse = Morse {};
-        let encrypted = morse.encrypt(&language, &msg);
+        let encrypted = morse.encrypt(&mut language, &msg);
         assert_eq!(encrypted, "-- --- .-. ... . / -.-. --- -.. .");
     }
 
     #[test]
     fn decrypt() {
         let msg = String::from("-- --- .-. ... . / -.-. --- -.. .");
-        let language = Default::default();
+        let mut language = Default::default();
         let morse = Morse {};
-        let decrypted = morse.decrypt(&language, &msg);
+        let decrypted = morse.decrypt(&mut language, &msg);
         assert_eq!(decrypted, "morse code");
     }
 }

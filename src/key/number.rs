@@ -36,7 +36,7 @@ impl Number {
 }
 
 impl KeyFrom<i16> for Number {
-    fn create_from(language: &Language, val: i16) -> Number {
+    fn create_from(language: &mut Language, val: i16) -> Number {
         Number {
             value: val,
             range: 0..language.cp_count(),
@@ -44,43 +44,43 @@ impl KeyFrom<i16> for Number {
     }
 }
 impl KeyFrom<&String> for Number {
-    fn create_from(language: &Language, string: &String) -> Number {
+    fn create_from(language: &mut Language, string: &String) -> Number {
         let num: i16 = string.parse().expect("Expected a number");
         Number::create_from(language, num)
     }
 }
 
 impl SetKey<i16> for Number {
-    fn set_key(&mut self, _language: &Language, num: i16) {
+    fn set_key(&mut self, _language: &mut Language, num: i16) {
         assert!(self.range.contains(&num));
 
         self.value = num;
     }
 }
 impl SetKey<&String> for Number {
-    fn set_key(&mut self, language: &Language, string: &String) {
+    fn set_key(&mut self, language: &mut Language, string: &String) {
         let num: i16 = string.parse().expect("Expected a number");
         self.set_key(language, num);
     }
 }
 
 impl Key for Number {
-    fn new(language: &Language) -> Number {
+    fn new(language: &mut Language) -> Number {
         Number {
             value: 0,
             range: 0..language.cp_count(),
         }
     }
-    fn to_string(&self, _language: &Language) -> String {
+    fn to_string(&self, _language: &mut Language) -> String {
         format!("{}", self.value)
     }
 }
 
 impl StatefulKey for Number {
-    fn reset(&mut self, _language: &Language) {
+    fn reset(&mut self, _language: &mut Language) {
         self.value = self.range.start;
     }
-    fn randomize(&mut self, _language: &Language, rng: &mut impl Rng) {
+    fn randomize(&mut self, _language: &mut Language, rng: &mut impl Rng) {
         self.value = rng.gen_range(self.range.clone());
     }
 }

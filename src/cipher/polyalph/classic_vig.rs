@@ -14,7 +14,7 @@ pub struct ClassicVigenere {
 impl ClassicVigenere {}
 
 impl Asymmetric for ClassicVigenere {
-    fn encrypt(&self, language: &Language, msg: &str) -> String {
+    fn encrypt(&self, language: &mut Language, msg: &str) -> String {
         let mut count = 0;
         msg.chars()
             .map(|c| {
@@ -31,7 +31,7 @@ impl Asymmetric for ClassicVigenere {
             })
             .collect()
     }
-    fn decrypt(&self, language: &Language, msg: &str) -> String {
+    fn decrypt(&self, language: &mut Language, msg: &str) -> String {
         let mut count = 0;
         msg.chars()
             .map(|c| {
@@ -51,19 +51,19 @@ impl Asymmetric for ClassicVigenere {
 }
 
 impl Keyed for ClassicVigenere {
-    fn new(language: &Language) -> ClassicVigenere {
+    fn new(language: &mut Language) -> ClassicVigenere {
         ClassicVigenere {
             square: ClassicVigSquare::new(language),
             keyword: Keyword::new(language),
         }
     }
-    fn reset(&mut self, language: &Language) {
+    fn reset(&mut self, language: &mut Language) {
         self.keyword.reset(language);
     }
-    fn randomize(&mut self, language: &Language, rng: &mut impl rand::Rng) {
+    fn randomize(&mut self, language: &mut Language, rng: &mut impl rand::Rng) {
         self.keyword.randomize(language, rng);
     }
-    fn to_string(&self, language: &Language) -> String {
+    fn to_string(&self, language: &mut Language) -> String {
         format!("Keyword:{}", self.keyword.to_string(language))
     }
 }

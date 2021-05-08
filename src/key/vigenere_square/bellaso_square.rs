@@ -45,12 +45,10 @@ impl VigSquare for BellasoSquare {
 }
 
 impl Key for BellasoSquare {
-    fn to_string(&self, language: &Language) -> String {
-        assert_eq!(language.alphabet_len(), 26);
+    fn to_string(&self, language: &mut Language) -> String {
         BellasoSquare::vig_square_to_string(language, &self.square, 26, 26)
     }
-    fn new(language: &Language) -> BellasoSquare {
-        assert_eq!(language.alphabet_len(), 26);
+    fn new(_language: &mut Language) -> BellasoSquare {
         let mut vig_square = BellasoSquare {
             square: vec![vec![0; 26]; 26],
         };

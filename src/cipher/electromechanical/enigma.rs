@@ -61,14 +61,14 @@ impl Enigma {
 }
 
 impl Symmetric for Enigma {
-    fn run(&self, language: &Language, msg: &str) -> String {
+    fn run(&self, language: &mut Language, msg: &str) -> String {
         let mut enigma_mut = self.clone();
         enigma_mut.run_mut(language, msg)
     }
 }
 
 impl Keyed for Enigma {
-    fn new(language: &Language) -> Enigma {
+    fn new(language: &mut Language) -> Enigma {
         Enigma {
             plugboard: Plugboard::new(language),
             rotors: vec![
@@ -79,19 +79,19 @@ impl Keyed for Enigma {
             reflector: Reflector::create_from(language, ReflectorType::B),
         }
     }
-    fn reset(&mut self, language: &Language) {
+    fn reset(&mut self, language: &mut Language) {
         self.plugboard.reset(language);
         self.rotors.iter_mut().for_each(|r| r.reset(language));
         self.reflector.reset(language);
     }
-    fn randomize(&mut self, language: &Language, rng: &mut impl rand::Rng) {
+    fn randomize(&mut self, language: &mut Language, rng: &mut impl rand::Rng) {
         self.plugboard.randomize(language, rng);
         self.rotors
             .iter_mut()
             .for_each(|r| r.randomize(language, rng));
         self.reflector.randomize(language, rng);
     }
-    fn to_string(&self, language: &Language) -> String {
+    fn to_string(&self, language: &mut Language) -> String {
         format!(
             "{}\n{}\n{}",
             self.plugboard.to_string(language),

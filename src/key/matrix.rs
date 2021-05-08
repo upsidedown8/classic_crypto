@@ -243,20 +243,20 @@ impl Matrix {
 }
 
 impl KeyFrom<&String> for Matrix {
-    fn create_from(language: &Language, string: &String) -> Matrix {
+    fn create_from(language: &mut Language, string: &String) -> Matrix {
         let arr: Vec<i16> = language.string_to_vec(&string);
         KeyFrom::create_from(language, &arr)
     }
 }
 impl KeyFrom<&Vec<i16>> for Matrix {
-    fn create_from(language: &Language, arr: &Vec<i16>) -> Matrix {
+    fn create_from(language: &mut Language, arr: &Vec<i16>) -> Matrix {
         let mut matrix = Matrix::new(language);
         matrix.set_key(language, arr);
         matrix
     }
 }
 impl KeyFrom<&Vec<Vec<i16>>> for Matrix {
-    fn create_from(_language: &Language, arr: &Vec<Vec<i16>>) -> Matrix {
+    fn create_from(_language: &mut Language, arr: &Vec<Vec<i16>>) -> Matrix {
         Matrix {
             value: arr.clone(),
             dim_size: arr.len(),
@@ -265,13 +265,13 @@ impl KeyFrom<&Vec<Vec<i16>>> for Matrix {
 }
 
 impl SetKey<&String> for Matrix {
-    fn set_key(&mut self, language: &Language, string: &String) {
+    fn set_key(&mut self, language: &mut Language, string: &String) {
         let arr = language.string_to_vec(string);
         self.set_key(language, &arr);
     }
 }
 impl SetKey<&Vec<i16>> for Matrix {
-    fn set_key(&mut self, _language: &Language, vec: &Vec<i16>) {
+    fn set_key(&mut self, _language: &mut Language, vec: &Vec<i16>) {
         let dim_size = match vec.len() {
             4 => 2,
             9 => 3,
@@ -293,21 +293,21 @@ impl SetKey<&Vec<i16>> for Matrix {
     }
 }
 impl SetKey<&Vec<Vec<i16>>> for Matrix {
-    fn set_key(&mut self, _language: &Language, vec: &Vec<Vec<i16>>) {
+    fn set_key(&mut self, _language: &mut Language, vec: &Vec<Vec<i16>>) {
         self.value = vec.clone();
         self.dim_size = vec.len();
     }
 }
 
 impl Key for Matrix {
-    fn to_string(&self, language: &Language) -> String {
+    fn to_string(&self, language: &mut Language) -> String {
         let mut result = String::new();
         for arr in &self.value {
             result.push_str(language.vec_to_string(&arr).as_str());
         }
         result
     }
-    fn new(language: &Language) -> Matrix {
+    fn new(language: &mut Language) -> Matrix {
         assert_eq!(language.alphabet_len(), 26);
         Matrix {
             value: { vec![vec![0; 2]; 2] },
@@ -317,14 +317,14 @@ impl Key for Matrix {
 }
 
 impl StatefulKey for Matrix {
-    fn reset(&mut self, language: &Language) {
+    fn reset(&mut self, language: &mut Language) {
         assert_eq!(language.alphabet_len(), 26);
         self.value = vec![vec![0; self.dim_size]; self.dim_size];
         for i in 0..self.dim_size {
             self.value[i][i] = 1;
         }
     }
-    fn randomize(&mut self, _language: &Language, rng: &mut impl rand::Rng) {
+    fn randomize(&mut self, _language: &mut Language, rng: &mut impl rand::Rng) {
         loop {
             for i in 0..self.dim_size {
                 for j in 0..self.dim_size {
