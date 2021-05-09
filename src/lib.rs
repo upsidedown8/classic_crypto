@@ -44,5 +44,6 @@ pub use cipher::polyalph::porta::Porta;
 /*                                Transposition                               */
 /* -------------------------------------------------------------------------- */
 pub use cipher::transpos::block_transpos::BlockTransposition;
+pub use cipher::transpos::column_transpos::ColumnTransposition;
 pub use cipher::transpos::railfence::Railfence;
 pub use cipher::transpos::scytale::Scytale;

@@ -53,7 +53,7 @@ fn main() {
 | Classic Vigenère                  | ✅              | ✅   |
 | Clock                             | ✅              | ✅   |
 | Chase                             | ✅              | ✅   |
-| Column Transposition              | ⬜️              | ⬜️   |
+| Column Transposition              | ✅              | ✅   |
 | Enigma M3/M4                      | ✅              | ⬜️   |
 | Fialka                            | ⬜️              | ⬜️   |
 | Four Square                       | ⬜️              | ⬜️   |
