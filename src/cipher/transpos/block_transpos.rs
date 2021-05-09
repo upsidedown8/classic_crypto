@@ -1,7 +1,7 @@
 use crate::{
     cipher::{Asymmetric, Keyed, Solve},
-    key::{Key, Keyword, StatefulKey},
-    lang::{Language, ScoreSize},
+    key::{Key, Keyword, SetKey, StatefulKey},
+    lang::Language,
 };
 
 pub struct BlockTransposition {
@@ -37,7 +37,7 @@ impl Asymmetric for BlockTransposition {
     fn encrypt(&self, language: &mut Language, msg: &str) -> String {
         let plaintext = language.string_to_vec(msg);
         let key_order = self.keyword.find_order();
-        let mut iter = BlockTransposition::encrypt_indexes(msg.len(), key_order).into_iter();
+        let mut iter = BlockTransposition::encrypt_indexes(plaintext.len(), key_order).into_iter();
         msg.chars()
             .filter_map(|ch| {
                 if language.is_letter(&ch) {
@@ -51,7 +51,7 @@ impl Asymmetric for BlockTransposition {
     fn decrypt(&self, language: &mut Language, msg: &str) -> String {
         let ciphertext = language.string_to_vec(msg);
         let key_order = self.keyword.find_order();
-        let mut iter = BlockTransposition::decrypt_indexes(msg.len(), key_order).into_iter();
+        let mut iter = BlockTransposition::decrypt_indexes(ciphertext.len(), key_order).into_iter();
         msg.chars()
             .filter_map(|ch| {
                 if language.is_letter(&ch) {
@@ -83,6 +83,13 @@ impl Keyed for BlockTransposition {
 
 impl Solve for BlockTransposition {
     fn solve(&mut self, language: &mut Language, msg: &str) {
-        unimplemented!();
+        let ciphertext = language.string_to_vec(msg);
+        let key = super::transposition_solve(
+            &ciphertext,
+            language,
+            BlockTransposition::decrypt_indexes,
+            |row, col, key_len, _| row * key_len + col,
+        );
+        self.keyword.set_key(language, &key);
     }
 }

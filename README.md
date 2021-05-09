@@ -47,7 +47,7 @@ fn main() {
 | Beaufort                          | ✅              | ✅   |
 | Bellaso                           | ✅              | ✅   |
 | Bifid                             | ⬜️              | ⬜️   |
-| Block Transposition               | ✅              | ⬜️   |
+| Block Transposition               | ✅              | ✅   |
 | Caesar                            | ✅              | ✅   |
 | Chaocipher                        | ⬜️              | ⬜️   |
 | Classic Vigenère                  | ✅              | ✅   |
