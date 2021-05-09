@@ -36,11 +36,11 @@ where
         // ignore any extra above a multiple of key_len
         let num_rows = len / key_len;
 
-        let mut key = vec![ 0 ];
+        let mut key = vec![0];
 
         while key.len() < key_len {
             let col1 = key.last().copied().unwrap();
-            
+
             let mut max_score = f64::MIN;
             let mut max_col = 0;
 
@@ -51,8 +51,7 @@ where
                     let col1_letter = ciphertext[get_index(row, col1, key_len, num_rows)];
                     let col2_letter = ciphertext[get_index(row, col2, key_len, num_rows)];
 
-                    total_score +=
-                        language.bigrams[((col1_letter << 5) | col2_letter) as usize];
+                    total_score += language.bigrams[((col1_letter << 5) | col2_letter) as usize];
                 }
 
                 if total_score > max_score {
@@ -70,8 +69,8 @@ where
             let score = language.score_iter(
                 decrypt_indexes(len, key.clone())
                     .into_iter()
-                    .map(|idx| ciphertext[idx])
-                , ScoreSize::Quadgrams
+                    .map(|idx| ciphertext[idx]),
+                ScoreSize::Quadgrams,
             );
 
             if score > best_score {
@@ -81,8 +80,5 @@ where
         }
     }
 
-    best_key
-        .iter()
-        .map(|x| *x as i16)
-        .collect()
+    best_key.iter().map(|x| *x as i16).collect()
 }

@@ -35,7 +35,7 @@ impl Keyword {
     }
 
     /// Finds the indexes of the items in the keyword
-    /// 
+    ///
     pub fn find_order(&self) -> Vec<usize> {
         util::find_order(&self.value)
     }

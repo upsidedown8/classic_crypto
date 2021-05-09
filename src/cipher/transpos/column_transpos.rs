@@ -51,7 +51,8 @@ impl Asymmetric for ColumnTransposition {
     fn decrypt(&self, language: &mut Language, msg: &str) -> String {
         let ciphertext = language.string_to_vec(msg);
         let key_order = self.keyword.find_order();
-        let mut iter = ColumnTransposition::decrypt_indexes(ciphertext.len(), key_order).into_iter();
+        let mut iter =
+            ColumnTransposition::decrypt_indexes(ciphertext.len(), key_order).into_iter();
         msg.chars()
             .filter_map(|ch| {
                 if language.is_letter(&ch) {
