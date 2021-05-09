@@ -277,15 +277,15 @@ pub fn invert(arr: &[i16]) -> Vec<i16> {
 /// assert_eq!(order, vec![1, 0, 2, 3, 4]);
 /// ```
 ///
-pub fn find_order(key: &[i16]) -> Vec<i16> {
-    let mut order: Vec<i16> = vec![0; key.len()];
-    let mut pos: usize = 0;
-    let mut idx: usize = 0;
+pub fn find_order(key: &[i16]) -> Vec<usize> {
+    let mut order = vec![0; key.len()];
+    let mut pos = 0;
+    let mut idx = 0;
 
     while pos < key.len() {
         for i in 0..key.len() {
             if key[i] == idx as i16 {
-                order[i] = pos as i16;
+                order[i] = pos;
                 pos += 1;
             }
         }

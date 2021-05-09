@@ -1,15 +1,18 @@
-use classic_crypto::{lang::Language, Bellaso, Keyed, Solve, Symmetric};
+use classic_crypto::{Asymmetric, BlockTransposition, Keyed, Solve, key::SetKey, lang::Language};
 
 fn main() {
     let mut language = Language::from_file("examples/data/english.bin").unwrap();
-    let mut cipher = Bellaso::new(&mut language);
+    let mut cipher = BlockTransposition::new(&mut language);
+    
+    let key = language.string_to_vec("badc");
+    cipher.keyword.set_key(&mut language, &key);
+    
+    let plaintext = "Abc d a BC d abcd abcd";
 
-    let ciphertext = r#"ojpkiajwibvfhdxoxsfbiblwcxxxvnmqtjgbbxswrvnclzpavjrrzlugwljiubmfgpsthsxwvrbkuivkityljwrfmyfgpxscpskrjcttlagbidjjeanuultpbkljlnpvhilsityqikbhdjjwjlsmzgdhmwsularnwyepnopsfvsxschqpnowxlkjrywlzphecytmlucwgxnbtvrklfpoigbkrpgcyfhdtvqblvhqgitwxscowifnsutzkutuzbsnnakyfjblwxpdhnjrvxxegcfnilrshiljdgalzpgbsbuhakbugiinkitmtfqnnfydsnzjrvuisckudzgcyelnpbsuaiubnuvzttsiknzvhnseztfkisaibnzjejpiinpjxrrshikavcqzsorpalyubotnxsivsisygcqfiysfhkudvzimpwfupgsqjtdxoiigelubbgijavcepwcglwnfgcagwzbtamabykspbsualvingyujtfyzaeesdfjzfvajjrygkjymwxonepjiubgavzpjfblzplcjpfzyplwqmxrbbfzotdpwviousesyxxvnsxbiubrruqyknzzapcfyjuljdgrvbpffmjmwcmnjxjxzzifkvsmfiyudbpvfzvsmrmgoppnacyxxpbsuaqbpkavlfbkkvbtamjytpjbscfbglfmjmljdgugiiektrtqyknjvqdpfqkiajfskuwcgsxcyxafkhvbtbtsyjqypbmfsivsiabqzdnngiyackuyuxpkiochrsxrlmypzygdpetsykzavcrzrzrpagehciiwujhgdjbamyinnzalrlsqigrrpctwhntvhyajrtnfyzbcgazdxvbuviubkiazywdpbqutcfbjefbuobqxcbnscbgiuzmlwyzosyjhuujwxbhozbfhdxoxsfbyaztrzlrbsrzryvhskjjjqonlzyfnjmizartwyxtacjrtpxzkigcgzbrmijtjkkkwngkjykgbeziqbaykidu"#;
+    let ciphertext = cipher.encrypt(&mut language, plaintext);
+    let plaintext = cipher.decrypt(&mut language, &ciphertext);
 
-    cipher.solve(&mut language, ciphertext);
-
-    println!("{}", cipher.to_string(&mut language));
-
-    let plaintext = cipher.run(&mut language, &ciphertext);
-    println!("plaintext {}", plaintext);
+    println!("ciphertext: {}", ciphertext);
+    println!("plaintext: {}", plaintext);
+    println!("cipher: {}", cipher.to_string(&mut language));
 }

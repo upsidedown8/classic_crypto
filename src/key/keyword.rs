@@ -33,6 +33,12 @@ impl Keyword {
         assert!(idx < self.value.len());
         self.value[idx]
     }
+
+    /// Finds the indexes of the items in the keyword
+    /// 
+    pub fn find_order(&self) -> Vec<usize> {
+        util::find_order(&self.value)
+    }
 }
 
 impl KeyFrom<&String> for Keyword {

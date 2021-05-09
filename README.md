@@ -47,10 +47,12 @@ fn main() {
 | Beaufort                          | ✅              | ✅   |
 | Bellaso                           | ✅              | ✅   |
 | Bifid                             | ⬜️              | ⬜️   |
-| Block Transposition               | ⬜️              | ⬜️   |
+| Block Transposition               | ✅              | ⬜️   |
 | Caesar                            | ✅              | ✅   |
 | Chaocipher                        | ⬜️              | ⬜️   |
 | Classic Vigenère                  | ✅              | ✅   |
+| Clock                             | ✅              | ✅   |
+| Chase                             | ✅              | ✅   |
 | Column Transposition              | ⬜️              | ⬜️   |
 | Enigma M3/M4                      | ✅              | ⬜️   |
 | Fialka                            | ⬜️              | ⬜️   |
@@ -74,4 +76,5 @@ fn main() {
 | Straddle Checkerboard             | ⬜️              | ⬜️   |
 | Trifid                            | ⬜️              | ⬜️   |
 | Two Square                        | ⬜️              | ⬜️   |
+| Typex                             | ⬜️              | ⬜️   |
 | VIC                               | ⬜️              | ⬜️   |
