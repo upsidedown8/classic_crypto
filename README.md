@@ -66,7 +66,7 @@ fn main() {
 | Polybius Square                   | ⬜️              | ⬜️   |
 | Porta                             | ✅              | ✅   |
 | Purple                            | ⬜️              | ⬜️   |
-| Railfence                         | ⬜️              | ⬜️   |
+| Railfence                         | ✅              | ✅   |
 | Rot13                             | ✅              | N/A  |
 | Scytale                           | ✅              | ✅   |
 | Simple Substitution               | ✅              | ✅   |
