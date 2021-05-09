@@ -15,7 +15,7 @@ impl Railfence {
 
         let num_rails = num_rails as i32;
         let len = len as i32;
-        
+
         let mut row = 0i32;
         let mut increment = -1i32;
 
@@ -41,13 +41,13 @@ impl Railfence {
     fn decrypt_indexes(num_rails: usize, len: usize) -> Vec<usize> {
         let mut matrix = vec![-1i32; num_rails * len];
         let mut result = Vec::with_capacity(len);
-        
+
         let num_rails = num_rails as i32;
         let len = len as i32;
-        
+
         let mut row = 0i32;
         let mut increment = -1i32;
-        
+
         for col in 0..len {
             matrix[(row * len + col) as usize] = -2;
             if row == 0 || row == num_rails - 1 {
