@@ -60,11 +60,12 @@ impl Solve for Caesar {
         let ciphertext = language.string_to_vec(msg);
 
         for shift in 0..language.cp_count() {
-            let plaintext: Vec<i16> = ciphertext
-                .iter()
-                .map(|&cp| util::modulo(cp - shift, language.cp_count()))
-                .collect();
-            let score = language.score(&plaintext, ScoreSize::Quadgrams);
+            let score = language.score_iter(
+                ciphertext
+                    .iter()
+                    .map(|&cp| util::modulo(cp - shift, language.cp_count())),
+                ScoreSize::Quadgrams,
+            );
 
             if score > best_score {
                 best_score = score;

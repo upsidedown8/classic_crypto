@@ -101,11 +101,12 @@ impl Solve for Affine {
         for a in Affine::valid_a_values(language) {
             if let Some(mmi) = util::mmi(a, language.cp_count()) {
                 for b in 0..language.cp_count() {
-                    let plaintext: Vec<i16> = ciphertext
-                        .iter()
-                        .map(|&cp| Affine::decrypt_one(language, cp, mmi, b))
-                        .collect();
-                    let score = language.score(&plaintext, ScoreSize::Quadgrams);
+                    let score = language.score_iter(
+                        ciphertext
+                            .iter()
+                            .map(|&cp| Affine::decrypt_one(language, cp, mmi, b)),
+                        ScoreSize::Quadgrams,
+                    );
 
                     if score > best_score {
                         best_score = score;
