@@ -39,3 +39,8 @@ pub use cipher::polyalph::bellaso::Bellaso;
 pub use cipher::polyalph::classic_vig::ClassicVigenere;
 pub use cipher::polyalph::keyed_vig::KeyedVigenere;
 pub use cipher::polyalph::porta::Porta;
+
+/* -------------------------------------------------------------------------- */
+/*                                Transposition                               */
+/* -------------------------------------------------------------------------- */
+pub use cipher::transpos::scytale::Scytale;

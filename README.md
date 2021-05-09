@@ -68,7 +68,7 @@ fn main() {
 | Purple                            | ⬜️              | ⬜️   |
 | Railfence                         | ⬜️              | ⬜️   |
 | Rot13                             | ✅              | N/A  |
-| Scytale                           | ⬜️              | ⬜️   |
+| Scytale                           | ✅              | ✅   |
 | Simple Substitution               | ✅              | ✅   |
 | Solitaire                         | ⬜️              | ⬜️   |
 | Straddle Checkerboard             | ⬜️              | ⬜️   |
