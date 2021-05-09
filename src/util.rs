@@ -217,7 +217,7 @@ pub fn fill_random_array(arr: &mut Vec<i16>, rng: &mut impl rand::Rng, max_exclu
 /// println!("{:?}", my_vec);
 /// ```
 ///
-pub fn shuffle(arr: &mut Vec<i16>, rng: &mut impl rand::Rng) {
+pub fn shuffle<T>(arr: &mut Vec<T>, rng: &mut impl rand::Rng) {
     for i in 0..arr.len() {
         let pos = rng.gen_range(0..arr.len());
         arr.swap(i, pos);
