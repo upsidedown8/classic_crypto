@@ -62,19 +62,19 @@ pub struct Language {
 
     /// Stores single letter probabilities
     ///
-    unigrams: Vec<f64>,
+    pub unigrams: Vec<f64>,
 
     /// Stores double letter probabilities
     ///
-    bigrams: Vec<f64>,
+    pub bigrams: Vec<f64>,
 
     /// Stores triple letter probabilities
     ///
-    trigrams: Vec<f64>,
+    pub trigrams: Vec<f64>,
 
     /// Stores quadruple letter probabilities
     ///
-    quadgrams: Vec<f64>,
+    pub quadgrams: Vec<f64>,
 
     /// Stores all supported alphabets
     ///
