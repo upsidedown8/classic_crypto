@@ -61,7 +61,7 @@ impl Solve for Bellaso {
                 1,
                 language,
                 |cp, shift| self.square.encrypt(shift, cp),
-                false,
+                |key, idx, key_len, _| key[idx % key_len],
             ),
         )
     }

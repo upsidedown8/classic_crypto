@@ -61,7 +61,7 @@ impl Solve for Porta {
                 2,
                 language,
                 |cp, shift| self.square.encrypt(shift / 2, cp),
-                false,
+                |key, idx, key_len, _| key[idx % key_len],
             ),
         )
     }

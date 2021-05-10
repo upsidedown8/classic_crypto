@@ -92,7 +92,13 @@ impl Solve for Autokey {
                 1,
                 language,
                 |cp, shift| self.square.decrypt(shift, cp),
-                true,
+                |key, idx, key_len, plaintext| {
+                    if idx < key_len {
+                        key[idx]
+                    } else {
+                        plaintext[idx % key_len]
+                    }
+                },
             ),
         )
     }

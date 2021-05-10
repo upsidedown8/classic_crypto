@@ -78,7 +78,7 @@ impl Solve for ClassicVigenere {
                 1,
                 language,
                 |cp, shift| self.square.decrypt(shift, cp),
-                false,
+                |key, idx, key_len, _| key[idx % key_len],
             ),
         )
     }

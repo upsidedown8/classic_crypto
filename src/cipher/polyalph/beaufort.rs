@@ -61,7 +61,7 @@ impl Solve for Beaufort {
                 1,
                 language,
                 |cp, shift| self.square.decrypt(cp, shift),
-                false,
+                |key, idx, key_len, _| key[idx % key_len],
             ),
         )
     }
