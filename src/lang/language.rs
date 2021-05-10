@@ -100,10 +100,10 @@ impl Language {
     ///
     /// # Arguments
     ///
-    /// * name The name of the language
-    /// * alphabet_len The primary alphabet length for the language (english = 26)
-    /// * alphabets A Vec of [`LangAlphabet`]s, which should contain one with length alphabet_len.
-    /// * corpus The text corpus to base frequency statistics on.
+    /// * `name` The name of the language
+    /// * `alphabet_len` The primary alphabet length for the language (english = 26)
+    /// * `alphabets` A Vec of [`LangAlphabet`]s, which should contain one with length alphabet_len.
+    /// * `corpus` The text corpus to base frequency statistics on.
     ///
     /// # Examples
     ///
@@ -240,7 +240,7 @@ impl Language {
     ///
     /// # Arguments
     ///
-    /// * len The desired length of the alphabet
+    /// * `len` The desired length of the alphabet
     ///
     pub fn set_alph_len(&mut self, len: usize) -> bool {
         if let Some(idx) = self.alphabets.iter().position(|x| x.length() == len) {
@@ -259,7 +259,7 @@ impl Language {
     ///
     /// # Arguments
     ///
-    /// * data The slice to analyse
+    /// * `data` The slice to analyse
     ///
     pub fn index_of_coincedence(&self, data: &[i16]) -> f64 {
         let mut counts = [0; MAX_ALPHABET_LEN];
@@ -284,8 +284,8 @@ impl Language {
     ///
     /// # Arguments
     ///
-    /// * data The slice to analyse
-    /// * period_length The length of the cipher period
+    /// * `data` The slice to analyse
+    /// * `period_length` The length of the cipher period
     ///
     pub fn periodic_ioc(&self, data: &[i16], period_length: usize) -> f64 {
         let mut total = 0.0;
@@ -308,7 +308,7 @@ impl Language {
     ///
     /// # Arguments
     ///
-    /// * data The slice to analyse
+    /// * `data` The slice to analyse
     ///
     pub fn chi_squared(&self, data: &[i16]) -> f64 {
         let mut total = 0.0;
@@ -379,7 +379,7 @@ impl Language {
     ///
     /// # Arguments
     ///
-    /// * letter The letter to convert
+    /// * `letter` The letter to convert
     ///
     /// # Panics
     ///
@@ -395,8 +395,8 @@ impl Language {
     ///
     /// # Arguments
     ///
-    /// * old_letter A letter occupying the same space in the string, in the past.
-    /// * new_cp The new code point to change the letter to
+    /// * `old_letter` A letter occupying the same space in the string, in the past.
+    /// * `new_cp` The new code point to change the letter to
     ///
     /// # Panics
     ///
@@ -417,7 +417,7 @@ impl Language {
     ///
     /// # Arguments
     ///
-    /// * cp The code point to convert
+    /// * `cp` The code point to convert
     ///
     pub fn cp_to_upper(&self, cp: i16) -> char {
         assert!(self.valid_cp(cp));
@@ -429,7 +429,7 @@ impl Language {
     ///
     /// # Arguments
     ///
-    /// * cp The code point to convert
+    /// * `cp` The code point to convert
     ///
     pub fn cp_to_lower(&self, cp: i16) -> char {
         assert!(self.valid_cp(cp));
@@ -441,7 +441,7 @@ impl Language {
     ///
     /// # Arguments
     ///
-    /// * letter The letter to convert to lowercase
+    /// * `letter` The letter to convert to lowercase
     ///
     pub fn to_lower(&self, letter: &char) -> char {
         if self.is_upper(letter) {
@@ -455,7 +455,7 @@ impl Language {
     ///
     /// # Arguments
     ///
-    /// * letter The letter to convert to uppercase
+    /// * `letter` The letter to convert to uppercase
     ///
     pub fn to_upper(&self, letter: &char) -> char {
         if self.is_lower(letter) {
@@ -469,7 +469,7 @@ impl Language {
     ///
     /// # Arguments
     ///
-    /// * letter The char to check
+    /// * `letter` The char to check
     ///
     pub fn is_letter(&self, letter: &char) -> bool {
         self.alph().char_to_cp.contains_key(&letter)
@@ -479,7 +479,7 @@ impl Language {
     ///
     /// # Arguments
     ///
-    /// * letter The letter to check
+    /// * `letter` The letter to check
     ///
     pub fn is_punct(&self, letter: &char) -> bool {
         !self.is_letter(letter)
@@ -489,7 +489,7 @@ impl Language {
     ///
     /// # Arguments
     ///
-    /// * letter The letter to check
+    /// * `letter` The letter to check
     ///
     pub fn is_upper(&self, letter: &char) -> bool {
         self.alph().upper.contains(*letter)
@@ -504,7 +504,7 @@ impl Language {
     ///
     /// # Arguments
     ///
-    /// * letter The letter to check
+    /// * `letter` The letter to check
     ///
     pub fn is_lower(&self, letter: &char) -> bool {
         self.alph().lower.contains(*letter)
@@ -519,7 +519,7 @@ impl Language {
     ///
     /// # Arguments
     ///
-    /// * cp The code point to validate
+    /// * `cp` The code point to validate
     ///
     pub fn valid_cp(&self, cp: i16) -> bool {
         0 <= cp && cp <= self.max_cp()
@@ -586,7 +586,7 @@ impl Language {
     ///
     /// # Arguments
     ///
-    /// * alphabet The alphabet to add
+    /// * `alphabet` The alphabet to add
     ///
     pub fn add_alphabet(&mut self, alphabet: LangAlphabet) -> Result<(), &str> {
         if self
@@ -606,7 +606,7 @@ impl Language {
     ///
     /// # Arguments
     ///
-    /// * alphabet_len The length of alphabet to remove
+    /// * `alphabet_len` The length of alphabet to remove
     ///
     pub fn del_alphabet(&mut self, alphabet_len: usize) {
         self.alphabets.retain(|x| x.length() != alphabet_len);

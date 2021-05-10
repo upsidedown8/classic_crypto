@@ -41,9 +41,9 @@ impl LangAlphabet {
     ///
     /// # Arguments
     ///
-    /// * upper The uppercase full alphabet
-    /// * lower The lowercase full alphabet
-    /// * substitutions Map one letter (not in the alphabet) to another letter within the alphabet. (Case sensative)
+    /// * `upper` The uppercase full alphabet
+    /// * `lower` The lowercase full alphabet
+    /// * `substitutions` Map one letter (not in the alphabet) to another letter within the alphabet. (Case sensative)
     ///
     pub fn new(
         upper: String,

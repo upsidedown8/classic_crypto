@@ -42,10 +42,10 @@ pub trait KeyFrom<T> {
     ///
     /// # Arguments
     ///
-    /// * [`Language`] A borrowed instance of the currently loaded [`Language`]
-    /// * `_` The argument with which to initialize the `Key`
+    /// * `language` A borrowed instance of the currently loaded [`Language`]
+    /// * `arg` The argument with which to initialize the `Key`
     ///
-    fn create_from(language: &mut Language, _: T) -> Self;
+    fn create_from(language: &mut Language, arg: T) -> Self;
 }
 
 /// Trait to set the state of a key with a value of type `T`
@@ -56,9 +56,9 @@ pub trait SetKey<T> {
     /// # Arguments
     ///
     /// * [`Language`] A borrowed instance of the currently loaded [`Language`]
-    /// * `_` The argument with which to set the `Key` state
+    /// * `arg` The argument with which to set the `Key` state
     ///
-    fn set_key(&mut self, language: &mut Language, _: T);
+    fn set_key(&mut self, language: &mut Language, arg: T);
 }
 
 /// Trait implemented by all cipher keys
@@ -68,7 +68,7 @@ pub trait Key {
     ///
     /// # Arguments
     ///
-    /// * [`Language`] A borrowed instance of the currently loaded [`Language`]
+    /// * `language` A borrowed instance of the currently loaded [`Language`]
     ///
     fn to_string(&self, language: &mut Language) -> String;
 
@@ -77,7 +77,7 @@ pub trait Key {
     ///
     /// # Arguments
     ///
-    /// * [`Language`] A borrowed instance of the currently loaded [`Language`]
+    /// * `language` A borrowed instance of the currently loaded [`Language`]
     ///
     fn new(language: &mut Language) -> Self;
 }
@@ -89,7 +89,7 @@ pub trait StatefulKey {
     ///
     /// # Arguments
     ///
-    /// * [`Language`] A borrowed instance of the currently loaded [`Language`]
+    /// * `language` A borrowed instance of the currently loaded [`Language`]
     ///
     fn reset(&mut self, language: &mut Language);
 
@@ -97,7 +97,7 @@ pub trait StatefulKey {
     ///
     /// # Arguments
     ///
-    /// * [`Language`] A borrowed instance of the currently loaded [`Language`]
+    /// * `language` A borrowed instance of the currently loaded [`Language`]
     /// * `rng` A rand::Rng implementation to generate random numbers
     ///
     fn randomize(&mut self, language: &mut Language, rng: &mut impl Rng);
