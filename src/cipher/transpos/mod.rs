@@ -36,35 +36,34 @@ where
         // ignore any extra above a multiple of key_len
         let num_rows = len / key_len;
 
-        let mut key = vec![0];
+        for start_col in 0..key_len {
+            let mut key = vec![start_col];
 
-        while key.len() < key_len {
-            let col1 = key.last().copied().unwrap();
+            while key.len() < key_len {
+                let col1 = key.last().copied().unwrap();
 
-            let mut max_score = f64::MIN;
-            let mut max_col = 0;
+                let mut max_score = f64::MIN;
+                let mut max_col = 0;
 
-            for col2 in (0..key_len).filter(|x| !key.contains(x)) {
-                let mut total_score = 0.0;
+                for col2 in (0..key_len).filter(|x| !key.contains(x)) {
+                    let mut total_score = 0.0;
 
-                for row in 0..num_rows {
-                    let col1_letter = ciphertext[get_index(row, col1, key_len, num_rows)];
-                    let col2_letter = ciphertext[get_index(row, col2, key_len, num_rows)];
+                    for row in 0..num_rows {
+                        let col1_letter = ciphertext[get_index(row, col1, key_len, num_rows)];
+                        let col2_letter = ciphertext[get_index(row, col2, key_len, num_rows)];
 
-                    total_score += language.bigrams[((col1_letter << 5) | col2_letter) as usize];
+                        total_score +=
+                            language.bigrams[((col1_letter << 5) | col2_letter) as usize];
+                    }
+
+                    if total_score > max_score {
+                        max_score = total_score;
+                        max_col = col2;
+                    }
                 }
 
-                if total_score > max_score {
-                    max_score = total_score;
-                    max_col = col2;
-                }
+                key.push(max_col);
             }
-
-            key.push(max_col);
-        }
-
-        for _ in 0..key_len {
-            key.rotate_left(1);
 
             let score = language.score_iter(
                 decrypt_indexes(len, key.clone())
