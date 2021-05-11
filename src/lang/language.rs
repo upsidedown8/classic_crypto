@@ -220,11 +220,16 @@ impl Language {
         let bytes = std::fs::read(filename).map_err(|err| err.to_string())?;
         let mut lang: Language = bincode::deserialize(&bytes).map_err(|err| err.to_string())?;
 
-        // init all alphabets
         for i in 0..lang.alphabets.len() {
+            // init all alphabets
             if let Err(msg) = lang.alphabets[i].init() {
                 return Err(msg.to_string());
             }
+        }
+
+        // init unigram probs
+        for i in 0..lang.alphabet_len() {
+            lang.unigram_probabilities[i] = lang.unigrams[i].exp();
         }
 
         Ok(lang)
