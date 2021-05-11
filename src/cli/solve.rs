@@ -2,6 +2,8 @@ use std::path::PathBuf;
 use structopt::StructOpt;
 
 use super::cipher::Cipher;
+use super::{CliResult, RunSubmodule};
+
 
 #[derive(StructOpt, Debug)]
 #[structopt(rename_all = "snake")]
@@ -21,7 +23,7 @@ pub struct Solve {
     /// Pretty print the key
     #[structopt(long)]
     pretty_key: bool,
-    
+
     /// Do not print the key at all, only the plaintext
     #[structopt(long)]
     plain_only: bool,
@@ -29,4 +31,10 @@ pub struct Solve {
     /// Language file path
     #[structopt(short = "l", long, parse(from_os_str))]
     lang_file: PathBuf,
+}
+
+impl RunSubmodule for Solve {
+    fn run(&self) -> CliResult {
+        Ok(())                    
+    }
 }

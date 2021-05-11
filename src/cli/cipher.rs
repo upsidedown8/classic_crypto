@@ -1,4 +1,4 @@
-use structopt::{StructOpt, clap::arg_enum};
+use structopt::{clap::arg_enum, StructOpt};
 
 arg_enum! {
     #[derive(StructOpt, Debug)]

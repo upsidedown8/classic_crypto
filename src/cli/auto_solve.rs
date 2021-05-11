@@ -1,6 +1,8 @@
 use std::path::PathBuf;
 use structopt::StructOpt;
 
+use super::{CliResult, RunSubmodule};
+
 #[derive(StructOpt, Debug)]
 #[structopt(rename_all = "snake")]
 pub struct AutoSolve {
@@ -15,19 +17,19 @@ pub struct AutoSolve {
     /// Pretty print the key
     #[structopt(long)]
     pretty_key: bool,
-    
+
     /// Do not print the key at all, only the plaintext
     #[structopt(long)]
     plain_only: bool,
-    
+
     /// Test monoalphabetic ciphers
     #[structopt(long)]
     monoalph: bool,
-    
+
     ///Test polyalphabetic ciphers
     #[structopt(long)]
     polyalph: bool,
-    
+
     /// Test polygraphic ciphers
     #[structopt(long)]
     polygraph: bool,
@@ -39,4 +41,10 @@ pub struct AutoSolve {
     /// Language file path
     #[structopt(short = "l", long, parse(from_os_str))]
     lang_file: PathBuf,
+}
+
+impl RunSubmodule for AutoSolve {
+    fn run(&self) -> CliResult {
+        Ok(())                    
+    }
 }

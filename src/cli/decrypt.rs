@@ -2,6 +2,7 @@ use std::path::PathBuf;
 use structopt::StructOpt;
 
 use super::cipher::Cipher;
+use super::{CliResult, RunSubmodule};
 
 #[derive(StructOpt, Debug)]
 #[structopt(rename_all = "snake")]
@@ -20,8 +21,8 @@ pub struct Decrypt {
 
     /// Use the default (identity) key
     #[structopt(short = "d", long)]
-    default: bool, 
-    
+    default: bool,
+
     /// The ciphertext (or use stdin)
     #[structopt(short = "t", long)]
     text: Option<String>,
@@ -29,4 +30,10 @@ pub struct Decrypt {
     /// Language file path
     #[structopt(short = "l", long, parse(from_os_str))]
     lang_file: PathBuf,
+}
+
+impl RunSubmodule for Decrypt {
+    fn run(&self) -> CliResult {
+        Ok(())                    
+    }
 }

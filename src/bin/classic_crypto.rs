@@ -1,3 +1,5 @@
-fn main() -> Result<(), &'static str> {
-    classic_crypto::cli::run()
+use classic_crypto::cli::{CliResult, run};
+
+fn main() -> CliResult {
+    run()
 }

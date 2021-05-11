@@ -5,6 +5,8 @@ use self::encrypt::Encrypt;
 use self::lang_gen::LangGen;
 use self::solve::Solve;
 
+pub type CliResult = Result<(), &'static str>;
+
 mod analyse;
 mod auto_solve;
 mod decrypt;
@@ -40,8 +42,31 @@ pub enum ClassicCrypto {
     LangGen(LangGen),
 }
 
-pub fn run() -> Result<(), &'static str> {
+trait RunSubmodule {
+    fn run(&self) -> CliResult;
+}
+
+pub fn run() -> CliResult {
     let options = ClassicCrypto::from_args();
-    println!("{:#?}", options);
-    Ok(())
+
+    match options {
+        ClassicCrypto::Encrypt(en) => {
+            en.run()
+        },
+        ClassicCrypto::Decrypt(de) => {
+            de.run()
+        },
+        ClassicCrypto::Solve(so) => {
+            so.run()
+        },
+        ClassicCrypto::AutoSolve(au) => {
+            au.run()
+        },
+        ClassicCrypto::Analyse(an) => {
+            an.run()
+        },
+        ClassicCrypto::LangGen(la) => {
+            la.run()
+        }
+    }
 }

@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 use structopt::StructOpt;
+use super::{CliResult, RunSubmodule};
 
 #[derive(StructOpt, Debug)]
 #[structopt(rename_all = "snake")]
@@ -16,4 +17,10 @@ pub struct LangGen {
     /// Output file path
     #[structopt(short = "o", long, parse(from_os_str))]
     output: PathBuf,
+}
+
+impl RunSubmodule for LangGen {
+    fn run(&self) -> CliResult {
+        Ok(())                    
+    }
 }
