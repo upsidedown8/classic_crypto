@@ -3,10 +3,10 @@
 //! to supply a character set for any [`Language`].
 //!
 
-pub mod lang;
-pub mod key;
-pub mod util;
 pub mod cli;
+pub mod key;
+pub mod lang;
+pub mod util;
 
 /* -------------------------------------------------------------------------- */
 /*                                   Cipher                                   */
