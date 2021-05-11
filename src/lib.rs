@@ -1,17 +1,17 @@
 //!
-//! Implementations of numerous classical ciphers. Supports configuration for
-//! an arbitrary [`Language`] defined in binary config files.
+//! A number of classical ciphers implemented in Rust, with the capability
+//! to supply a character set for any [`Language`].
 //!
 
-mod cipher;
 pub mod lang;
-
 pub mod key;
 pub mod util;
+pub mod cli;
 
 /* -------------------------------------------------------------------------- */
 /*                                   Cipher                                   */
 /* -------------------------------------------------------------------------- */
+mod cipher;
 pub use cipher::{Asymmetric, Keyed, Solve, Symmetric};
 
 /* -------------------------------------------------------------------------- */
