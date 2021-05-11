@@ -4,7 +4,6 @@ use structopt::StructOpt;
 use super::cipher::Cipher;
 use super::{CliResult, RunSubmodule};
 
-
 #[derive(StructOpt, Debug)]
 #[structopt(rename_all = "snake")]
 pub struct Encrypt {
@@ -35,6 +34,6 @@ pub struct Encrypt {
 
 impl RunSubmodule for Encrypt {
     fn run(&self) -> CliResult {
-        Ok(())                    
+        Ok(())
     }
 }

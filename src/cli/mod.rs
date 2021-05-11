@@ -50,23 +50,11 @@ pub fn run() -> CliResult {
     let options = ClassicCrypto::from_args();
 
     match options {
-        ClassicCrypto::Encrypt(en) => {
-            en.run()
-        },
-        ClassicCrypto::Decrypt(de) => {
-            de.run()
-        },
-        ClassicCrypto::Solve(so) => {
-            so.run()
-        },
-        ClassicCrypto::AutoSolve(au) => {
-            au.run()
-        },
-        ClassicCrypto::Analyse(an) => {
-            an.run()
-        },
-        ClassicCrypto::LangGen(la) => {
-            la.run()
-        }
+        ClassicCrypto::Encrypt(en) => en.run(),
+        ClassicCrypto::Decrypt(de) => de.run(),
+        ClassicCrypto::Solve(so) => so.run(),
+        ClassicCrypto::AutoSolve(au) => au.run(),
+        ClassicCrypto::Analyse(an) => an.run(),
+        ClassicCrypto::LangGen(la) => la.run(),
     }
 }

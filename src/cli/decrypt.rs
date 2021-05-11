@@ -34,6 +34,6 @@ pub struct Decrypt {
 
 impl RunSubmodule for Decrypt {
     fn run(&self) -> CliResult {
-        Ok(())                    
+        Ok(())
     }
 }

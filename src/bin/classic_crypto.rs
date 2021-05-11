@@ -1,4 +1,4 @@
-use classic_crypto::cli::{CliResult, run};
+use classic_crypto::cli::{run, CliResult};
 
 fn main() -> CliResult {
     run()

@@ -45,6 +45,6 @@ pub struct Analyse {
 
 impl RunSubmodule for Analyse {
     fn run(&self) -> CliResult {
-        Ok(())                    
+        Ok(())
     }
 }

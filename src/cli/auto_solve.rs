@@ -45,6 +45,6 @@ pub struct AutoSolve {
 
 impl RunSubmodule for AutoSolve {
     fn run(&self) -> CliResult {
-        Ok(())                    
+        Ok(())
     }
 }

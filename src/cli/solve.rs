@@ -4,7 +4,6 @@ use structopt::StructOpt;
 use super::cipher::Cipher;
 use super::{CliResult, RunSubmodule};
 
-
 #[derive(StructOpt, Debug)]
 #[structopt(rename_all = "snake")]
 pub struct Solve {
@@ -35,6 +34,6 @@ pub struct Solve {
 
 impl RunSubmodule for Solve {
     fn run(&self) -> CliResult {
-        Ok(())                    
+        Ok(())
     }
 }
