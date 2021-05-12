@@ -48,7 +48,7 @@ pub trait VigSquare {
         max_y: usize,
         max_x: usize,
     ) -> String {
-        assert_eq!(language.alphabet_len(), 26);
+        debug_assert_eq!(language.alphabet_len(), 26);
         let mut square_as_string = String::new();
 
         let is_porta = max_y == 13;

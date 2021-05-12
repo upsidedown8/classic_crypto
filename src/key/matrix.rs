@@ -308,7 +308,7 @@ impl Key for Matrix {
         result
     }
     fn new(language: &mut Language) -> Matrix {
-        assert_eq!(language.alphabet_len(), 26);
+        language.set_alph_len(26);
         Matrix {
             value: { vec![vec![0; 2]; 2] },
             dim_size: 2,
@@ -318,7 +318,7 @@ impl Key for Matrix {
 
 impl StatefulKey for Matrix {
     fn reset(&mut self, language: &mut Language) {
-        assert_eq!(language.alphabet_len(), 26);
+        language.set_alph_len(26);
         self.value = vec![vec![0; self.dim_size]; self.dim_size];
         for i in 0..self.dim_size {
             self.value[i][i] = 1;

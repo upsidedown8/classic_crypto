@@ -22,7 +22,7 @@ impl Plugboard {
     /// * `letter2` The second letter of the plug
     ///
     pub fn add_plug(&mut self, letter1: i16, letter2: i16) {
-        assert!(self.is_valid_plug(letter1, letter2));
+        debug_assert!(self.is_valid_plug(letter1, letter2));
 
         self.substitution[letter1 as usize] = letter2;
         self.substitution[letter2 as usize] = letter1;
@@ -36,7 +36,7 @@ impl Plugboard {
     /// * `letter2` The second letter of the plug
     ///
     pub fn del_plug(&mut self, letter1: i16, letter2: i16) {
-        assert!(self.is_existing_plug(letter1, letter2));
+        debug_assert!(self.is_existing_plug(letter1, letter2));
 
         self.substitution[letter1 as usize] = letter1;
         self.substitution[letter2 as usize] = letter2;

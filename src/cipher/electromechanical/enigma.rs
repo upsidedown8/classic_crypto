@@ -33,7 +33,7 @@ impl Enigma {
     }
 
     fn step_rotors(&mut self) {
-        assert!(self.rotors.len() >= 3);
+        debug_assert!(self.rotors.len() >= 3);
 
         if self.rotors[1].is_on_notch() {
             self.rotors[1].step();

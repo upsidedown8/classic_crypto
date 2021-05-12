@@ -454,7 +454,7 @@ impl Language {
     /// If the char provided does not satisfy `self.is_letter()`
     ///
     pub fn get_cp(&self, letter: &char) -> i16 {
-        assert!(self.is_letter(letter));
+        debug_assert!(self.is_letter(letter));
 
         self.alph().char_to_cp[letter]
     }
@@ -471,8 +471,8 @@ impl Language {
     /// If the char provided is not a letter (`self.is_letter()`) or `new_cp` does not satisfy `self.valid_cp()`.
     ///
     pub fn update_cp(&self, old_letter: &char, new_cp: i16) -> char {
-        assert!(self.valid_cp(new_cp));
-        assert!(self.is_letter(old_letter));
+        debug_assert!(self.valid_cp(new_cp));
+        debug_assert!(self.is_letter(old_letter));
 
         if self.is_upper(old_letter) {
             self.cp_to_upper(new_cp)
@@ -488,7 +488,7 @@ impl Language {
     /// * `cp` The code point to convert
     ///
     pub fn cp_to_upper(&self, cp: i16) -> char {
-        assert!(self.valid_cp(cp));
+        debug_assert!(self.valid_cp(cp));
 
         self.alph().upper.chars().nth(cp as usize).unwrap()
     }
@@ -500,7 +500,7 @@ impl Language {
     /// * `cp` The code point to convert
     ///
     pub fn cp_to_lower(&self, cp: i16) -> char {
-        assert!(self.valid_cp(cp));
+        debug_assert!(self.valid_cp(cp));
 
         self.alph().lower.chars().nth(cp as usize).unwrap()
     }
@@ -710,7 +710,7 @@ impl Language {
     /// ```
     ///
     pub fn add_substitution(&mut self, from: &char, to: &str) {
-        assert!(!self.substitution_table.contains_key(from));
+        debug_assert!(!self.substitution_table.contains_key(from));
 
         self.substitution_table.insert(*from, String::from(to));
     }
@@ -733,7 +733,7 @@ impl Language {
     /// ```
     ///
     pub fn del_substitution(&mut self, from: &char) {
-        assert!(self.substitution_table.contains_key(from));
+        debug_assert!(self.substitution_table.contains_key(from));
 
         self.substitution_table.remove(from);
     }

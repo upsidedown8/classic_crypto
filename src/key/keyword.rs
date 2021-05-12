@@ -30,7 +30,7 @@ impl Keyword {
     /// * `idx` The index to get
     ///
     pub fn at(&self, idx: usize) -> i16 {
-        assert!(idx < self.value.len());
+        debug_assert!(idx < self.value.len());
         self.value[idx]
     }
 
