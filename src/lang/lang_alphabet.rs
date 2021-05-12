@@ -1,6 +1,7 @@
 extern crate serde;
 use std::collections::HashMap;
 
+use crate::error::{Error, Result};
 use crate::util;
 use serde::{Deserialize, Serialize};
 
@@ -29,6 +30,10 @@ pub struct LangAlphabet {
     ///
     pub scoring_sub_table: Vec<i16>,
 
+    /// The expected value for index of coincedence
+    ///
+    pub expected_ioc: f64,
+
     /// Maps characters to code points
     ///
     #[serde(skip)]
@@ -43,15 +48,17 @@ impl LangAlphabet {
     ///
     /// * `upper` The uppercase full alphabet
     /// * `lower` The lowercase full alphabet
-    /// * `substitutions` Map one letter (not in the alphabet) to another letter within the alphabet. (Case sensative)
+    /// * `upper_substitutions` Map one uppercase letter (not in the alphabet) to another letter within the alphabet
+    /// * `lower_substitutions` Map one lowercase letter (not in the alphabet) to another letter within the alphabet
+    /// * `scoring_sub_table` Map (0..length) to (0..principle_length)
     ///
     pub fn new(
         upper: String,
         lower: String,
-        lower_substitutions: Vec<String>,
         upper_substitutions: Vec<String>,
+        lower_substitutions: Vec<String>,
         scoring_sub_table: Vec<i16>,
-    ) -> Result<LangAlphabet, &'static str> {
+    ) -> Result<LangAlphabet> {
         let mut result = LangAlphabet {
             upper,
             lower,
@@ -59,6 +66,7 @@ impl LangAlphabet {
             upper_substitutions,
             scoring_sub_table,
             char_to_cp: HashMap::new(),
+            expected_ioc: 0.0,
         };
 
         result.init()?;
@@ -66,19 +74,36 @@ impl LangAlphabet {
         Ok(result)
     }
 
-    pub fn init(&mut self) -> Result<(), &'static str> {
+    /// Checks the deserialized [`LangAlphabet`] and fills in unserialized fields
+    ///
+    pub fn init(&mut self) -> Result<()> {
         self.char_to_cp.clear();
 
-        if self.upper.chars().count() != self.lower.chars().count() {
-            Err("Upper and Lower alphabets must have equal length")
-        } else if self.upper.chars().count() != self.scoring_sub_table.len() {
-            Err("scoring_sub_table must be of equal length to the alphabet")
+        let upper_len = self.upper.chars().count();
+        let lower_len = self.lower.chars().count();
+
+        if upper_len != lower_len {
+            Err(Error::AlphabetLenDifference {
+                upper_len,
+                lower_len,
+            })
+        } else if upper_len != self.scoring_sub_table.len() {
+            Err(Error::ScoringSubTableLen {
+                alphabet_len: upper_len,
+                table_len: self.scoring_sub_table.len(),
+            })
         } else if self.upper.chars().count() > crate::lang::language::MAX_ALPHABET_LEN {
-            Err("Maximum alphabet length is 32")
+            Err(Error::MaxAlphabetLenExceeded {
+                alphabet_len: upper_len,
+            })
         } else if !util::is_unique(&self.upper) {
-            Err("Upper alphabet has repeated letters")
+            Err(Error::RepeatCharUpperAlph {
+                upper: self.upper.clone(),
+            })
         } else if !util::is_unique(&self.lower) {
-            Err("Lower alphabet has repeated letters")
+            Err(Error::RepeatCharLowerAlph {
+                lower: self.lower.clone(),
+            })
         } else if self
             .lower_substitutions
             .iter()
@@ -88,67 +113,87 @@ impl LangAlphabet {
                 .iter()
                 .any(|x| x.chars().count() != 2)
         {
-            Err("Substitutions must be pairs of letters")
-        } else if !util::is_unique(
-            self.lower_substitutions
-                .iter()
-                .fold(String::new(), |acc, x| acc + x)
-                .as_str(),
-        ) || !util::is_unique(
-            self.upper_substitutions
-                .iter()
-                .fold(String::new(), |acc, x| acc + x)
-                .as_str(),
-        ) {
-            Err("Substitutions must be unique")
+            Err(Error::SubstitutionsNotPairs {
+                subs: self.upper_substitutions.clone(),
+            })
         } else {
-            let any_invalid_letters = self.lower_substitutions.iter().any(|sub| {
-                let mut iter = sub.chars();
+            let lower_is_unique = util::is_unique(
+                self.lower_substitutions
+                    .iter()
+                    .fold(String::new(), |acc, x| acc + x)
+                    .as_str(),
+            );
+            let upper_is_unique = util::is_unique(
+                self.upper_substitutions
+                    .iter()
+                    .fold(String::new(), |acc, x| acc + x)
+                    .as_str(),
+            );
 
-                if let Some(char2) = iter.nth(1) {
-                    // check whether the target char exists in the alphabet
-                    !self.lower.contains(char2)
-                } else {
-                    false
-                }
-            }) || self.upper_substitutions.iter().any(|sub| {
-                let mut iter = sub.chars();
-
-                if let Some(char2) = iter.nth(1) {
-                    // check whether the target char exists in the alphabet
-                    !self.upper.contains(char2)
-                } else {
-                    false
-                }
-            });
-
-            if any_invalid_letters {
-                Err("Some letters in the substitutions were not present in the alphabet")
+            if !upper_is_unique {
+                Err(Error::SubstitutionsNotUnique {
+                    subs: self.upper_substitutions.clone(),
+                })
+            } else if !lower_is_unique {
+                Err(Error::SubstitutionsNotUnique {
+                    subs: self.lower_substitutions.clone(),
+                })
             } else {
-                // insert all upper & lower chars
-                for i in 0..self.length() {
-                    self.char_to_cp
-                        .insert(self.upper.chars().nth(i).unwrap(), i as i16);
-                    self.char_to_cp
-                        .insert(self.lower.chars().nth(i).unwrap(), i as i16);
-                }
+                let invalid_lower = self.lower_substitutions.iter().any(|sub| {
+                    let mut iter = sub.chars();
 
-                // insert substitutions
-                for &list in &[&self.lower_substitutions, &self.upper_substitutions] {
-                    for sub in list {
-                        let mut iter = sub.chars();
+                    if let Some(char2) = iter.nth(1) {
+                        // check whether the target char exists in the alphabet
+                        !self.lower.contains(char2)
+                    } else {
+                        false
+                    }
+                });
+                let invalid_upper = self.upper_substitutions.iter().any(|sub| {
+                    let mut iter = sub.chars();
 
-                        // find the pair of chars, then add both upper & lower alternatives to char_to_cp
-                        if let Some(char1) = iter.next() {
-                            if let Some(char2) = iter.next() {
-                                // add the pair
-                                self.char_to_cp.insert(char1, self.char_to_cp[&char2]);
+                    if let Some(char2) = iter.nth(1) {
+                        // check whether the target char exists in the alphabet
+                        !self.upper.contains(char2)
+                    } else {
+                        false
+                    }
+                });
+
+                if invalid_lower {
+                    Err(Error::InvalidCharsInSubstitutions {
+                        subs: self.lower_substitutions.clone(),
+                    })
+                } else if invalid_upper {
+                    Err(Error::InvalidCharsInSubstitutions {
+                        subs: self.upper_substitutions.clone(),
+                    })
+                } else {
+                    // insert all upper & lower chars
+                    for i in 0..self.length() {
+                        self.char_to_cp
+                            .insert(self.upper.chars().nth(i).unwrap(), i as i16);
+                        self.char_to_cp
+                            .insert(self.lower.chars().nth(i).unwrap(), i as i16);
+                    }
+
+                    // insert substitutions
+                    for &list in &[&self.lower_substitutions, &self.upper_substitutions] {
+                        for sub in list {
+                            let mut iter = sub.chars();
+
+                            // find the pair of chars, then add both upper & lower alternatives to char_to_cp
+                            if let Some(char1) = iter.next() {
+                                if let Some(char2) = iter.next() {
+                                    // add the pair
+                                    self.char_to_cp.insert(char1, self.char_to_cp[&char2]);
+                                }
                             }
                         }
                     }
-                }
 
-                Ok(())
+                    Ok(())
+                }
             }
         }
     }

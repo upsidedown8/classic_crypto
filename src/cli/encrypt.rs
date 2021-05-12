@@ -2,7 +2,8 @@ use std::path::PathBuf;
 use structopt::StructOpt;
 
 use super::cipher::Cipher;
-use super::{CliResult, RunSubmodule};
+use super::RunSubmodule;
+use crate::error::Result;
 
 #[derive(StructOpt, Debug)]
 #[structopt(rename_all = "snake")]
@@ -23,9 +24,9 @@ pub struct Encrypt {
     #[structopt(short = "d", long)]
     default: bool,
 
-    /// The plaintext (or use stdin)
+    /// The plaintext
     #[structopt(short = "t", long)]
-    text: Option<String>,
+    text: String,
 
     /// Language file path
     #[structopt(short = "l", long, parse(from_os_str))]
@@ -33,7 +34,7 @@ pub struct Encrypt {
 }
 
 impl RunSubmodule for Encrypt {
-    fn run(&self) -> CliResult {
+    fn run(&self) -> Result<()> {
         Ok(())
     }
 }

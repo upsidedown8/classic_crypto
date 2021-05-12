@@ -2,7 +2,8 @@ use std::path::PathBuf;
 use structopt::StructOpt;
 
 use super::cipher::Cipher;
-use super::{CliResult, RunSubmodule};
+use super::RunSubmodule;
+use crate::error::Result;
 
 #[derive(StructOpt, Debug)]
 #[structopt(rename_all = "snake")]
@@ -11,9 +12,9 @@ pub struct Solve {
     #[structopt(short = "c", long, possible_values = &Cipher::variants(), case_insensitive = true)]
     cipher: Cipher,
 
-    /// The ciphertext (or use stdin)
+    /// The ciphertext
     #[structopt(short = "t", long)]
-    text: Option<String>,
+    text: String,
 
     /// Display each solution as it is found
     #[structopt(long)]
@@ -33,7 +34,7 @@ pub struct Solve {
 }
 
 impl RunSubmodule for Solve {
-    fn run(&self) -> CliResult {
+    fn run(&self) -> Result<()> {
         Ok(())
     }
 }

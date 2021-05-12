@@ -1,14 +1,15 @@
 use std::path::PathBuf;
 use structopt::StructOpt;
 
-use super::{CliResult, RunSubmodule};
+use super::RunSubmodule;
+use crate::error::Result;
 
 #[derive(StructOpt, Debug)]
 #[structopt(rename_all = "snake")]
 pub struct AutoSolve {
-    /// The ciphertext to solve (or use stdin)
+    /// The ciphertext to solve
     #[structopt(short = "t", long)]
-    text: Option<String>,
+    text: String,
 
     /// Display each solution as it is found
     #[structopt(long)]
@@ -44,7 +45,7 @@ pub struct AutoSolve {
 }
 
 impl RunSubmodule for AutoSolve {
-    fn run(&self) -> CliResult {
+    fn run(&self) -> Result<()> {
         Ok(())
     }
 }

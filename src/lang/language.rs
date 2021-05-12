@@ -1,6 +1,13 @@
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    fs::File,
+    io::Read,
+    path::{Path, PathBuf},
+};
 
+use crate::error::{Error, Result};
 use crate::lang::LangAlphabet;
+
 use serde::{Deserialize, Serialize};
 
 pub const MAX_ALPHABET_LEN: usize = 32;
@@ -126,8 +133,8 @@ impl Language {
     ///         LangAlphabet::new(
     ///             "ABCDEFGHIKLMNOPQRSTUVWXYZ".to_string(),
     ///             "abcdefghiklmnopqrstuvwxyz".to_string(),
-    ///             vec!["ji".to_string()],
     ///             vec!["JI".to_string()],
+    ///             vec!["ji".to_string()],
     ///             // since J is missed out
     ///             (0..25).map(|x| if x > 8 {x+1} else {x}).collect(),
     ///         ).unwrap(),
@@ -146,7 +153,7 @@ impl Language {
         alphabet_len: usize,
         alphabets: Vec<LangAlphabet>,
         corpus: String,
-    ) -> Result<Language, String> {
+    ) -> Result<Language> {
         if let Some(selected_alph_idx) = alphabets.iter().position(|x| x.length() == alphabet_len) {
             let mut lang = Language {
                 name,
@@ -163,6 +170,10 @@ impl Language {
 
             // filter out punctuation from corpus
             let corpus = lang.string_to_vec(&corpus);
+
+            if corpus.len() < 4 {
+                return Err(Error::InsufficientCorpusLen { len: corpus.len() });
+            }
 
             // load corpus
             if corpus.len() >= 4 {
@@ -207,32 +218,84 @@ impl Language {
                 }
             }
 
+            // calculate ioc for each alphabet
+            for i in 0..lang.alphabets.len() {
+                lang.set_alph_len(lang.alphabets[i].length());
+                lang.alphabets[i].expected_ioc = lang.index_of_coincedence(&corpus);
+            }
+
+            // reset the length afterwards
+            lang.set_alph_len(alphabet_len);
+
             Ok(lang)
         } else {
-            Err("None of the alphabets supplied match the given alphabet_len".to_string())
+            Err(Error::AlphabetLenUnmatched {
+                expected: alphabet_len,
+            })
         }
     }
 
     /// Creates a new [`Language`] from a binary file
     ///
-    pub fn from_file(filename: &str) -> Result<Language, String> {
-        // read bytes then deserialize
-        let bytes = std::fs::read(filename).map_err(|err| err.to_string())?;
-        let mut lang: Language = bincode::deserialize(&bytes).map_err(|err| err.to_string())?;
+    /// # Arguments
+    ///
+    /// * `filename` The path to the language file
+    ///
+    pub fn from_file(filename: &str) -> Result<Language> {
+        Self::from_pathbuf(&PathBuf::from(filename))
+    }
 
-        for i in 0..lang.alphabets.len() {
-            // init all alphabets
-            if let Err(msg) = lang.alphabets[i].init() {
-                return Err(msg.to_string());
+    /// Creates a new [`Language`] from a binary file
+    ///
+    /// # Arguments
+    ///
+    /// * `path` The PathBuf to the language file
+    ///  
+    pub fn from_pathbuf(path: &Path) -> Result<Language> {
+        if !path.exists() {
+            Err(Error::FileNotFound {
+                path: path.to_path_buf(),
+            })
+        } else {
+            // read bytes then deserialize
+            match File::open(&path) {
+                Ok(mut file) => {
+                    let mut bytes = Vec::new();
+
+                    match file.read_to_end(&mut bytes) {
+                        Ok(..) => {
+                            match bincode::deserialize::<Language>(&bytes) {
+                                Ok(mut lang) => {
+                                    for i in 0..lang.alphabets.len() {
+                                        // init all alphabets
+                                        lang.alphabets[i].init()?;
+                                    }
+
+                                    // init unigram probs
+                                    for i in 0..lang.alphabet_len() {
+                                        lang.unigram_probabilities.push(lang.unigrams[i].exp());
+                                    }
+
+                                    Ok(lang)
+                                }
+                                Err(err) => Err(Error::CouldntDeserializeFile {
+                                    path: path.to_path_buf(),
+                                    reason: err,
+                                }),
+                            }
+                        }
+                        Err(reason) => Err(Error::CouldntReadFile {
+                            path: path.to_path_buf(),
+                            reason,
+                        }),
+                    }
+                }
+                Err(reason) => Err(Error::CouldntReadFile {
+                    path: path.to_path_buf(),
+                    reason,
+                }),
             }
         }
-
-        // init unigram probs
-        for i in 0..lang.alphabet_len() {
-            lang.unigram_probabilities[i] = lang.unigrams[i].exp();
-        }
-
-        Ok(lang)
     }
 
     /// Gets the currently selected alphabet
@@ -299,7 +362,7 @@ impl Language {
 
         for i in 0..period_length {
             temp.clear();
-            for j in (i..).step_by(period_length) {
+            for j in (i..data.len()).step_by(period_length) {
                 temp.push(data[j]);
             }
             total += self.index_of_coincedence(&temp);
@@ -440,6 +503,13 @@ impl Language {
         assert!(self.valid_cp(cp));
 
         self.alph().lower.chars().nth(cp as usize).unwrap()
+    }
+
+    /// Gets the expected value for the index of coincedence for the current
+    /// alphabet.
+    ///
+    pub fn expected_ioc(&self) -> f64 {
+        self.alph().expected_ioc
     }
 
     /// Converts a letter to lowercase
@@ -587,22 +657,21 @@ impl Language {
     /*                               Alphabet setup                               */
     /* -------------------------------------------------------------------------- */
     /// Adds an alphabet to the [`Language`]. For more information on alphabets, see [`LangAlphabet`].
-    /// Returns Err if an alphabet with the same length already exists.
+    /// Overwrites the existing alphabet if one with the same length already exists.
     ///
     /// # Arguments
     ///
     /// * `alphabet` The alphabet to add
     ///
-    pub fn add_alphabet(&mut self, alphabet: LangAlphabet) -> Result<(), &str> {
-        if self
+    pub fn add_alphabet(&mut self, alphabet: LangAlphabet) {
+        if let Some(pos) = self
             .alphabets
             .iter()
-            .any(|x| x.length() == alphabet.length())
+            .position(|x| x.length() == alphabet.length())
         {
-            Err("Alphabet with given length already exists")
+            self.alphabets[pos] = alphabet;
         } else {
             self.alphabets.push(alphabet);
-            Ok(())
         }
     }
 

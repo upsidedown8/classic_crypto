@@ -1,11 +1,11 @@
+use crate::error::Result;
+
 use self::analyse::Analyse;
 use self::auto_solve::AutoSolve;
 use self::decrypt::Decrypt;
 use self::encrypt::Encrypt;
 use self::lang_gen::LangGen;
 use self::solve::Solve;
-
-pub type CliResult = Result<(), &'static str>;
 
 mod analyse;
 mod auto_solve;
@@ -43,10 +43,10 @@ pub enum ClassicCrypto {
 }
 
 trait RunSubmodule {
-    fn run(&self) -> CliResult;
+    fn run(&self) -> Result<()>;
 }
 
-pub fn run() -> CliResult {
+pub fn run() -> Result<()> {
     let options = ClassicCrypto::from_args();
 
     match options {

@@ -1,6 +1,8 @@
-use super::{CliResult, RunSubmodule};
 use std::path::PathBuf;
 use structopt::StructOpt;
+
+use super::RunSubmodule;
+use crate::error::Result;
 
 #[derive(StructOpt, Debug)]
 #[structopt(rename_all = "snake")]
@@ -20,7 +22,7 @@ pub struct LangGen {
 }
 
 impl RunSubmodule for LangGen {
-    fn run(&self) -> CliResult {
+    fn run(&self) -> Result<()> {
         Ok(())
     }
 }
