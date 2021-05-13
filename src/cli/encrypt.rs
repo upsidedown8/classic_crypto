@@ -1,16 +1,16 @@
 use std::path::PathBuf;
 use structopt::StructOpt;
 
-use super::cipher::Cipher;
+use super::cipher::CipherOpt;
 use super::RunSubmodule;
-use crate::error::Result;
+use crate::{cli::cipher::Cipher, error::Result, lang::Language};
 
 #[derive(StructOpt, Debug)]
 #[structopt(rename_all = "snake")]
 pub struct Encrypt {
     /// Which cipher to use
-    #[structopt(short = "c", long, possible_values = &Cipher::variants(), case_insensitive = true)]
-    cipher: Cipher,
+    #[structopt(short = "c", long, possible_values = &CipherOpt::variants(), case_insensitive = true)]
+    cipher: CipherOpt,
 
     /// The arguments to parse a key from
     #[structopt(short = "k", long)]
@@ -35,6 +35,25 @@ pub struct Encrypt {
 
 impl RunSubmodule for Encrypt {
     fn run(&self) -> Result<()> {
+        let mut language = Language::from_pathbuf(&PathBuf::from(&self.lang_file))?;
+
+        let mut cipher = Cipher::new(&self.cipher, &mut language);
+
+        if self.rand {
+            cipher.randomize(&mut language, &mut rand::thread_rng());
+        } else if self.default {
+            cipher.reset(&mut language);
+        } else {
+            // set the key
+
+        }
+
+        println!("{}", cipher.to_string(&mut language));
+
+        let ciphertext = cipher.encrypt(&mut language, &self.text);
+
+        println!("{}", ciphertext);
+
         Ok(())
     }
 }
