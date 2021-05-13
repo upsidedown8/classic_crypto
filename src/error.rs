@@ -65,8 +65,5 @@ pub enum Error {
     CouldntWriteToStdout,
 
     /// Occurs when not enough text was input to a function
-    InsufficientInputLen {
-        expected: usize,
-        actual: usize,
-    }
+    InsufficientInputLen { expected: usize, actual: usize },
 }

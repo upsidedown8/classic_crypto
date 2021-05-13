@@ -1,5 +1,5 @@
+use crate::{lang::Language, Affine, Asymmetric, Caesar, Keyed, Solve};
 use structopt::{clap::arg_enum, StructOpt};
-use crate::{Affine, Asymmetric, Caesar, Keyed, Solve, lang::Language};
 
 arg_enum! {
     #[derive(StructOpt, Debug)]

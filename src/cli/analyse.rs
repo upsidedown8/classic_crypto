@@ -62,7 +62,7 @@ impl RunSubmodule for Analyse {
             return Err(Error::InsufficientInputLen {
                 expected: MIN_LEN,
                 actual: data.len(),
-            })
+            });
         }
 
         let all = !(self.chi
@@ -139,8 +139,10 @@ impl RunSubmodule for Analyse {
                         period,
                         "=".repeat(width),
                         " ".repeat(TERM_WIDTH - width),
-                    ).color(color),
-                ).map_err(map_err)?;
+                    )
+                    .color(color),
+                )
+                .map_err(map_err)?;
             }
 
             writeln!(handle).map_err(map_err)?;

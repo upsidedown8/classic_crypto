@@ -45,7 +45,6 @@ impl RunSubmodule for Encrypt {
             cipher.reset(&mut language);
         } else {
             // set the key
-
         }
 
         println!("{}", cipher.to_string(&mut language));
