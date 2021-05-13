@@ -90,15 +90,3 @@ pub trait Solve {
     ///
     fn solve(&mut self, language: &mut Language, msg: &str);
 }
-
-impl<T> Asymmetric for T
-where
-    T: Symmetric,
-{
-    fn encrypt(&self, language: &mut Language, msg: &str) -> String {
-        self.run(language, msg)
-    }
-    fn decrypt(&self, language: &mut Language, msg: &str) -> String {
-        self.run(language, msg)
-    }
-}
