@@ -58,7 +58,7 @@ impl RunSubmodule for Analyse {
         let language = Language::from_pathbuf(&PathBuf::from(&self.lang_file))?;
         let data = language.string_to_vec(&self.text);
 
-        if data.len() < 8 {
+        if data.len() < MIN_LEN {
             return Err(Error::InsufficientInputLen {
                 expected: MIN_LEN,
                 actual: data.len(),
