@@ -3,7 +3,10 @@ use std::path::PathBuf;
 use structopt::StructOpt;
 
 use super::RunSubmodule;
-use crate::{error::Result, lang::Language};
+use crate::{
+    error::{Error, Result},
+    lang::Language,
+};
 
 #[derive(StructOpt, Debug)]
 #[structopt(rename_all = "snake")]
@@ -45,13 +48,22 @@ pub struct Analyse {
     lang_file: PathBuf,
 }
 
-const PIOC_MIN: usize = 3;
+const PIOC_MIN: usize = 1;
 const PIOC_MAX: usize = 100;
+const TERM_WIDTH: usize = 50;
+const MIN_LEN: usize = 4;
 
 impl RunSubmodule for Analyse {
     fn run(&self) -> Result<()> {
         let language = Language::from_pathbuf(&PathBuf::from(&self.lang_file))?;
         let data = language.string_to_vec(&self.text);
+
+        if data.len() < 8 {
+            return Err(Error::InsufficientInputLen {
+                expected: MIN_LEN,
+                actual: data.len(),
+            })
+        }
 
         let all = !(self.chi
             || self.ioc
@@ -63,12 +75,17 @@ impl RunSubmodule for Analyse {
 
         if self.ioc || all {
             println!(
-                "Index of coincedence: {}",
+                "{}: {:.04}\n",
+                "Index of coincedence".to_string().bold(),
                 language.index_of_coincedence(&data),
             );
         }
         if self.chi || all {
-            println!("Chi squared: {}", language.chi_squared(&data));
+            println!(
+                "{}: {:.04}\n",
+                "Chi squared".to_string().bold(),
+                language.chi_squared(&data)
+            );
         }
         if self.likely_cipher || all {
             unimplemented!();
@@ -83,27 +100,52 @@ impl RunSubmodule for Analyse {
             unimplemented!();
         }
         if self.pioc || all {
-            println!("+---------------+--------------------------+");
-            println!("| Period Length | Avg Index of Coincedence |");
-            println!("+---------------+--------------------------+");
+            use std::io::Write;
 
-            for period in PIOC_MIN..=PIOC_MAX {
+            let mut handle = std::io::BufWriter::new(std::io::stdout());
+
+            let map_err = |_| Error::CouldntWriteToStdout;
+
+            writeln!(
+                handle,
+                "{}",
+                "Periodic Index of Coincedence".to_string().bold()
+            )
+            .map_err(map_err)?;
+
+            for period in PIOC_MIN..=PIOC_MAX.min(data.len()) {
                 let pioc = language.periodic_ioc(&data, period);
 
-                let color = if (pioc - language.expected_ioc()).abs() < 0.01 {
-                    AnsiColors::Blue
+                let abs_diff = (pioc - language.expected_ioc()).abs();
+                let multiplier = 1.0 - abs_diff / language.expected_ioc();
+                let width = if pioc.is_nan() {
+                    0
+                } else {
+                    (TERM_WIDTH as f64 * multiplier) as usize
+                };
+
+                let color = if abs_diff < 0.008 {
+                    AnsiColors::BrightMagenta
                 } else {
                     AnsiColors::White
                 };
 
-                println!(
-                    "| {:<13} | {:<24} |",
-                    period.to_string().color(color),
-                    pioc.to_string().color(color),
-                );
+                writeln!(
+                    handle,
+                    "{}",
+                    format!(
+                        "{:<6.04} => {:<3} [ {}=>{} ]",
+                        pioc,
+                        period,
+                        "=".repeat(width),
+                        " ".repeat(TERM_WIDTH - width),
+                    ).color(color),
+                ).map_err(map_err)?;
             }
 
-            println!("+---------------+--------------------------+");
+            writeln!(handle).map_err(map_err)?;
+
+            handle.flush().map_err(map_err)?;
         }
 
         Ok(())
