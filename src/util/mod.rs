@@ -2,6 +2,8 @@
 //! Contains functions that are used across the library
 //!
 
+pub mod prime_gen;
+
 /// Returns true if the string contains any repeated characters
 ///
 /// # Arguments
