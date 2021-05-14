@@ -43,8 +43,8 @@ impl RunSubmodule for Decrypt {
             cipher.randomize(&mut language, &mut rand::thread_rng());
         } else if self.default {
             cipher.reset(&mut language);
-        } else {
-            // set the key
+        } else if let Some(key) = &self.key {
+            cipher.set_key(key)?;
         }
 
         println!("{}", cipher.to_string(&mut language));
