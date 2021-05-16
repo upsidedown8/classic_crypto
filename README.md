@@ -27,12 +27,12 @@ fn main() {
     let mut language = Language::from_file("examples/data/english.bin").unwrap();
     let mut caesar = Caesar::new(&mut language);
 
-    caesar.randomize(&mut language, &mut rand::thread_rng());
+    caesar.randomize(&mut language);
 
     let plaintext = "Secret message!";
     let ciphertext = caesar.encrypt(&mut language, plaintext);
 
-    caesar.randomize(&mut language, &mut rand::thread_rng());
+    caesar.randomize(&mut language);
 
     caesar.solve(&mut language, &ciphertext);
 
