@@ -1,7 +1,9 @@
 use crate::{
-    error::Result, lang::Language, Affine, Asymmetric, Atbash, Autokey, Beaufort, Bellaso,
-    BlockTransposition, Caesar, ClassicVigenere, ColumnTransposition, Enigma, Keyed, KeyedVigenere,
-    Morse, Porta, Railfence, Rot13, Scytale, SimpleSubstitution, Solve, Symmetric,
+    error::{Error, Result},
+    lang::Language,
+    Affine, Asymmetric, Atbash, Autokey, Beaufort, Bellaso, BlockTransposition, Caesar,
+    ClassicVigenere, ColumnTransposition, Enigma, Keyed, KeyedVigenere, Morse, Porta, Railfence,
+    Rot13, Scytale, SimpleSubstitution, Solve, Symmetric,
 };
 use structopt::{clap::arg_enum, StructOpt};
 
@@ -272,8 +274,15 @@ impl Cipher {
 
         for key in keys {
             for arg in args.iter() {
-                if arg[0] == key.key_info().short_name {
-                    key.set_key_str(language, arg[1])?;
+                let short_name = key.key_info().short_name.clone();
+                if arg[0] == short_name {
+                    key.set_key_str(language, arg[1]).map_err(|err| match err {
+                        Error::InvalidKeyFmt { expected, actual } => Error::InvalidKeyFmt {
+                            expected: format!("[{}]: {}", short_name, expected),
+                            actual,
+                        },
+                        _ => err,
+                    })?;
                 }
             }
         }
