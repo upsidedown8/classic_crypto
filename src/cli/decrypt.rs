@@ -40,7 +40,7 @@ impl RunSubmodule for Decrypt {
         let mut cipher = Cipher::new(&self.cipher, &mut language);
 
         if self.rand {
-            cipher.randomize(&mut language, &mut rand::thread_rng());
+            cipher.randomize(&mut language);
         } else if self.default {
             cipher.reset(&mut language);
         } else if let Some(key) = &self.key {

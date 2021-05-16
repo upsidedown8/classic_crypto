@@ -121,26 +121,26 @@ impl Cipher {
             CipherOpt::SimpleSub => Cipher::SimpleSubstitution(SimpleSubstitution::new(language)),
         }
     }
-    pub fn randomize(&mut self, language: &mut Language, rng: &mut impl rand::Rng) {
+    pub fn randomize(&mut self, language: &mut Language) {
         match self {
-            Cipher::Affine(ref mut affine) => affine.randomize(language, rng),
-            Cipher::Autokey(ref mut autokey) => autokey.randomize(language, rng),
-            Cipher::Beaufort(ref mut beaufort) => beaufort.randomize(language, rng),
-            Cipher::Bellaso(ref mut bellaso) => bellaso.randomize(language, rng),
+            Cipher::Affine(ref mut affine) => affine.randomize(language),
+            Cipher::Autokey(ref mut autokey) => autokey.randomize(language),
+            Cipher::Beaufort(ref mut beaufort) => beaufort.randomize(language),
+            Cipher::Bellaso(ref mut bellaso) => bellaso.randomize(language),
             Cipher::BlockTransposition(ref mut blocktranspos) => {
-                blocktranspos.randomize(language, rng)
+                blocktranspos.randomize(language)
             }
-            Cipher::Caesar(ref mut caesar) => caesar.randomize(language, rng),
-            Cipher::ClassicVigenere(ref mut classicvig) => classicvig.randomize(language, rng),
+            Cipher::Caesar(ref mut caesar) => caesar.randomize(language),
+            Cipher::ClassicVigenere(ref mut classicvig) => classicvig.randomize(language),
             Cipher::ColumnTransposition(ref mut columntranspos) => {
-                columntranspos.randomize(language, rng)
+                columntranspos.randomize(language)
             }
-            Cipher::Enigma(ref mut enigma) => enigma.randomize(language, rng),
-            Cipher::KeyedVigenere(ref mut keyedvig) => keyedvig.randomize(language, rng),
-            Cipher::Porta(ref mut porta) => porta.randomize(language, rng),
-            Cipher::Railfence(ref mut railfence) => railfence.randomize(language, rng),
-            Cipher::Scytale(ref mut scytale) => scytale.randomize(language, rng),
-            Cipher::SimpleSubstitution(ref mut simplesub) => simplesub.randomize(language, rng),
+            Cipher::Enigma(ref mut enigma) => enigma.randomize(language),
+            Cipher::KeyedVigenere(ref mut keyedvig) => keyedvig.randomize(language),
+            Cipher::Porta(ref mut porta) => porta.randomize(language),
+            Cipher::Railfence(ref mut railfence) => railfence.randomize(language),
+            Cipher::Scytale(ref mut scytale) => scytale.randomize(language),
+            Cipher::SimpleSubstitution(ref mut simplesub) => simplesub.randomize(language),
             _ => {}
         };
     }
