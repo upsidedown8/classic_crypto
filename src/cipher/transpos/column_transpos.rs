@@ -67,9 +67,17 @@ impl Asymmetric for ColumnTransposition {
 
 impl Keyed for ColumnTransposition {
     fn new(language: &mut Language) -> ColumnTransposition {
-        ColumnTransposition {
+        let mut result = ColumnTransposition {
             keyword: Keyword::identity(language),
-        }
+        };
+
+        result.keyword.key_info_mut().set(
+            "Keyword",
+            "A string",
+            "kw"
+        );
+
+        result
     }
     fn reset(&mut self, language: &mut Language) {
         self.keyword.reset(language);

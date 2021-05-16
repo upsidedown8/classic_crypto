@@ -31,10 +31,18 @@ impl Symmetric for Porta {
 
 impl Keyed for Porta {
     fn new(language: &mut Language) -> Porta {
-        Porta {
+        let mut result = Porta {
             square: PortaSquare::identity(language),
             keyword: Keyword::identity(language),
-        }
+        };
+
+        result.keyword.key_info_mut().set(
+            "Keyword",
+            "A string",
+            "kw"
+        );
+
+        result
     }
     fn reset(&mut self, language: &mut Language) {
         self.keyword.reset(language);

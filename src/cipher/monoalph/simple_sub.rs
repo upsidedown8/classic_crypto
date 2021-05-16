@@ -40,9 +40,17 @@ impl Asymmetric for SimpleSubstitution {
 
 impl Keyed for SimpleSubstitution {
     fn new(language: &mut Language) -> SimpleSubstitution {
-        SimpleSubstitution {
+        let mut result = SimpleSubstitution {
             alphabet: Alphabet::identity(language),
-        }
+        };
+
+        result.alphabet.key_info_mut().set(
+            "Alphabet",
+            "",
+            "alph"
+        );
+
+        result
     }
     fn reset(&mut self, language: &mut Language) {
         self.alphabet.reset(language);

@@ -31,10 +31,18 @@ impl Symmetric for Bellaso {
 
 impl Keyed for Bellaso {
     fn new(language: &mut Language) -> Bellaso {
-        Bellaso {
+        let mut result = Bellaso {
             square: BellasoSquare::identity(language),
             keyword: Keyword::identity(language),
-        }
+        };
+
+        result.keyword.key_info_mut().set(
+            "Keyword",
+            "A string",
+            "kw"
+        );
+
+        result
     }
     fn reset(&mut self, language: &mut Language) {
         self.keyword.reset(language);

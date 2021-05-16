@@ -48,10 +48,18 @@ impl Asymmetric for ClassicVigenere {
 
 impl Keyed for ClassicVigenere {
     fn new(language: &mut Language) -> ClassicVigenere {
-        ClassicVigenere {
+        let mut result = ClassicVigenere {
             square: ClassicVigSquare::identity(language),
             keyword: Keyword::identity(language),
-        }
+        };
+
+        result.keyword.key_info_mut().set(
+            "Keyword",
+            "A string",
+            "kw"
+        );
+
+        result
     }
     fn reset(&mut self, language: &mut Language) {
         self.keyword.reset(language);

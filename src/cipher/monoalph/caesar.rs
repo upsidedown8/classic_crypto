@@ -43,9 +43,17 @@ impl Asymmetric for Caesar {
 
 impl Keyed for Caesar {
     fn new(language: &mut Language) -> Caesar {
-        Caesar {
+        let mut result = Caesar {
             shift: *Number::new(language, 0).unwrap(),
-        }
+        };
+
+        result.shift.key_info_mut().set(
+            "Shift",
+            "",
+            "shift"
+        );
+
+        result
     }
     fn reset(&mut self, language: &mut Language) {
         self.shift.reset(language);

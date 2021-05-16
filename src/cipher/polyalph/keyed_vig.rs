@@ -54,10 +54,23 @@ impl Asymmetric for KeyedVigenere {
 
 impl Keyed for KeyedVigenere {
     fn new(language: &mut Language) -> KeyedVigenere {
-        KeyedVigenere {
+        let mut result = KeyedVigenere {
             keyword: Keyword::identity(language),
             alphabet: Alphabet::identity(language),
-        }
+        };
+
+        result.keyword.key_info_mut().set(
+            "Keyword",
+            "A string",
+            "kw"
+        );
+        result.alphabet.key_info_mut().set(
+            "Alphabet",
+            "",
+            "alph"
+        );
+
+        result
     }
     fn reset(&mut self, language: &mut Language) {
         self.keyword.reset(language);
