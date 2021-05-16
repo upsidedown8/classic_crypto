@@ -71,11 +71,10 @@ impl Keyed for ColumnTransposition {
             keyword: Keyword::identity(language),
         };
 
-        result.keyword.key_info_mut().set(
-            "Keyword",
-            "A string",
-            "kw"
-        );
+        result
+            .keyword
+            .key_info_mut()
+            .set("Keyword", "A string", "kw");
 
         result
     }

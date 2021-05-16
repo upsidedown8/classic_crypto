@@ -120,11 +120,10 @@ impl Keyed for Railfence {
         };
 
         result.num_rails.set_legal_values((1..50).collect());
-        result.num_rails.key_info_mut().set(
-            "Number of rails",
-            "An integer",
-            "rails"
-        );
+        result
+            .num_rails
+            .key_info_mut()
+            .set("Number of rails", "An integer", "rails");
 
         result
     }

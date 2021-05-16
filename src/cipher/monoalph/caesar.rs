@@ -47,11 +47,7 @@ impl Keyed for Caesar {
             shift: *Number::new(language, 0).unwrap(),
         };
 
-        result.shift.key_info_mut().set(
-            "Shift",
-            "",
-            "shift"
-        );
+        result.shift.key_info_mut().set("Shift", "", "shift");
 
         result
     }
