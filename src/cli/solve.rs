@@ -40,7 +40,7 @@ impl RunSubmodule for Solve {
         let all = !(self.key_only || self.plain_only);
 
         if self.key_only || all {
-            println!("key:\n{}", cipher.to_string(&mut language));
+            println!("{}", cipher.to_string(&mut language));
         }
         if self.plain_only || all {
             println!("plaintext: {}", cipher.decrypt(&mut language, &self.text));
