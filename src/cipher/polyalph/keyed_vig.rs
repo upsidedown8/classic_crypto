@@ -1,6 +1,6 @@
 use crate::{
     cipher::{Asymmetric, Keyed},
-    key::{Alphabet, IdentityKey, IoKey, KeyedVigSquare, Keyword, StatefulKey, VigSquare},
+    key::{Alphabet, IdentityKey, IoKey, KeyedVigSquare, Keyword, VigSquare},
     lang::Language,
 };
 
@@ -66,12 +66,6 @@ impl Keyed for KeyedVigenere {
         result.alphabet.key_info_mut().set("Alphabet", "", "alph");
 
         result
-    }
-    fn reset(&mut self, language: &mut Language) {
-        self.keyword.reset(language);
-    }
-    fn randomize(&mut self, language: &mut Language) {
-        self.keyword.randomize(language);
     }
     fn keys(&self) -> Vec<&dyn IoKey> {
         vec![&self.keyword, &self.alphabet]

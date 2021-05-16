@@ -1,4 +1,4 @@
-use crate::key::{Key, Plugboard, Reflector, ReflectorType, Rotor, RotorType, StatefulKey};
+use crate::key::{Key, Plugboard, Reflector, ReflectorType, Rotor, RotorType};
 use crate::lang::Language;
 use crate::{
     cipher::{Keyed, Symmetric},
@@ -100,16 +100,6 @@ impl Keyed for Enigma {
             .set("Reflector", "The reflector name", "ref");
 
         result
-    }
-    fn reset(&mut self, language: &mut Language) {
-        self.plugboard.reset(language);
-        self.rotors.iter_mut().for_each(|r| r.reset(language));
-        self.reflector.reset(language);
-    }
-    fn randomize(&mut self, language: &mut Language) {
-        self.plugboard.randomize(language);
-        self.rotors.iter_mut().for_each(|r| r.randomize(language));
-        self.reflector.randomize(language);
     }
     fn keys(&self) -> Vec<&dyn IoKey> {
         let mut result: Vec<&dyn IoKey> = vec![&self.plugboard, &self.reflector];

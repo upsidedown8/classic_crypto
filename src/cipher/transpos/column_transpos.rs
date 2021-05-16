@@ -1,6 +1,6 @@
 use crate::{
     cipher::{Asymmetric, Keyed, Solve},
-    key::{IdentityKey, IoKey, Key, Keyword, StatefulKey},
+    key::{IdentityKey, IoKey, Key, Keyword},
     lang::Language,
 };
 
@@ -77,12 +77,6 @@ impl Keyed for ColumnTransposition {
             .set("Keyword", "A string", "kw");
 
         result
-    }
-    fn reset(&mut self, language: &mut Language) {
-        self.keyword.reset(language);
-    }
-    fn randomize(&mut self, language: &mut Language) {
-        self.keyword.randomize(language);
     }
     fn keys(&self) -> Vec<&dyn IoKey> {
         vec![&self.keyword]

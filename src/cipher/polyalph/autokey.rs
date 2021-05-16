@@ -1,6 +1,6 @@
 use crate::{
     cipher::{Asymmetric, Keyed, Solve},
-    key::{ClassicVigSquare, IdentityKey, IoKey, Key, Keyword, StatefulKey, VigSquare},
+    key::{ClassicVigSquare, IdentityKey, IoKey, Key, Keyword, VigSquare},
     lang::Language,
 };
 
@@ -73,12 +73,6 @@ impl Keyed for Autokey {
             .set("Keyword", "A string", "kw");
 
         result
-    }
-    fn reset(&mut self, language: &mut Language) {
-        self.keyword.reset(language);
-    }
-    fn randomize(&mut self, language: &mut Language) {
-        self.keyword.randomize(language);
     }
     fn keys(&self) -> Vec<&dyn IoKey> {
         vec![&self.keyword]

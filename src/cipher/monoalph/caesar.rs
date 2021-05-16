@@ -1,11 +1,8 @@
-use crate::util;
 use crate::{
     cipher::{Asymmetric, Keyed, Solve},
-    lang::ScoreSize,
-};
-use crate::{
-    key::{IoKey, Key, Number, StatefulKey},
-    lang::Language,
+    key::{IoKey, Key, Number},
+    lang::{Language, ScoreSize},
+    util,
 };
 
 pub struct Caesar {
@@ -50,12 +47,6 @@ impl Keyed for Caesar {
         result.shift.key_info_mut().set("Shift", "", "shift");
 
         result
-    }
-    fn reset(&mut self, language: &mut Language) {
-        self.shift.reset(language);
-    }
-    fn randomize(&mut self, language: &mut Language) {
-        self.shift.randomize(language);
     }
     fn keys(&self) -> Vec<&dyn IoKey> {
         vec![&self.shift]

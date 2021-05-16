@@ -1,8 +1,6 @@
-use rand::{prelude::IteratorRandom, Rng};
-
 use crate::{
     cipher::{Asymmetric, Keyed, Solve},
-    key::{IoKey, Key, Number, StatefulKey},
+    key::{IoKey, Key, Number},
     lang::{Language, ScoreSize},
     util,
 };
@@ -97,27 +95,6 @@ impl Keyed for Affine {
         result.b.key_info_mut().set("B", "", "b");
 
         result
-    }
-    fn reset(&mut self, language: &mut Language) {
-        self.a.reset(language);
-        self.b.reset(language);
-    }
-    fn randomize(&mut self, language: &mut Language) {
-        self.a
-            .set(
-                language,
-                *Affine::valid_a_values(language)
-                    .iter()
-                    .choose(&mut rand::thread_rng())
-                    .unwrap_or(&1),
-            )
-            .unwrap();
-        self.b
-            .set(
-                language,
-                rand::thread_rng().gen_range(0..language.cp_count()),
-            )
-            .unwrap();
     }
     fn keys(&self) -> Vec<&dyn IoKey> {
         vec![&self.a, &self.b]

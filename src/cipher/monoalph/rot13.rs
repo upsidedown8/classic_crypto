@@ -1,8 +1,4 @@
-use crate::{
-    cipher::Symmetric,
-    lang::Language,
-    util,
-};
+use crate::{cipher::Symmetric, lang::Language, util};
 
 pub struct Rot13 {}
 

@@ -1,6 +1,6 @@
 use crate::{
     cipher::{Keyed, Solve, Symmetric},
-    key::{IdentityKey, IoKey, Key, Keyword, PortaSquare, StatefulKey, VigSquare},
+    key::{IdentityKey, IoKey, Key, Keyword, PortaSquare, VigSquare},
     lang::Language,
 };
 
@@ -42,12 +42,6 @@ impl Keyed for Porta {
             .set("Keyword", "A string", "kw");
 
         result
-    }
-    fn reset(&mut self, language: &mut Language) {
-        self.keyword.reset(language);
-    }
-    fn randomize(&mut self, language: &mut Language) {
-        self.keyword.randomize(language);
     }
     fn keys(&self) -> Vec<&dyn IoKey> {
         vec![&self.keyword]

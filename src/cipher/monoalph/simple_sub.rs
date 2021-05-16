@@ -1,6 +1,6 @@
 use crate::{
     cipher::{Asymmetric, Keyed, Solve},
-    key::{Alphabet, IdentityKey, IoKey, Key, StatefulKey},
+    key::{Alphabet, IdentityKey, IoKey, Key},
     lang::{Language, ScoreSize},
     util,
 };
@@ -47,12 +47,6 @@ impl Keyed for SimpleSubstitution {
         result.alphabet.key_info_mut().set("Alphabet", "", "alph");
 
         result
-    }
-    fn reset(&mut self, language: &mut Language) {
-        self.alphabet.reset(language);
-    }
-    fn randomize(&mut self, language: &mut Language) {
-        self.alphabet.randomize(language);
     }
     fn keys(&self) -> Vec<&dyn IoKey> {
         vec![&self.alphabet]

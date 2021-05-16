@@ -52,22 +52,6 @@ pub trait Keyed {
     ///
     fn new(language: &mut Language) -> Self;
 
-    /// Reset the cipher state
-    ///
-    /// # Arguments
-    ///
-    /// * `language` A borrowed instance of the currently loaded [`Language`]
-    ///
-    fn reset(&mut self, language: &mut Language);
-
-    /// Randomize the cipher state
-    ///
-    /// # Arguments
-    ///
-    /// * `language` A borrowed instance of the currently loaded [`Language`]
-    ///
-    fn randomize(&mut self, language: &mut Language);
-
     /// Get a vec of keys
     ///
     fn keys(&self) -> Vec<&dyn IoKey>;
@@ -75,6 +59,30 @@ pub trait Keyed {
     /// Get a vec of mutable keys
     ///
     fn keys_mut(&mut self) -> Vec<&mut dyn IoKey>;
+
+    /// Reset the cipher state
+    ///
+    /// # Arguments
+    ///
+    /// * `language` A borrowed instance of the currently loaded [`Language`]
+    ///
+    fn reset(&mut self, language: &mut Language) {
+        self.keys_mut()
+            .iter_mut()
+            .for_each(|key| key.reset(language));
+    }
+
+    /// Randomize the cipher state
+    ///
+    /// # Arguments
+    ///
+    /// * `language` A borrowed instance of the currently loaded [`Language`]
+    ///
+    fn randomize(&mut self, language: &mut Language) {
+        self.keys_mut()
+            .iter_mut()
+            .for_each(|key| key.randomize(language));
+    }
 
     /// Convert the cipher state to a string
     ///

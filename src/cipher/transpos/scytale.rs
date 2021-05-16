@@ -1,6 +1,6 @@
 use crate::{
     cipher::{Asymmetric, Keyed, Solve},
-    key::{IoKey, Key, Number, StatefulKey},
+    key::{IoKey, Key, Number},
     lang::{Language, ScoreSize},
 };
 
@@ -81,12 +81,6 @@ impl Keyed for Scytale {
             .set("Number of faces", "An integer", "faces");
 
         result
-    }
-    fn reset(&mut self, language: &mut Language) {
-        self.num_faces.reset(language);
-    }
-    fn randomize(&mut self, language: &mut Language) {
-        self.num_faces.randomize(language);
     }
     fn keys(&self) -> Vec<&dyn IoKey> {
         vec![&self.num_faces]
