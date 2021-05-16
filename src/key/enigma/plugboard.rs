@@ -143,7 +143,7 @@ impl Key<&str> for Plugboard {
 impl IdentityKey for Plugboard {
     fn identity(_language: &mut Language) -> Self {
         Self {
-            substitution: vec![0; 26],
+            substitution: (0..26).collect(),
             info: KeyInfo::default(),
         }
     }
@@ -168,7 +168,7 @@ impl StatefulKey for Plugboard {
                 tmp[t as usize] = t;
             }
         }
-        format!("Plugboard: {}", data.trim())
+        data.trim().to_string()
     }
     fn randomize(&mut self, language: &mut Language) {
         self.reset(language);
