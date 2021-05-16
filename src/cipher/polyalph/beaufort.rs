@@ -1,8 +1,6 @@
 use crate::{
-    cipher::{Keyed, Solve, Symmetric},
-    key::{
-        ClassicVigSquare, Keyword, SetKey, VigSquare, {Key, StatefulKey},
-    },
+    cipher::{Symmetric, Keyed, Solve},
+    key::{ClassicVigSquare, IdentityKey, IoKey, Key, Keyword, StatefulKey, VigSquare},
     lang::Language,
 };
 
@@ -10,8 +8,6 @@ pub struct Beaufort {
     square: ClassicVigSquare,
     pub keyword: Keyword,
 }
-
-impl Beaufort {}
 
 impl Symmetric for Beaufort {
     fn run(&self, language: &mut Language, msg: &str) -> String {
@@ -36,33 +32,39 @@ impl Symmetric for Beaufort {
 impl Keyed for Beaufort {
     fn new(language: &mut Language) -> Beaufort {
         Beaufort {
-            square: ClassicVigSquare::new(language),
-            keyword: Keyword::new(language),
+            square: ClassicVigSquare::identity(language),
+            keyword: Keyword::identity(language),
         }
     }
     fn reset(&mut self, language: &mut Language) {
         self.keyword.reset(language);
     }
-    fn randomize(&mut self, language: &mut Language, rng: &mut impl rand::Rng) {
-        self.keyword.randomize(language, rng);
+    fn randomize(&mut self, language: &mut Language) {
+        self.keyword.randomize(language);
     }
-    fn to_string(&self, language: &mut Language) -> String {
-        format!("Keyword:{}", self.keyword.to_string(language))
+    fn keys(&self) -> Vec<&dyn IoKey> {
+        vec![&self.keyword]
+    }
+    fn keys_mut(&mut self) -> Vec<&mut dyn IoKey> {
+        vec![&mut self.keyword]
     }
 }
 
 impl Solve for Beaufort {
     fn solve(&mut self, language: &mut Language, msg: &str) {
         let ciphertext = language.string_to_vec(msg);
-        self.keyword.set_key(
-            language,
-            &crate::cipher::polyalph::vig_solve(
-                &ciphertext,
-                1,
+        self.keyword
+            .set(
                 language,
-                |cp, shift| self.square.decrypt(cp, shift),
-                |key, idx, key_len, _| key[idx % key_len],
-            ),
-        )
+                crate::cipher::polyalph::vig_solve(
+                    &ciphertext,
+                    1,
+                    language,
+                    |cp, shift| self.square.decrypt(cp, shift),
+                    |key, idx, key_len, _| key[idx % key_len],
+                )
+                .as_slice(),
+            )
+            .unwrap();
     }
 }

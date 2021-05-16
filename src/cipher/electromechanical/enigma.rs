@@ -1,6 +1,6 @@
-use crate::cipher::{Keyed, Symmetric};
+use crate::{cipher::{Keyed, Symmetric}, key::{IdentityKey, IoKey}};
 use crate::key::{
-    Key, KeyFrom, Plugboard, Reflector, ReflectorType, Rotor, RotorType, StatefulKey,
+    Key, Plugboard, Reflector, ReflectorType, Rotor, RotorType, StatefulKey,
 };
 use crate::lang::Language;
 
@@ -69,41 +69,78 @@ impl Symmetric for Enigma {
 
 impl Keyed for Enigma {
     fn new(language: &mut Language) -> Enigma {
-        Enigma {
-            plugboard: Plugboard::new(language),
+        let mut result = Enigma {
+            plugboard: Plugboard::identity(language),
             rotors: vec![
-                Rotor::create_from(language, RotorType::III),
-                Rotor::create_from(language, RotorType::II),
-                Rotor::create_from(language, RotorType::I),
+                *Rotor::new(language, RotorType::III).unwrap(),
+                *Rotor::new(language, RotorType::II).unwrap(),
+                *Rotor::new(language, RotorType::I).unwrap(),
             ],
-            reflector: Reflector::create_from(language, ReflectorType::B),
-        }
+            reflector: *Reflector::new(language, ReflectorType::B).unwrap(),
+        };
+
+        result.plugboard.key_info_mut().set(
+            "Plugboard",
+            "Pairs of connected letters, delimited by whitespace",
+            "plug"
+        );
+        result.rotors[0].key_info_mut().set(
+            "Right rotor",
+            "The rotor name",
+            "r0"
+        );
+        result.rotors[1].key_info_mut().set(
+            "Middle rotor",
+            "The rotor name",
+            "r1"
+        );
+        result.rotors[2].key_info_mut().set(
+            "Left rotor",
+            "The rotor name",
+            "r3"
+        );
+        result.reflector.key_info_mut().set(
+            "Reflector",
+            "The reflector name",
+            "ref"
+        );
+
+        result
     }
     fn reset(&mut self, language: &mut Language) {
         self.plugboard.reset(language);
         self.rotors.iter_mut().for_each(|r| r.reset(language));
         self.reflector.reset(language);
     }
-    fn randomize(&mut self, language: &mut Language, rng: &mut impl rand::Rng) {
-        self.plugboard.randomize(language, rng);
+    fn randomize(&mut self, language: &mut Language) {
+        self.plugboard.randomize(language);
         self.rotors
             .iter_mut()
-            .for_each(|r| r.randomize(language, rng));
-        self.reflector.randomize(language, rng);
+            .for_each(|r| r.randomize(language));
+        self.reflector.randomize(language);
     }
-    fn to_string(&self, language: &mut Language) -> String {
-        format!(
-            "{}\n{}\n{}",
-            self.plugboard.to_string(language),
-            self.reflector.to_string(language),
-            self.rotors
-                .iter()
-                .map(|&r| r.to_string(language))
-                .fold(String::new(), |mut acc, x| {
-                    acc.push_str(&x);
-                    acc.push('\n');
-                    acc
-                }),
-        )
+    fn keys(&self) -> Vec<&dyn IoKey> {
+        let mut result: Vec<&dyn IoKey> = vec![
+            &self.plugboard,
+            &self.reflector,
+        ];
+        
+        self.rotors
+            .iter()
+            .for_each(|rotor| result.push(rotor));
+
+        result
+    }
+    fn keys_mut(&mut self) -> Vec<&mut dyn IoKey> {
+        let mut result: Vec<&mut dyn IoKey> = vec![
+            &mut self.plugboard,
+            &mut self.reflector,
+        ];
+        
+        self.rotors
+            .iter_mut()
+            .for_each(|rotor| result.push(rotor));
+
+        result
     }
 }

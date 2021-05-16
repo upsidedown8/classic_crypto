@@ -1,11 +1,7 @@
-use crate::lang::Language;
 use crate::{
     cipher::{Asymmetric, Keyed, Solve},
-    key::{Key, StatefulKey},
-};
-use crate::{
-    key::{Alphabet, SetKey},
-    lang::ScoreSize,
+    key::{Alphabet, IdentityKey, IoKey, Key, StatefulKey},
+    lang::{Language, ScoreSize},
     util,
 };
 
@@ -45,17 +41,20 @@ impl Asymmetric for SimpleSubstitution {
 impl Keyed for SimpleSubstitution {
     fn new(language: &mut Language) -> SimpleSubstitution {
         SimpleSubstitution {
-            alphabet: Alphabet::new(language),
+            alphabet: Alphabet::identity(language),
         }
     }
     fn reset(&mut self, language: &mut Language) {
         self.alphabet.reset(language);
     }
-    fn randomize(&mut self, language: &mut Language, rng: &mut impl rand::Rng) {
-        self.alphabet.randomize(language, rng);
+    fn randomize(&mut self, language: &mut Language) {
+        self.alphabet.randomize(language);
     }
-    fn to_string(&self, language: &mut Language) -> String {
-        format!("alphabet:{}", self.alphabet.to_string(language))
+    fn keys(&self) -> Vec<&dyn IoKey> {
+        vec![&self.alphabet]
+    }
+    fn keys_mut(&mut self) -> Vec<&mut dyn IoKey> {
+        vec![&mut self.alphabet]
     }
 }
 
@@ -73,7 +72,7 @@ impl Solve for SimpleSubstitution {
         for _ in 0..MAX_ITERATIONS {
             let mut local_best_score: f64 = f64::MIN;
 
-            util::shuffle(&mut inv_key, &mut rand::thread_rng());
+            util::shuffle(&mut inv_key);
 
             // keep trying all possible swaps until there is no further improvement
             let mut improved = true;
@@ -113,6 +112,8 @@ impl Solve for SimpleSubstitution {
             }
         }
 
-        self.alphabet.set_key(language, &util::invert(&inv_key));
+        self.alphabet
+            .set(language, util::invert(&inv_key).as_slice())
+            .unwrap();
     }
 }

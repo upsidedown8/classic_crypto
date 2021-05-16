@@ -1,12 +1,15 @@
-use crate::lang::Language;
 use crate::util;
 use crate::{
     cipher::{Asymmetric, Keyed, Solve},
     lang::ScoreSize,
 };
+use crate::{
+    key::{IoKey, Key, Number, StatefulKey},
+    lang::Language,
+};
 
 pub struct Caesar {
-    pub shift: i16,
+    pub shift: Number,
 }
 
 impl Asymmetric for Caesar {
@@ -15,7 +18,7 @@ impl Asymmetric for Caesar {
             .map(|c| {
                 if language.is_letter(&c) {
                     let mut cp = language.get_cp(&c);
-                    cp = util::modulo(cp + self.shift, language.cp_count());
+                    cp = util::modulo(cp + self.shift.get(), language.cp_count());
                     language.update_cp(&c, cp)
                 } else {
                     c
@@ -28,7 +31,7 @@ impl Asymmetric for Caesar {
             .map(|c| {
                 if language.is_letter(&c) {
                     let mut cp = language.get_cp(&c);
-                    cp = util::modulo(cp - self.shift, language.cp_count());
+                    cp = util::modulo(cp - self.shift.get(), language.cp_count());
                     language.update_cp(&c, cp)
                 } else {
                     c
@@ -39,17 +42,22 @@ impl Asymmetric for Caesar {
 }
 
 impl Keyed for Caesar {
-    fn new(_language: &mut Language) -> Caesar {
-        Caesar { shift: 0 }
+    fn new(language: &mut Language) -> Caesar {
+        Caesar {
+            shift: *Number::new(language, 0).unwrap(),
+        }
     }
-    fn reset(&mut self, _language: &mut Language) {
-        self.shift = 0;
+    fn reset(&mut self, language: &mut Language) {
+        self.shift.reset(language);
     }
-    fn randomize(&mut self, language: &mut Language, rng: &mut impl rand::Rng) {
-        self.shift = rng.gen_range(0..language.cp_count());
+    fn randomize(&mut self, language: &mut Language) {
+        self.shift.randomize(language);
     }
-    fn to_string(&self, _language: &mut Language) -> String {
-        format!("shift:{}", self.shift)
+    fn keys(&self) -> Vec<&dyn IoKey> {
+        vec![&self.shift]
+    }
+    fn keys_mut(&mut self) -> Vec<&mut dyn IoKey> {
+        vec![&mut self.shift]
     }
 }
 
@@ -69,7 +77,7 @@ impl Solve for Caesar {
 
             if score > best_score {
                 best_score = score;
-                self.shift = shift;
+                self.shift.set(language, shift).unwrap();
             }
         }
     }

@@ -1,6 +1,6 @@
 use crate::{
     cipher::{Asymmetric, Keyed, Solve},
-    key::{Key, Keyword, SetKey, StatefulKey},
+    key::{IdentityKey, IoKey, Key, Keyword, StatefulKey},
     lang::Language,
 };
 
@@ -68,17 +68,20 @@ impl Asymmetric for ColumnTransposition {
 impl Keyed for ColumnTransposition {
     fn new(language: &mut Language) -> ColumnTransposition {
         ColumnTransposition {
-            keyword: Keyword::new(language),
+            keyword: Keyword::identity(language),
         }
     }
     fn reset(&mut self, language: &mut Language) {
         self.keyword.reset(language);
     }
-    fn randomize(&mut self, language: &mut Language, rng: &mut impl rand::Rng) {
-        self.keyword.randomize(language, rng);
+    fn randomize(&mut self, language: &mut Language) {
+        self.keyword.randomize(language);
     }
-    fn to_string(&self, language: &mut Language) -> String {
-        format!("Keyword:{}", self.keyword.to_string(language))
+    fn keys(&self) -> Vec<&dyn IoKey> {
+        vec![&self.keyword]
+    }
+    fn keys_mut(&mut self) -> Vec<&mut dyn IoKey> {
+        vec![&mut self.keyword]
     }
 }
 
@@ -91,6 +94,6 @@ impl Solve for ColumnTransposition {
             ColumnTransposition::decrypt_indexes,
             |row, col, _, num_rows| col * num_rows + row,
         );
-        self.keyword.set_key(language, &key);
+        self.keyword.set(language, key.as_slice()).unwrap();
     }
 }

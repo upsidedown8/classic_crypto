@@ -5,7 +5,7 @@ pub mod polygraph;
 pub mod stream;
 pub mod transpos;
 
-use crate::lang::Language;
+use crate::{key::IoKey, lang::Language};
 
 /// Trait implemented by Symmetric ciphers (where encryption and decryption are identical).
 pub trait Symmetric {
@@ -65,9 +65,16 @@ pub trait Keyed {
     /// # Arguments
     ///
     /// * `language` A borrowed instance of the currently loaded [`Language`]
-    /// * `rng` A rand::Rng implementation to generate random numbers
     ///
-    fn randomize(&mut self, language: &mut Language, rng: &mut impl rand::Rng);
+    fn randomize(&mut self, language: &mut Language);
+
+    /// Get a vec of keys
+    ///
+    fn keys(&self) -> Vec<&dyn IoKey>;
+
+    /// Get a vec of mutable keys
+    /// 
+    fn keys_mut(&mut self) -> Vec<&mut dyn IoKey>;
 
     /// Convert the cipher state to a string
     ///
@@ -75,7 +82,22 @@ pub trait Keyed {
     ///
     /// * `language` A borrowed instance of the currently loaded [`Language`]
     ///
-    fn to_string(&self, language: &mut Language) -> String;
+    fn to_string(&self, language: &mut Language) -> String {
+        let mut result = String::new();
+
+        let keys = self.keys();
+
+        (0..keys.len()).for_each(|i| {
+            result.push_str(&format!(
+                "{}: {}",
+                keys[i].key_info().name,
+                keys[i].to_string(language),
+            ));
+            result.push('\n');
+        });
+
+        result
+    }
 }
 
 /// Trait implemented by ciphers which can be automatically solved

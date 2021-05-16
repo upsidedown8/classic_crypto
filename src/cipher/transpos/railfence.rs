@@ -1,11 +1,11 @@
-use crate::lang::Language;
 use crate::{
     cipher::{Asymmetric, Keyed, Solve},
-    lang::ScoreSize,
+    key::{IoKey, Key, Number, StatefulKey},
+    lang::{Language, ScoreSize},
 };
 
 pub struct Railfence {
-    pub num_rails: usize,
+    pub num_rails: Number,
 }
 
 impl Railfence {
@@ -85,7 +85,8 @@ impl Railfence {
 impl Asymmetric for Railfence {
     fn encrypt(&self, language: &mut Language, msg: &str) -> String {
         let plaintext = language.string_to_vec(msg);
-        let mut iter = Railfence::encrypt_indexes(self.num_rails, plaintext.len()).into_iter();
+        let mut iter =
+            Railfence::encrypt_indexes(self.num_rails.get() as usize, plaintext.len()).into_iter();
         msg.chars()
             .filter_map(|ch| {
                 if language.is_letter(&ch) {
@@ -98,7 +99,8 @@ impl Asymmetric for Railfence {
     }
     fn decrypt(&self, language: &mut Language, msg: &str) -> String {
         let ciphertext = language.string_to_vec(msg);
-        let mut iter = Railfence::decrypt_indexes(self.num_rails, ciphertext.len()).into_iter();
+        let mut iter =
+            Railfence::decrypt_indexes(self.num_rails.get() as usize, ciphertext.len()).into_iter();
         msg.chars()
             .filter_map(|ch| {
                 if language.is_letter(&ch) {
@@ -112,17 +114,26 @@ impl Asymmetric for Railfence {
 }
 
 impl Keyed for Railfence {
-    fn new(_language: &mut Language) -> Railfence {
-        Railfence { num_rails: 1 }
+    fn new(language: &mut Language) -> Railfence {
+        let mut result = Railfence {
+            num_rails: *Number::new(language, 1).unwrap(),
+        };
+
+        result.num_rails.set_legal_values((1..50).collect());
+
+        result
     }
-    fn reset(&mut self, _language: &mut Language) {
-        self.num_rails = 1;
+    fn reset(&mut self, language: &mut Language) {
+        self.num_rails.reset(language);
     }
-    fn randomize(&mut self, _language: &mut Language, rng: &mut impl rand::Rng) {
-        self.num_rails = rng.gen_range(1..20);
+    fn randomize(&mut self, language: &mut Language) {
+        self.num_rails.randomize(language);
     }
-    fn to_string(&self, _language: &mut Language) -> String {
-        format!("Rails:{}", self.num_rails)
+    fn keys(&self) -> Vec<&dyn IoKey> {
+        vec![&self.num_rails]
+    }
+    fn keys_mut(&mut self) -> Vec<&mut dyn IoKey> {
+        vec![&mut self.num_rails]
     }
 }
 
@@ -142,7 +153,7 @@ impl Solve for Railfence {
 
             if score > best_score {
                 best_score = score;
-                self.num_rails = num_rails;
+                self.num_rails.set(language, num_rails as i16).unwrap();
             }
         }
     }
