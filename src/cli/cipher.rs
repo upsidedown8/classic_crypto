@@ -269,7 +269,7 @@ impl Cipher {
         let args = args
             .iter()
             .map(|arg| arg.split(':').collect::<Vec<_>>())
-            .filter(|arg| arg.len() == 2)
+            .filter(|arg| arg.len() >= 2)
             .collect::<Vec<_>>();
 
         for key in keys {
