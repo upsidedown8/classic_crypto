@@ -4,7 +4,10 @@ use crate::{
     lang::Language,
 };
 
-use rand::{Rng, distributions::{Distribution, Standard}};
+use rand::{
+    distributions::{Distribution, Standard},
+    Rng,
+};
 
 // Wiring details from: https://en.wikipedia.org/wiki/Enigma_rotor_details#Rotor_wiring_tables
 
@@ -85,23 +88,23 @@ impl Key<&str> for Reflector {
             "a" => {
                 self.wiring_type = ReflectorType::A;
                 Ok(())
-            },
+            }
             "b" => {
                 self.wiring_type = ReflectorType::B;
                 Ok(())
-            },
+            }
             "c" => {
                 self.wiring_type = ReflectorType::C;
                 Ok(())
-            },
+            }
             "bthin" => {
                 self.wiring_type = ReflectorType::BThin;
                 Ok(())
-            },
+            }
             "cthin" => {
                 self.wiring_type = ReflectorType::CThin;
                 Ok(())
-            },
+            }
             _ => Err(Error::InvalidKeyFmt {
                 expected: "One of [a, b, c, bthin, cthin]".to_string(),
                 actual: arg.to_string(),

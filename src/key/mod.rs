@@ -50,9 +50,9 @@ impl KeyInfo {
 }
 
 /// Trait implemented by all cipher keys
-/// 
+///
 /// `T` is a datatype to create a key from
-/// 
+///
 pub trait Key<T> {
     /// Creates a new `Key` implementation using a value of type `T`. Methods on individual
     /// `Key` implementations may offer more control over the parameters of a key.
@@ -78,11 +78,11 @@ pub trait Key<T> {
 /// Trait implemented by cipher keys that have an identity version
 pub trait IdentityKey {
     /// Creates a default/identity version of the key
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `language` A borrowed instance of the currently loaded [`Language`]
-    /// 
+    ///
     fn identity(language: &mut Language) -> Self;
 }
 
@@ -96,13 +96,13 @@ pub trait StatefulKey {
     /// * `language` A borrowed instance of the currently loaded [`Language`]
     ///
     fn reset(&mut self, language: &mut Language);
-    
+
     /// Converts the key to a string
-    /// 
+    ///
     /// # Arguments
     ///
     /// * `language` A borrowed instance of the currently loaded [`Language`]
-    /// 
+    ///
     fn to_string(&self, language: &mut Language) -> String;
 
     /// Randomizes the state of the key.
@@ -116,21 +116,21 @@ pub trait StatefulKey {
 
 /// Trait implemented by [`Key`] implementations that want
 /// to communicate with the CLI through a text based system.
-pub trait IoKey : StatefulKey {
+pub trait IoKey: StatefulKey {
     /// Sets the value of the key using input provided in a string
-    /// 
+    ///
     /// # Arguments
     ///
     /// * `language` A borrowed instance of the currently loaded [`Language`]
     /// * `data` The string with which to set the key
-    /// 
+    ///
     fn set_key_str(&mut self, language: &mut Language, arg: &str) -> Result<()>;
 
     /// Get the key info for this key type
-    /// 
+    ///
     fn key_info(&self) -> &KeyInfo;
 
     /// Get the mutable key info for this key type
-    /// 
+    ///
     fn key_info_mut(&mut self) -> &mut KeyInfo;
 }

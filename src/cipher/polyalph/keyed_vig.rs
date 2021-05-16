@@ -1,8 +1,6 @@
 use crate::{
     cipher::{Asymmetric, Keyed},
-    key::{
-        Alphabet, IdentityKey, IoKey, KeyedVigSquare, Keyword, StatefulKey, VigSquare,
-    },
+    key::{Alphabet, IdentityKey, IoKey, KeyedVigSquare, Keyword, StatefulKey, VigSquare},
     lang::Language,
 };
 

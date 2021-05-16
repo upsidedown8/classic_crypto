@@ -1,6 +1,6 @@
 use crate::{
-    cipher::{Symmetric, Keyed, Solve},
-    key::{PortaSquare, IdentityKey, IoKey, Key, Keyword, StatefulKey, VigSquare},
+    cipher::{Keyed, Solve, Symmetric},
+    key::{IdentityKey, IoKey, Key, Keyword, PortaSquare, StatefulKey, VigSquare},
     lang::Language,
 };
 
@@ -43,29 +43,28 @@ impl Keyed for Porta {
         self.keyword.randomize(language);
     }
     fn keys(&self) -> Vec<&dyn IoKey> {
-        vec![
-            &self.keyword,
-        ]
+        vec![&self.keyword]
     }
     fn keys_mut(&mut self) -> Vec<&mut dyn IoKey> {
-        vec![
-            &mut self.keyword,
-        ]
+        vec![&mut self.keyword]
     }
 }
 
 impl Solve for Porta {
     fn solve(&mut self, language: &mut Language, msg: &str) {
         let ciphertext = language.string_to_vec(msg);
-        self.keyword.set(
-            language,
-            crate::cipher::polyalph::vig_solve(
-                &ciphertext,
-                2,
+        self.keyword
+            .set(
                 language,
-                |cp, shift| self.square.encrypt(shift / 2, cp),
-                |key, idx, key_len, _| key[idx % key_len],
-            ).as_slice(),
-        ).unwrap();
+                crate::cipher::polyalph::vig_solve(
+                    &ciphertext,
+                    2,
+                    language,
+                    |cp, shift| self.square.encrypt(shift / 2, cp),
+                    |key, idx, key_len, _| key[idx % key_len],
+                )
+                .as_slice(),
+            )
+            .unwrap();
     }
 }

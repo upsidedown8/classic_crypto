@@ -1,5 +1,5 @@
 use crate::{
-    cipher::{Symmetric, Keyed, Solve},
+    cipher::{Keyed, Solve, Symmetric},
     key::{ClassicVigSquare, IdentityKey, IoKey, Key, Keyword, StatefulKey, VigSquare},
     lang::Language,
 };

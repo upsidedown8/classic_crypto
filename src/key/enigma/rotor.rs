@@ -4,7 +4,10 @@ use crate::{
     lang::Language,
     util,
 };
-use rand::{Rng, distributions::{Distribution, Standard}};
+use rand::{
+    distributions::{Distribution, Standard},
+    Rng,
+};
 
 // Wiring details from: https://en.wikipedia.org/wiki/Enigma_rotor_details#Rotor_wiring_tables
 
@@ -170,10 +173,12 @@ impl Key<&str> for Rotor {
             "viii" => self.wiring_type = RotorType::VIII,
             "beta" | "b" => self.wiring_type = RotorType::Beta,
             "gamma" | "g" => self.wiring_type = RotorType::Gamma,
-            _ => return Err(Error::InvalidKeyFmt {
-                expected: "One of [i, ii, iii, iv, v, vi, vii, viii, beta, gamma]".to_string(),
-                actual: arg.to_string(),
-            }),
+            _ => {
+                return Err(Error::InvalidKeyFmt {
+                    expected: "One of [i, ii, iii, iv, v, vi, vii, viii, beta, gamma]".to_string(),
+                    actual: arg.to_string(),
+                })
+            }
         };
         Ok(())
     }

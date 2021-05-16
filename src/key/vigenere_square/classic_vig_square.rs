@@ -1,8 +1,5 @@
 use super::VigSquare;
-use crate::{
-    key::IdentityKey,
-    lang::Language,
-};
+use crate::{key::IdentityKey, lang::Language};
 
 /// Represents a Vigenere tableau. (See Classic Vigenere cipher)
 ///

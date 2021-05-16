@@ -43,7 +43,7 @@ impl Alphabet {
     }
 
     /// Gets the value of the substitution as a slice
-    /// 
+    ///
     pub fn as_slice(&self) -> &[i16] {
         &self.value
     }

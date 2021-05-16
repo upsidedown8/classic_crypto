@@ -84,21 +84,24 @@ impl Keyed for Autokey {
 impl Solve for Autokey {
     fn solve(&mut self, language: &mut Language, msg: &str) {
         let ciphertext = language.string_to_vec(msg);
-        self.keyword.set(
-            language,
-            crate::cipher::polyalph::vig_solve(
-                &ciphertext,
-                1,
+        self.keyword
+            .set(
                 language,
-                |cp, shift| self.square.decrypt(shift, cp),
-                |key, idx, key_len, plaintext| {
-                    if idx < key_len {
-                        key[idx]
-                    } else {
-                        plaintext[idx % key_len]
-                    }
-                },
-            ).as_slice(),
-        ).unwrap();
+                crate::cipher::polyalph::vig_solve(
+                    &ciphertext,
+                    1,
+                    language,
+                    |cp, shift| self.square.decrypt(shift, cp),
+                    |key, idx, key_len, plaintext| {
+                        if idx < key_len {
+                            key[idx]
+                        } else {
+                            plaintext[idx % key_len]
+                        }
+                    },
+                )
+                .as_slice(),
+            )
+            .unwrap();
     }
 }

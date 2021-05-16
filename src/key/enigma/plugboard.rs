@@ -103,7 +103,7 @@ impl Key<&str> for Plugboard {
     }
     fn set(&mut self, language: &mut Language, arg: &str) -> Result<()> {
         language.set_alph_len(26);
-        
+
         let tokens = arg
             .split_whitespace()
             .map(|t| language.string_to_vec(t))

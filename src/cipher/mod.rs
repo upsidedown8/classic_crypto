@@ -73,7 +73,7 @@ pub trait Keyed {
     fn keys(&self) -> Vec<&dyn IoKey>;
 
     /// Get a vec of mutable keys
-    /// 
+    ///
     fn keys_mut(&mut self) -> Vec<&mut dyn IoKey>;
 
     /// Convert the cipher state to a string

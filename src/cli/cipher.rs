@@ -127,9 +127,7 @@ impl Cipher {
             Cipher::Autokey(ref mut autokey) => autokey.randomize(language),
             Cipher::Beaufort(ref mut beaufort) => beaufort.randomize(language),
             Cipher::Bellaso(ref mut bellaso) => bellaso.randomize(language),
-            Cipher::BlockTransposition(ref mut blocktranspos) => {
-                blocktranspos.randomize(language)
-            }
+            Cipher::BlockTransposition(ref mut blocktranspos) => blocktranspos.randomize(language),
             Cipher::Caesar(ref mut caesar) => caesar.randomize(language),
             Cipher::ClassicVigenere(ref mut classicvig) => classicvig.randomize(language),
             Cipher::ColumnTransposition(ref mut columntranspos) => {

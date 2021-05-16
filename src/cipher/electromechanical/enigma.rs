@@ -1,8 +1,9 @@
-use crate::{cipher::{Keyed, Symmetric}, key::{IdentityKey, IoKey}};
-use crate::key::{
-    Key, Plugboard, Reflector, ReflectorType, Rotor, RotorType, StatefulKey,
-};
+use crate::key::{Key, Plugboard, Reflector, ReflectorType, Rotor, RotorType, StatefulKey};
 use crate::lang::Language;
+use crate::{
+    cipher::{Keyed, Symmetric},
+    key::{IdentityKey, IoKey},
+};
 
 #[derive(Clone)]
 pub struct Enigma {
@@ -82,28 +83,21 @@ impl Keyed for Enigma {
         result.plugboard.key_info_mut().set(
             "Plugboard",
             "Pairs of connected letters, delimited by whitespace",
-            "plug"
+            "plug",
         );
-        result.rotors[0].key_info_mut().set(
-            "Right rotor",
-            "The rotor name",
-            "r0"
-        );
-        result.rotors[1].key_info_mut().set(
-            "Middle rotor",
-            "The rotor name",
-            "r1"
-        );
-        result.rotors[2].key_info_mut().set(
-            "Left rotor",
-            "The rotor name",
-            "r3"
-        );
-        result.reflector.key_info_mut().set(
-            "Reflector",
-            "The reflector name",
-            "ref"
-        );
+        result.rotors[0]
+            .key_info_mut()
+            .set("Right rotor", "The rotor name", "r0");
+        result.rotors[1]
+            .key_info_mut()
+            .set("Middle rotor", "The rotor name", "r1");
+        result.rotors[2]
+            .key_info_mut()
+            .set("Left rotor", "The rotor name", "r3");
+        result
+            .reflector
+            .key_info_mut()
+            .set("Reflector", "The reflector name", "ref");
 
         result
     }
@@ -114,32 +108,20 @@ impl Keyed for Enigma {
     }
     fn randomize(&mut self, language: &mut Language) {
         self.plugboard.randomize(language);
-        self.rotors
-            .iter_mut()
-            .for_each(|r| r.randomize(language));
+        self.rotors.iter_mut().for_each(|r| r.randomize(language));
         self.reflector.randomize(language);
     }
     fn keys(&self) -> Vec<&dyn IoKey> {
-        let mut result: Vec<&dyn IoKey> = vec![
-            &self.plugboard,
-            &self.reflector,
-        ];
-        
-        self.rotors
-            .iter()
-            .for_each(|rotor| result.push(rotor));
+        let mut result: Vec<&dyn IoKey> = vec![&self.plugboard, &self.reflector];
+
+        self.rotors.iter().for_each(|rotor| result.push(rotor));
 
         result
     }
     fn keys_mut(&mut self) -> Vec<&mut dyn IoKey> {
-        let mut result: Vec<&mut dyn IoKey> = vec![
-            &mut self.plugboard,
-            &mut self.reflector,
-        ];
-        
-        self.rotors
-            .iter_mut()
-            .for_each(|rotor| result.push(rotor));
+        let mut result: Vec<&mut dyn IoKey> = vec![&mut self.plugboard, &mut self.reflector];
+
+        self.rotors.iter_mut().for_each(|rotor| result.push(rotor));
 
         result
     }
