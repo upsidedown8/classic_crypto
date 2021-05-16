@@ -2,6 +2,8 @@
 //! Contains functions that are used across the library
 //!
 
+use rand::Rng;
+
 pub mod prime_gen;
 
 /// Returns true if the string contains any repeated characters
@@ -185,16 +187,15 @@ pub fn fill_consecutive_vec(arr: &mut Vec<i16>, start: i16, modulus: i16) {
 ///
 /// ```rust
 /// # use classic_crypto::util;
-/// # use rand::{thread_rng, Rng};
 /// let mut my_vec = vec![0; 10];
-/// let mut rng = thread_rng();
 /// let max_exclusive = 10;
-/// util::fill_random_array(&mut my_vec, &mut rng, max_exclusive);
+/// util::fill_random_array(&mut my_vec, max_exclusive);
 /// my_vec.iter().for_each(|&x| assert!(x < max_exclusive));
 /// println!("{:?}", my_vec);
 /// ```
 ///
-pub fn fill_random_array(arr: &mut Vec<i16>, rng: &mut impl rand::Rng, max_exclusive: i16) {
+pub fn fill_random_array(arr: &mut Vec<i16>, max_exclusive: i16) {
+    let mut rng = rand::thread_rng();
     for item in arr {
         *item = rng.gen_range(0..max_exclusive);
     }
@@ -206,20 +207,18 @@ pub fn fill_random_array(arr: &mut Vec<i16>, rng: &mut impl rand::Rng, max_exclu
 /// # Arguments
 ///
 /// * `arr` A mutable borrow of the Vec<i16> to shuffle
-/// * `rng` A rand::Rng implementation to generate random numbers
 ///
 /// # Examples
 ///
 /// ```rust
 /// # use classic_crypto::util;
-/// # use rand::{thread_rng, Rng};
 /// let mut my_vec = vec![0, 1, 2, 3, 4];
-/// let mut rng = thread_rng();
-/// util::shuffle(&mut my_vec, &mut rng);
+/// util::shuffle(&mut my_vec);
 /// println!("{:?}", my_vec);
 /// ```
 ///
-pub fn shuffle<T>(arr: &mut Vec<T>, rng: &mut impl rand::Rng) {
+pub fn shuffle<T>(arr: &mut Vec<T>) {
+    let mut rng = rand::thread_rng();
     for i in 0..arr.len() {
         let pos = rng.gen_range(0..arr.len());
         arr.swap(i, pos);
