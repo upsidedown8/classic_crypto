@@ -120,7 +120,7 @@ impl Key<&str> for Plugboard {
                 actual: arg.to_string(),
             })
         } else {
-            let tmp = Plugboard::identity(language);
+            let mut tmp = Plugboard::identity(language);
 
             for t in tokens.iter() {
                 if !tmp.is_valid_plug(t[0], t[1]) {
@@ -129,6 +129,7 @@ impl Key<&str> for Plugboard {
                         actual: arg.to_string(),
                     });
                 }
+                tmp.add_plug(t[0], t[1]);
             }
 
             for t in tokens.iter() {
