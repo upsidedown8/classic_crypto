@@ -24,6 +24,10 @@ pub struct Encrypt {
     #[structopt(short = "d", long)]
     default: bool,
 
+    /// View the argument format for the key(s)
+    #[structopt(long)]
+    key_help: bool,
+
     /// The plaintext
     #[structopt(short = "t", long)]
     text: String,
@@ -39,19 +43,23 @@ impl RunSubmodule for Encrypt {
 
         let mut cipher = Cipher::new(&self.cipher, &mut language);
 
-        if self.rand {
-            cipher.randomize(&mut language);
-        } else if self.default {
-            cipher.reset(&mut language);
-        } else if let Some(key) = &self.key {
-            cipher.set_key(key)?;
+        if self.key_help {
+            println!("{}", cipher.key_help());
+        } else {
+            if self.rand {
+                cipher.randomize(&mut language);
+            } else if self.default {
+                cipher.reset(&mut language);
+            } else if let Some(key) = &self.key {
+                cipher.set_key(&mut language, key)?;
+            }
+
+            println!("{}", cipher.to_string(&mut language));
+
+            let ciphertext = cipher.encrypt(&mut language, &self.text);
+
+            println!("{}", ciphertext);
         }
-
-        println!("{}", cipher.to_string(&mut language));
-
-        let ciphertext = cipher.encrypt(&mut language, &self.text);
-
-        println!("{}", ciphertext);
 
         Ok(())
     }

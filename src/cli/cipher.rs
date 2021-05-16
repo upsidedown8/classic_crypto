@@ -245,9 +245,70 @@ impl Cipher {
             _ => {}
         }
     }
-    pub fn set_key(&mut self, key: &[String]) -> Result<()> {
-        println!("key args: {:#?}", key,);
+    pub fn set_key(&mut self, language: &mut Language, args: &[String]) -> Result<()> {
+        let keys = match self {
+            Cipher::Affine(ref mut affine) => affine.keys_mut(),
+            Cipher::Autokey(ref mut autokey) => autokey.keys_mut(),
+            Cipher::Beaufort(ref mut beaufort) => beaufort.keys_mut(),
+            Cipher::Bellaso(ref mut bellaso) => bellaso.keys_mut(),
+            Cipher::BlockTransposition(ref mut blocktranspos) => blocktranspos.keys_mut(),
+            Cipher::Caesar(ref mut caesar) => caesar.keys_mut(),
+            Cipher::ClassicVigenere(ref mut classicvig) => classicvig.keys_mut(),
+            Cipher::ColumnTransposition(ref mut columntranspos) => columntranspos.keys_mut(),
+            Cipher::Enigma(ref mut enigma) => enigma.keys_mut(),
+            Cipher::KeyedVigenere(ref mut keyedvig) => keyedvig.keys_mut(),
+            Cipher::Porta(ref mut porta) => porta.keys_mut(),
+            Cipher::Railfence(ref mut railfence) => railfence.keys_mut(),
+            Cipher::Scytale(ref mut scytale) => scytale.keys_mut(),
+            Cipher::SimpleSubstitution(ref mut simplesub) => simplesub.keys_mut(),
+            _ => vec![],
+        };
+
+        let args = args
+            .iter()
+            .map(|arg| arg.split(':').collect::<Vec<_>>())
+            .filter(|arg| arg.len() == 2)
+            .collect::<Vec<_>>();
+
+        for key in keys {
+            for arg in args.iter() {
+                if arg[0] == key.key_info().short_name {
+                    key.set_key_str(language, arg[1])?;
+                }
+            }
+        }
 
         Ok(())
+    }
+    pub fn key_help(&self) -> String {
+        let keys = match self {
+            Cipher::Affine(ref affine) => affine.keys(),
+            Cipher::Autokey(ref autokey) => autokey.keys(),
+            Cipher::Beaufort(ref beaufort) => beaufort.keys(),
+            Cipher::Bellaso(ref bellaso) => bellaso.keys(),
+            Cipher::BlockTransposition(ref blocktranspos) => blocktranspos.keys(),
+            Cipher::Caesar(ref caesar) => caesar.keys(),
+            Cipher::ClassicVigenere(ref classicvig) => classicvig.keys(),
+            Cipher::ColumnTransposition(ref columntranspos) => columntranspos.keys(),
+            Cipher::Enigma(ref enigma) => enigma.keys(),
+            Cipher::KeyedVigenere(ref keyedvig) => keyedvig.keys(),
+            Cipher::Porta(ref porta) => porta.keys(),
+            Cipher::Railfence(ref railfence) => railfence.keys(),
+            Cipher::Scytale(ref scytale) => scytale.keys(),
+            Cipher::SimpleSubstitution(ref simplesub) => simplesub.keys(),
+            _ => vec![],
+        };
+
+        let mut result = String::new();
+
+        for key in keys {
+            result.push_str(&format!(
+                "{} ({})\n",
+                key.key_info().short_name,
+                key.key_info().desc,
+            ));
+        }
+
+        result
     }
 }
