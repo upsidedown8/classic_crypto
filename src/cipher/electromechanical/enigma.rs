@@ -87,13 +87,13 @@ impl Keyed for Enigma {
         );
         result.rotors[0]
             .key_info_mut()
-            .set("Right rotor", "The rotor name", "r0");
+            .set("Right rotor", "<rotor_name>:<grund>:<rings>", "r0");
         result.rotors[1]
             .key_info_mut()
-            .set("Middle rotor", "The rotor name", "r1");
+            .set("Middle rotor", "<rotor_name>:<grund>:<rings>", "r1");
         result.rotors[2]
             .key_info_mut()
-            .set("Left rotor", "The rotor name", "r3");
+            .set("Left rotor", "<rotor_name>:<grund>:<rings>", "r3");
         result
             .reflector
             .key_info_mut()
