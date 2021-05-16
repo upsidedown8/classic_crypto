@@ -1,11 +1,10 @@
 use crate::{
-    key::{Key, KeyFrom, SetKey, StatefulKey},
+    error::{Error, Result},
+    key::{IoKey, Key, KeyInfo, StatefulKey},
     lang::Language,
 };
-use rand::{
-    distributions::{Distribution, Standard},
-    Rng,
-};
+
+use rand::{Rng, distributions::{Distribution, Standard}};
 
 // Wiring details from: https://en.wikipedia.org/wiki/Enigma_rotor_details#Rotor_wiring_tables
 
@@ -23,7 +22,7 @@ pub enum ReflectorType {
 
 impl Distribution<ReflectorType> for Standard {
     /// BThin and CThin are a special case for M4 Enigma
-    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> ReflectorType {
+    fn sample<R: rand::Rng + ?Sized>(&self, rng: &mut R) -> ReflectorType {
         match rng.gen_range(0..5) {
             0 => ReflectorType::A,
             1 => ReflectorType::B,
@@ -43,10 +42,11 @@ const WIRINGS: [[i16; 26]; 5] = [
 
 /// Represents an Enigma Reflector (See Enigma cipher)
 ///
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct Reflector {
     /// The current internal wiring of the reflector
     wiring_type: ReflectorType,
+    info: KeyInfo,
 }
 
 impl Reflector {
@@ -62,37 +62,50 @@ impl Reflector {
     }
 }
 
-impl KeyFrom<ReflectorType> for Reflector {
-    fn create_from(_language: &mut Language, wiring: ReflectorType) -> Reflector {
-        Reflector {
-            wiring_type: wiring,
-        }
+impl Key<ReflectorType> for Reflector {
+    fn new(_language: &mut Language, arg: ReflectorType) -> Result<Box<Self>> {
+        Ok(Box::new(Reflector {
+            wiring_type: arg,
+            info: KeyInfo::default(),
+        }))
+    }
+    fn set(&mut self, _language: &mut Language, arg: ReflectorType) -> Result<()> {
+        self.wiring_type = arg;
+        Ok(())
     }
 }
-
-impl SetKey<ReflectorType> for Reflector {
-    fn set_key(&mut self, _language: &mut Language, wiring: ReflectorType) {
-        self.wiring_type = wiring;
+impl Key<&str> for Reflector {
+    fn new(language: &mut Language, arg: &str) -> Result<Box<Self>> {
+        let mut result = Reflector::new(language, ReflectorType::B)?;
+        result.set(language, arg)?;
+        Ok(result)
     }
-}
-
-impl Key for Reflector {
-    fn to_string(&self, _language: &mut Language) -> String {
-        format!(
-            "Reflector: {}",
-            match self.wiring_type {
-                ReflectorType::A => "A",
-                ReflectorType::B => "B",
-                ReflectorType::C => "C",
-                ReflectorType::BThin => "B thin",
-                ReflectorType::CThin => "C thin",
-            }
-        )
-    }
-
-    fn new(_language: &mut Language) -> Reflector {
-        Reflector {
-            wiring_type: ReflectorType::B,
+    fn set(&mut self, _language: &mut Language, arg: &str) -> Result<()> {
+        match arg.to_lowercase().as_str() {
+            "a" => {
+                self.wiring_type = ReflectorType::A;
+                Ok(())
+            },
+            "b" => {
+                self.wiring_type = ReflectorType::B;
+                Ok(())
+            },
+            "c" => {
+                self.wiring_type = ReflectorType::C;
+                Ok(())
+            },
+            "bthin" => {
+                self.wiring_type = ReflectorType::BThin;
+                Ok(())
+            },
+            "cthin" => {
+                self.wiring_type = ReflectorType::CThin;
+                Ok(())
+            },
+            _ => Err(Error::InvalidKeyFmt {
+                expected: "One of [a, b, c, bthin, cthin]".to_string(),
+                actual: arg.to_string(),
+            }),
         }
     }
 }
@@ -101,7 +114,29 @@ impl StatefulKey for Reflector {
     fn reset(&mut self, _language: &mut Language) {
         self.wiring_type = ReflectorType::B;
     }
-    fn randomize(&mut self, _language: &mut Language, rng: &mut impl Rng) {
-        self.wiring_type = rng.gen();
+    fn to_string(&self, _language: &mut Language) -> String {
+        match self.wiring_type {
+            ReflectorType::A => "A",
+            ReflectorType::B => "B",
+            ReflectorType::C => "C",
+            ReflectorType::BThin => "B thin",
+            ReflectorType::CThin => "C thin",
+        }
+        .to_string()
+    }
+    fn randomize(&mut self, _language: &mut Language) {
+        self.wiring_type = rand::thread_rng().gen();
+    }
+}
+
+impl IoKey for Reflector {
+    fn set_key_str(&mut self, language: &mut Language, arg: &str) -> Result<()> {
+        self.set(language, arg)
+    }
+    fn key_info(&self) -> &KeyInfo {
+        &self.info
+    }
+    fn key_info_mut(&mut self) -> &mut KeyInfo {
+        &mut self.info
     }
 }

@@ -1,6 +1,8 @@
 use super::VigSquare;
-use crate::{key, lang::Language};
-use key::Key;
+use crate::{
+    key::IdentityKey,
+    lang::Language,
+};
 
 /// Represents a Porta tableau. (See Porta cipher)
 ///
@@ -31,19 +33,18 @@ impl VigSquare for PortaSquare {
         }
     }
 
+    #[inline(always)]
     fn encrypt(&self, x: i16, y: i16) -> i16 {
         self.square[x as usize][y as usize]
     }
+    #[inline(always)]
     fn decrypt(&self, x: i16, y: i16) -> i16 {
         self.square[x as usize][y as usize]
     }
 }
 
-impl Key for PortaSquare {
-    fn to_string(&self, language: &mut Language) -> String {
-        PortaSquare::vig_square_to_string(language, &self.square, 13, 26)
-    }
-    fn new(_language: &mut Language) -> PortaSquare {
+impl IdentityKey for PortaSquare {
+    fn identity(_language: &mut Language) -> Self {
         let mut vig_square = PortaSquare {
             square: vec![vec![0; 26]; 26],
         };

@@ -1,13 +1,18 @@
-use crate::key::{Key, KeyFrom, SetKey, StatefulKey};
+use rand::Rng;
 
-use crate::lang::Language;
-use crate::util;
+use crate::{
+    error::{Error, Result},
+    key::{IdentityKey, IoKey, Key, KeyInfo, StatefulKey},
+    lang::Language,
+    util,
+};
 
 /// Represents a Matrix (See Hill Cipher)
 ///
 pub struct Matrix {
     value: Vec<Vec<i16>>,
     dim_size: usize,
+    info: KeyInfo,
 }
 
 impl Matrix {
@@ -95,6 +100,7 @@ impl Matrix {
     ///
     pub fn invert(&self) -> Matrix {
         Matrix {
+            info: KeyInfo::default(),
             value: {
                 let mut matrix = vec![vec![0; self.dim_size]; self.dim_size];
                 let adj;
@@ -237,81 +243,94 @@ impl Matrix {
     /// * `x` The horizontal coordinate
     /// * `y` The vertical coordinate
     ///
+    #[inline(always)]
     pub fn at(&self, x: usize, y: usize) -> i16 {
         self.value[x][y]
     }
 }
 
-impl KeyFrom<&String> for Matrix {
-    fn create_from(language: &mut Language, string: &String) -> Matrix {
-        let arr: Vec<i16> = language.string_to_vec(&string);
-        KeyFrom::create_from(language, &arr)
+impl Key<&[i16]> for Matrix {
+    fn new(language: &mut Language, arg: &[i16]) -> Result<Box<Self>> {
+        let mut result = Matrix::identity(language);
+        result.set(language, arg)?;
+        Ok(Box::new(result))
     }
-}
-impl KeyFrom<&Vec<i16>> for Matrix {
-    fn create_from(language: &mut Language, arr: &Vec<i16>) -> Matrix {
-        let mut matrix = Matrix::new(language);
-        matrix.set_key(language, arr);
-        matrix
-    }
-}
-impl KeyFrom<&Vec<Vec<i16>>> for Matrix {
-    fn create_from(_language: &mut Language, arr: &Vec<Vec<i16>>) -> Matrix {
-        Matrix {
-            value: arr.clone(),
-            dim_size: arr.len(),
-        }
-    }
-}
+    fn set(&mut self, _language: &mut Language, arg: &[i16]) -> Result<()> {
+        if arg.len() != 4 && arg.len() != 9 {
+            Err(Error::InvalidKeyFmt {
+                expected: "Expected 4 or 9 values".to_string(),
+                actual: format!("{} values, data: {:?}", arg.len(), arg),
+            })
+        } else {
+            let dim_size = match arg.len() {
+                4 => 2,
+                9 => 3,
+                _ => unreachable!(),
+            };
 
-impl SetKey<&String> for Matrix {
-    fn set_key(&mut self, language: &mut Language, string: &String) {
-        let arr = language.string_to_vec(string);
-        self.set_key(language, &arr);
-    }
-}
-impl SetKey<&Vec<i16>> for Matrix {
-    fn set_key(&mut self, _language: &mut Language, vec: &Vec<i16>) {
-        let dim_size = match vec.len() {
-            4 => 2,
-            9 => 3,
-            _ => {
-                panic!("Matrix must be either 2x2 (4 letters) or 3x3 (9 letters)");
-            }
-        };
-
-        self.value = {
-            let mut matrix = vec![vec![0; dim_size]; dim_size];
-            for i in 0..dim_size {
-                for j in 0..dim_size {
-                    matrix[i][j] = vec[i * dim_size + j];
+            self.value = {
+                let mut matrix = vec![vec![0; dim_size]; dim_size];
+                for i in 0..dim_size {
+                    for j in 0..dim_size {
+                        matrix[i][j] = arg[i * dim_size + j];
+                    }
                 }
-            }
-            matrix
-        };
-        self.dim_size = dim_size;
+                matrix
+            };
+            self.dim_size = dim_size;
+
+            Ok(())
+        }
     }
 }
-impl SetKey<&Vec<Vec<i16>>> for Matrix {
-    fn set_key(&mut self, _language: &mut Language, vec: &Vec<Vec<i16>>) {
-        self.value = vec.clone();
-        self.dim_size = vec.len();
+impl Key<&Vec<Vec<i16>>> for Matrix {
+    fn new(language: &mut Language, arg: &Vec<Vec<i16>>) -> Result<Box<Self>> {
+        let mut result = Matrix::identity(language);
+        result.set(language, arg)?;
+        Ok(Box::new(result))
+    }
+    fn set(&mut self, _language: &mut Language, arg: &Vec<Vec<i16>>) -> Result<()> {
+        if arg.is_empty() {
+            Err(Error::InvalidKeyFmt {
+                expected: "Not empty".to_string(),
+                actual: "Empty vec".to_string(),
+            })
+        } else if arg.len() != arg[0].len() {
+            Err(Error::InvalidKeyFmt {
+                expected: "Square matrix".to_string(),
+                actual: format!("rows ({}) != cols ({})", arg.len(), arg[0].len()),
+            })
+        } else if !(2..=3).contains(&arg.len()) {
+            Err(Error::InvalidKeyFmt {
+                expected: "Matrix must be 2x2 or 3x3".to_string(),
+                actual: format!("rows: {} cols: {}", arg.len(), arg[0].len()),
+            })
+        } else {
+            self.value = arg.clone();
+            self.dim_size = arg.len();
+            Ok(())
+        }
+    }
+}
+impl Key<&str> for Matrix {
+    fn new(language: &mut Language, arg: &str) -> Result<Box<Self>> {
+        let arr = language.string_to_vec(arg);
+        Matrix::new(language, arr.as_slice())
+    }
+    fn set(&mut self, language: &mut Language, arg: &str) -> Result<()> {
+        let arr = language.string_to_vec(arg);
+        self.set(language, arr.as_slice())?;
+        Ok(())
     }
 }
 
-impl Key for Matrix {
-    fn to_string(&self, language: &mut Language) -> String {
-        let mut result = String::new();
-        for arr in &self.value {
-            result.push_str(language.vec_to_string(&arr).as_str());
-        }
-        result
-    }
-    fn new(language: &mut Language) -> Matrix {
+impl IdentityKey for Matrix {
+    fn identity(language: &mut Language) -> Self {
         language.set_alph_len(26);
-        Matrix {
+        Self {
             value: { vec![vec![0; 2]; 2] },
             dim_size: 2,
+            info: KeyInfo::default(),
         }
     }
 }
@@ -324,16 +343,34 @@ impl StatefulKey for Matrix {
             self.value[i][i] = 1;
         }
     }
-    fn randomize(&mut self, _language: &mut Language, rng: &mut impl rand::Rng) {
+    fn to_string(&self, language: &mut Language) -> String {
+        self.value
+            .iter()
+            .map(|row| language.vec_to_string(row))
+            .fold(String::new(), |acc, row| row + &acc)
+    }
+    fn randomize(&mut self, _language: &mut Language) {
         loop {
             for i in 0..self.dim_size {
                 for j in 0..self.dim_size {
-                    self.value[i][j] = rng.gen_range(0..26);
+                    self.value[i][j] = rand::thread_rng().gen_range(0..26);
                 }
             }
             if self.is_invertible() {
                 break;
             }
         }
+    }
+}
+
+impl IoKey for Matrix {
+    fn set_key_str(&mut self, language: &mut Language, arg: &str) -> Result<()> {
+        self.set(language, arg)
+    }
+    fn key_info(&self) -> &KeyInfo {
+        &self.info
+    }
+    fn key_info_mut(&mut self) -> &mut KeyInfo {
+        &mut self.info
     }
 }

@@ -1,14 +1,16 @@
-use key::{Key, KeyFrom, SetKey, StatefulKey};
-
-use crate::key;
-use crate::lang::Language;
-use crate::util;
+use crate::{
+    error::Result,
+    key::{IdentityKey, IoKey, Key, KeyInfo, StatefulKey},
+    lang::Language,
+    util,
+};
 
 /// Represents a substitution alphabet (See Simple Substitution cipher)
 ///
 pub struct Alphabet {
     value: Vec<i16>,
     inverse: Vec<i16>,
+    info: KeyInfo,
 }
 
 impl Alphabet {
@@ -24,6 +26,7 @@ impl Alphabet {
     ///
     /// * `letter` The letter to encrypt
     ///
+    #[inline(always)]
     pub fn encrypt(&self, letter: i16) -> i16 {
         self.value[letter as usize]
     }
@@ -34,55 +37,59 @@ impl Alphabet {
     ///
     /// * `letter` The letter to decrypt
     ///
+    #[inline(always)]
     pub fn decrypt(&self, letter: i16) -> i16 {
         self.inverse[letter as usize]
     }
+
+    /// Gets the value of the substitution as a slice
+    /// 
+    pub fn as_slice(&self) -> &[i16] {
+        &self.value
+    }
 }
 
-impl KeyFrom<&String> for Alphabet {
-    fn create_from(language: &mut Language, string: &String) -> Alphabet {
-        let alphabet: Vec<i16> = language.string_to_vec(&string);
+impl Key<&str> for Alphabet {
+    fn new(language: &mut Language, arg: &str) -> Result<Box<Self>> {
+        let alphabet: Vec<i16> = language.string_to_vec(arg);
         let my_value = util::fill_alphabet_from_start(&alphabet, language.alphabet_len());
         let my_inverse = util::invert(&my_value);
-        Alphabet {
+        Ok(Box::new(Self {
             value: my_value,
             inverse: my_inverse,
-        }
+            info: KeyInfo::default(),
+        }))
+    }
+    fn set(&mut self, language: &mut Language, arg: &str) -> Result<()> {
+        let alphabet: Vec<i16> = language.string_to_vec(arg);
+        self.value = util::fill_alphabet_from_start(&alphabet, language.alphabet_len());
+        self.update_inverse();
+        Ok(())
     }
 }
-impl KeyFrom<&Vec<i16>> for Alphabet {
-    fn create_from(_language: &mut Language, vec: &Vec<i16>) -> Alphabet {
-        Alphabet {
-            value: vec.clone(),
-            inverse: util::invert(vec),
-        }
+impl Key<&[i16]> for Alphabet {
+    fn new(language: &mut Language, arg: &[i16]) -> Result<Box<Self>> {
+        let my_value = util::fill_alphabet_from_start(arg, language.alphabet_len());
+        let my_inverse = util::invert(&my_value);
+        Ok(Box::new(Self {
+            value: my_value,
+            inverse: my_inverse,
+            info: KeyInfo::default(),
+        }))
+    }
+    fn set(&mut self, language: &mut Language, arg: &[i16]) -> Result<()> {
+        self.value = util::fill_alphabet_from_start(arg, language.alphabet_len());
+        self.update_inverse();
+        Ok(())
     }
 }
 
-impl SetKey<&String> for Alphabet {
-    fn set_key(&mut self, language: &mut Language, string: &String) {
-        let alphabet: Vec<i16> = language.string_to_vec(&string);
-        self.value = util::fill_alphabet_from_start(&alphabet, language.alphabet_len() as usize);
-        self.update_inverse();
-    }
-}
-impl SetKey<&Vec<i16>> for Alphabet {
-    fn set_key(&mut self, _language: &mut Language, vec: &Vec<i16>) {
-        self.value = vec.clone();
-        self.update_inverse();
-    }
-}
-
-impl Key for Alphabet {
-    fn to_string(&self, language: &mut Language) -> String {
-        language.vec_to_string(&self.value)
-    }
-    fn new(language: &mut Language) -> Alphabet {
-        let mut alphabet = vec![0; language.alphabet_len()];
-        util::fill_consecutive_vec(&mut alphabet, 0, language.cp_count());
-        Alphabet {
-            value: alphabet.clone(),
-            inverse: alphabet,
+impl IdentityKey for Alphabet {
+    fn identity(language: &mut Language) -> Self {
+        Self {
+            value: (0..language.cp_count()).collect(),
+            inverse: (0..language.cp_count()).collect(),
+            info: KeyInfo::default(),
         }
     }
 }
@@ -92,8 +99,23 @@ impl StatefulKey for Alphabet {
         self.value = vec![0; language.alphabet_len()];
         self.update_inverse();
     }
-    fn randomize(&mut self, _language: &mut Language, rng: &mut impl rand::Rng) {
-        util::shuffle(&mut self.value, rng);
+    fn to_string(&self, language: &mut Language) -> String {
+        language.vec_to_string(&self.value)
+    }
+    fn randomize(&mut self, _language: &mut Language) {
+        util::shuffle(&mut self.value);
         self.update_inverse();
+    }
+}
+
+impl IoKey for Alphabet {
+    fn set_key_str(&mut self, language: &mut Language, arg: &str) -> crate::error::Result<()> {
+        self.set(language, arg)
+    }
+    fn key_info(&self) -> &KeyInfo {
+        &self.info
+    }
+    fn key_info_mut(&mut self) -> &mut KeyInfo {
+        &mut self.info
     }
 }

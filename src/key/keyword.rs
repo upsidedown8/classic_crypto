@@ -1,13 +1,17 @@
-use key::{Key, KeyFrom, SetKey, StatefulKey};
+use rand::Rng;
 
-use crate::key;
-use crate::lang::Language;
-use crate::util;
+use crate::{
+    error::Result,
+    key::{IdentityKey, IoKey, Key, KeyInfo, StatefulKey},
+    lang::Language,
+    util,
+};
 
 /// Represents a Keyword (See Vigenere ciphers)
 ///
 pub struct Keyword {
     value: Vec<i16>,
+    info: KeyInfo,
 }
 
 impl Keyword {
@@ -29,6 +33,7 @@ impl Keyword {
     ///
     /// * `idx` The index to get
     ///
+    #[inline(always)]
     pub fn at(&self, idx: usize) -> i16 {
         debug_assert!(idx < self.value.len());
         self.value[idx]
@@ -41,31 +46,37 @@ impl Keyword {
     }
 }
 
-impl KeyFrom<&String> for Keyword {
-    fn create_from(language: &mut Language, string: &String) -> Keyword {
-        Keyword {
-            value: language.string_to_vec(&string),
+impl Key<&str> for Keyword {
+    fn new(language: &mut Language, arg: &str) -> Result<Box<Self>> {
+        Ok(Box::new(Self {
+            value: language.string_to_vec(arg),
+            info: KeyInfo::default(),
+        }))
+    }
+    fn set(&mut self, language: &mut Language, arg: &str) -> Result<()> {
+        self.value = language.string_to_vec(arg);
+        Ok(())
+    }
+}
+impl Key<&[i16]> for Keyword {
+    fn new(_language: &mut Language, arg: &[i16]) -> Result<Box<Self>> {
+        Ok(Box::new(Self {
+            value: Vec::from(arg),
+            info: KeyInfo::default(),
+        }))
+    }
+    fn set(&mut self, _language: &mut Language, arg: &[i16]) -> Result<()> {
+        self.value.copy_from_slice(arg);
+        Ok(())
+    }
+}
+
+impl IdentityKey for Keyword {
+    fn identity(_language: &mut Language) -> Self {
+        Self {
+            value: vec![0],
+            info: KeyInfo::default(),
         }
-    }
-}
-
-impl SetKey<&String> for Keyword {
-    fn set_key(&mut self, language: &mut Language, string: &String) {
-        self.value = language.string_to_vec(&string);
-    }
-}
-impl SetKey<&Vec<i16>> for Keyword {
-    fn set_key(&mut self, _language: &mut Language, key: &Vec<i16>) {
-        self.value = key.clone();
-    }
-}
-
-impl Key for Keyword {
-    fn to_string(&self, language: &mut Language) -> String {
-        language.vec_to_string(&self.value)
-    }
-    fn new(_language: &mut Language) -> Keyword {
-        Keyword { value: vec![0] }
     }
 }
 
@@ -73,9 +84,24 @@ impl StatefulKey for Keyword {
     fn reset(&mut self, _language: &mut Language) {
         self.value = vec![0];
     }
-    fn randomize(&mut self, language: &mut Language, rng: &mut impl rand::Rng) {
-        let length = rng.gen_range(3..12);
+    fn to_string(&self, language: &mut Language) -> String {
+        language.vec_to_string(&self.value)
+    }
+    fn randomize(&mut self, language: &mut Language) {
+        let length = rand::thread_rng().gen_range(3..12);
         self.value.resize(length, 0);
-        util::fill_random_array(&mut self.value, rng, language.cp_count());
+        util::fill_random_array(&mut self.value, language.cp_count());
+    }
+}
+
+impl IoKey for Keyword {
+    fn set_key_str(&mut self, language: &mut Language, arg: &str) -> Result<()> {
+        self.set(language, arg)
+    }
+    fn key_info(&self) -> &KeyInfo {
+        &self.info
+    }
+    fn key_info_mut(&mut self) -> &mut KeyInfo {
+        &mut self.info
     }
 }

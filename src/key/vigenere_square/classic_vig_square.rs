@@ -1,6 +1,8 @@
 use super::VigSquare;
-use crate::{key, lang::Language};
-use key::Key;
+use crate::{
+    key::IdentityKey,
+    lang::Language,
+};
 
 /// Represents a Vigenere tableau. (See Classic Vigenere cipher)
 ///
@@ -26,19 +28,18 @@ impl VigSquare for ClassicVigSquare {
         }
     }
 
+    #[inline(always)]
     fn encrypt(&self, x: i16, y: i16) -> i16 {
         self.square[x as usize][y as usize]
     }
+    #[inline(always)]
     fn decrypt(&self, x: i16, y: i16) -> i16 {
         self.inverse[x as usize][y as usize]
     }
 }
 
-impl Key for ClassicVigSquare {
-    fn to_string(&self, language: &mut Language) -> String {
-        ClassicVigSquare::vig_square_to_string(language, &self.square, 26, 26)
-    }
-    fn new(_language: &mut Language) -> ClassicVigSquare {
+impl IdentityKey for ClassicVigSquare {
+    fn identity(_language: &mut Language) -> Self {
         let my_square = vec![vec![0; 26]; 26];
         let mut vig_square = ClassicVigSquare {
             square: my_square.clone(),

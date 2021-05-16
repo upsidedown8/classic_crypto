@@ -1,12 +1,10 @@
 use crate::{
-    key::{Key, KeyFrom, SetKey, StatefulKey},
+    error::{Error, Result},
+    key::{IoKey, Key, KeyInfo, StatefulKey},
     lang::Language,
     util,
 };
-use rand::{
-    distributions::{Distribution, Standard},
-    Rng,
-};
+use rand::{Rng, distributions::{Distribution, Standard}};
 
 // Wiring details from: https://en.wikipedia.org/wiki/Enigma_rotor_details#Rotor_wiring_tables
 
@@ -31,7 +29,7 @@ pub enum RotorType {
 
 impl Distribution<RotorType> for Standard {
     // Beta and Gamma rotors are generated with a seperate RNG
-    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> RotorType {
+    fn sample<R: rand::Rng + ?Sized>(&self, rng: &mut R) -> RotorType {
         match rng.gen_range(0..8) {
             0 => RotorType::I,
             1 => RotorType::II,
@@ -86,7 +84,7 @@ const NOTCHES: [[i16; 2]; 10] = [
 
 /// Represents an Enigma Rotor (See Enigma cipher)
 ///
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct Rotor {
     /// The internal wiring to use
     wiring_type: RotorType,
@@ -96,6 +94,8 @@ pub struct Rotor {
 
     /// The inner position (fixed)
     pub rings: i16,
+
+    info: KeyInfo,
 }
 
 impl Rotor {
@@ -138,26 +138,55 @@ impl Rotor {
     }
 }
 
-impl KeyFrom<RotorType> for Rotor {
-    fn create_from(_language: &mut Language, wiring: RotorType) -> Rotor {
-        Rotor {
-            wiring_type: wiring,
+impl Key<RotorType> for Rotor {
+    fn new(_language: &mut Language, arg: RotorType) -> Result<Box<Self>> {
+        Ok(Box::new(Rotor {
+            wiring_type: arg,
             grund: 0,
             rings: 0,
-        }
+            info: KeyInfo::default(),
+        }))
+    }
+    fn set(&mut self, _language: &mut Language, arg: RotorType) -> Result<()> {
+        self.wiring_type = arg;
+        Ok(())
+    }
+}
+impl Key<&str> for Rotor {
+    fn new(language: &mut Language, arg: &str) -> Result<Box<Self>> {
+        let mut result = Rotor::new(language, RotorType::I)?;
+        result.set(language, arg)?;
+        Ok(result)
+    }
+    fn set(&mut self, _language: &mut Language, arg: &str) -> Result<()> {
+        match arg.to_lowercase().as_str() {
+            "i" => self.wiring_type = RotorType::I,
+            "ii" => self.wiring_type = RotorType::II,
+            "iii" => self.wiring_type = RotorType::III,
+            "iv" => self.wiring_type = RotorType::IV,
+            "v" => self.wiring_type = RotorType::V,
+            "vi" => self.wiring_type = RotorType::VI,
+            "vii" => self.wiring_type = RotorType::VII,
+            "viii" => self.wiring_type = RotorType::VIII,
+            "beta" | "b" => self.wiring_type = RotorType::Beta,
+            "gamma" | "g" => self.wiring_type = RotorType::Gamma,
+            _ => return Err(Error::InvalidKeyFmt {
+                expected: "One of [i, ii, iii, iv, v, vi, vii, viii, beta, gamma]".to_string(),
+                actual: arg.to_string(),
+            }),
+        };
+        Ok(())
     }
 }
 
-impl SetKey<RotorType> for Rotor {
-    fn set_key(&mut self, _language: &mut Language, wiring: RotorType) {
-        self.wiring_type = wiring;
+impl StatefulKey for Rotor {
+    fn reset(&mut self, _language: &mut Language) {
+        self.wiring_type = RotorType::I;
+        self.reset_positions();
     }
-}
-
-impl Key for Rotor {
     fn to_string(&self, _language: &mut Language) -> String {
         format!(
-            "Rotor: {}, grund:{}, rings:{}",
+            "rotor:{}, grund:{}, rings:{}",
             match self.wiring_type {
                 RotorType::I => "I",
                 RotorType::II => "II",
@@ -174,24 +203,22 @@ impl Key for Rotor {
             self.rings
         )
     }
-
-    fn new(_language: &mut Language) -> Rotor {
-        Rotor {
-            wiring_type: RotorType::I,
-            grund: 0,
-            rings: 0,
-        }
-    }
-}
-
-impl StatefulKey for Rotor {
-    fn reset(&mut self, _language: &mut Language) {
-        self.wiring_type = RotorType::I;
-        self.reset_positions();
-    }
-    fn randomize(&mut self, _language: &mut Language, rng: &mut impl Rng) {
+    fn randomize(&mut self, _language: &mut Language) {
+        let mut rng = rand::thread_rng();
         self.wiring_type = rng.gen();
         self.grund = rng.gen_range(0..26);
         self.rings = rng.gen_range(0..26);
+    }
+}
+
+impl IoKey for Rotor {
+    fn set_key_str(&mut self, language: &mut Language, arg: &str) -> Result<()> {
+        self.set(language, arg)
+    }
+    fn key_info(&self) -> &KeyInfo {
+        &self.info
+    }
+    fn key_info_mut(&mut self) -> &mut KeyInfo {
+        &mut self.info
     }
 }

@@ -78,7 +78,7 @@
 //     fn reset(&mut self) {
 //         self.value = vec![0];
 //     }
-//     fn randomize(&mut self, rng: &mut impl rand::Rng) {
+//     fn randomize(&mut self) {
 //         let length = rng.gen_range(3..12);
 //         self.value.resize(length, 0);
 //         util::fill_random_array(&mut self.value, rng, 26);

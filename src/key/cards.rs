@@ -1,15 +1,15 @@
-use std::usize;
-
-use key::{Key, KeyFrom, SetKey, StatefulKey};
-
-use crate::key;
-use crate::lang::Language;
-use crate::util;
+use crate::{
+    error::Result,
+    key::{IdentityKey, IoKey, Key, KeyInfo, StatefulKey},
+    lang::Language,
+    util,
+};
 
 /// Represents a deck of cards (See Solitaire cipher)
 ///
 pub struct Cards {
     value: Vec<i16>,
+    info: KeyInfo,
 }
 
 const CARDS_PER_SUITE: i16 = 13;
@@ -135,30 +135,15 @@ impl Cards {
     }
 }
 
-impl KeyFrom<&String> for Cards {
-    fn create_from(language: &mut Language, string: &String) -> Cards {
-        let mut cards = Cards::new(language);
-        cards.set_key(language, string);
-        cards
+impl Key<&[i16]> for Cards {
+    fn new(_language: &mut Language, arg: &[i16]) -> Result<Box<Self>> {
+        Ok(Box::new(Self {
+            value: Vec::from(arg),
+            info: KeyInfo::default(),
+        }))
     }
-}
-impl KeyFrom<&Vec<i16>> for Cards {
-    fn create_from(_language: &mut Language, cards: &Vec<i16>) -> Cards {
-        Cards {
-            value: cards.clone(),
-        }
-    }
-}
-
-impl SetKey<&String> for Cards {
-    fn set_key(&mut self, language: &mut Language, string: &String) {
-        let vec = language.string_to_vec(&string);
-        self.set_key(language, &vec);
-    }
-}
-impl SetKey<&Vec<i16>> for Cards {
-    fn set_key(&mut self, _language: &mut Language, vec: &Vec<i16>) {
-        for card in vec {
+    fn set(&mut self, _language: &mut Language, arg: &[i16]) -> Result<()> {
+        for &card in arg {
             self.shift_joker(A_JOKER);
             self.shift_joker(B_JOKER);
             self.shift_joker(B_JOKER);
@@ -166,10 +151,34 @@ impl SetKey<&Vec<i16>> for Cards {
             self.count_cut(self.value[53] + 1);
             self.count_cut(card + 1);
         }
+        Ok(())
+    }
+}
+impl Key<&str> for Cards {
+    fn new(language: &mut Language, arg: &str) -> Result<Box<Self>> {
+        let mut cards = Cards::identity(language);
+        cards.set(language, arg)?;
+        Ok(Box::new(cards))
+    }
+    fn set(&mut self, language: &mut Language, arg: &str) -> Result<()> {
+        let vec = language.string_to_vec(arg);
+        self.set(language, vec.as_slice())
     }
 }
 
-impl Key for Cards {
+impl IdentityKey for Cards {
+    fn identity(_language: &mut Language) -> Self {
+        Self {
+            value: (0..54).collect(),
+            info: KeyInfo::default(),
+        }
+    }
+}
+
+impl StatefulKey for Cards {
+    fn reset(&mut self, _language: &mut Language) {
+        util::fill_consecutive_vec(&mut self.value, 0, 54);
+    }
     fn to_string(&self, _language: &mut Language) -> String {
         let mut result = String::new();
 
@@ -194,18 +203,19 @@ impl Key for Cards {
 
         result
     }
-    fn new(_language: &mut Language) -> Cards {
-        let mut cards = vec![0; 54];
-        util::fill_consecutive_vec(&mut cards, 0, 54);
-        Cards { value: cards }
+    fn randomize(&mut self, _language: &mut Language) {
+        util::shuffle(&mut self.value);
     }
 }
 
-impl StatefulKey for Cards {
-    fn reset(&mut self, _language: &mut Language) {
-        util::fill_consecutive_vec(&mut self.value, 0, 54);
+impl IoKey for Cards {
+    fn set_key_str(&mut self, language: &mut Language, arg: &str) -> Result<()> {
+        self.set(language, arg)
     }
-    fn randomize(&mut self, _language: &mut Language, rng: &mut impl rand::Rng) {
-        util::shuffle(&mut self.value, rng);
+    fn key_info(&self) -> &KeyInfo {
+        &self.info
+    }
+    fn key_info_mut(&mut self) -> &mut KeyInfo {
+        &mut self.info
     }
 }

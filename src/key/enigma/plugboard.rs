@@ -1,15 +1,18 @@
+use rand::Rng;
+
 use crate::{
-    key::{Key, StatefulKey},
+    error::{Error, Result},
+    key::{IdentityKey, IoKey, Key, KeyInfo, StatefulKey},
     lang::Language,
     util,
 };
-use rand::Rng;
 
 /// Represents an Enigma Plugboard (See Enigma cipher)
 ///
 #[derive(Clone)]
 pub struct Plugboard {
     substitution: Vec<i16>,
+    info: KeyInfo,
 }
 
 impl Plugboard {
@@ -92,7 +95,64 @@ impl Plugboard {
     }
 }
 
-impl Key for Plugboard {
+impl Key<&str> for Plugboard {
+    fn new(language: &mut Language, arg: &str) -> Result<Box<Self>> {
+        let mut result = Plugboard::identity(language);
+        result.set(language, arg)?;
+        Ok(Box::new(result))
+    }
+    fn set(&mut self, language: &mut Language, arg: &str) -> Result<()> {
+        language.set_alph_len(26);
+        
+        let tokens = arg
+            .split_whitespace()
+            .map(|t| language.string_to_vec(t))
+            .collect::<Vec<_>>();
+
+        if tokens.iter().any(|t| t.len() != 2) {
+            Err(Error::InvalidKeyFmt {
+                expected: "A whitespace delimited string of pairs of letters".to_string(),
+                actual: arg.to_string(),
+            })
+        } else if tokens.iter().any(|t| t[0] == t[1]) {
+            Err(Error::InvalidKeyFmt {
+                expected: "No pair of letters should have the same letter twice".to_string(),
+                actual: arg.to_string(),
+            })
+        } else {
+            let tmp = Plugboard::identity(language);
+
+            for t in tokens.iter() {
+                if !tmp.is_valid_plug(t[0], t[1]) {
+                    return Err(Error::InvalidKeyFmt {
+                        expected: "No single letter to be plugged to two others".to_string(),
+                        actual: arg.to_string(),
+                    });
+                }
+            }
+
+            for t in tokens.iter() {
+                self.add_plug(t[0], t[1]);
+            }
+
+            Ok(())
+        }
+    }
+}
+
+impl IdentityKey for Plugboard {
+    fn identity(_language: &mut Language) -> Self {
+        Self {
+            substitution: vec![0; 26],
+            info: KeyInfo::default(),
+        }
+    }
+}
+
+impl StatefulKey for Plugboard {
+    fn reset(&mut self, _language: &mut Language) {
+        util::fill_consecutive_vec(&mut self.substitution, 0, 26);
+    }
     fn to_string(&self, language: &mut Language) -> String {
         let mut tmp = self.substitution.clone();
         let mut data = String::new();
@@ -110,28 +170,26 @@ impl Key for Plugboard {
         }
         format!("Plugboard: {}", data.trim())
     }
-
-    fn new(language: &mut Language) -> Plugboard {
-        let mut result = Plugboard {
-            substitution: vec![0; 26],
-        };
-        result.reset(language);
-        result
-    }
-}
-
-impl StatefulKey for Plugboard {
-    fn reset(&mut self, _language: &mut Language) {
-        util::fill_consecutive_vec(&mut self.substitution, 0, 26);
-    }
-    fn randomize(&mut self, language: &mut Language, rng: &mut impl Rng) {
+    fn randomize(&mut self, language: &mut Language) {
         self.reset(language);
         let mut values = vec![0; 26];
         util::fill_consecutive_vec(&mut values, 0, 26);
-        util::shuffle(&mut values, rng);
-        let num_plugs = rng.gen_range(5..13);
+        util::shuffle(&mut values);
+        let num_plugs = rand::thread_rng().gen_range(5..13);
         for i in 0..num_plugs {
             self.add_plug(values[i * 2], values[i * 2 + 1]);
         }
+    }
+}
+
+impl IoKey for Plugboard {
+    fn set_key_str(&mut self, language: &mut Language, arg: &str) -> Result<()> {
+        self.set(language, arg)
+    }
+    fn key_info(&self) -> &KeyInfo {
+        &self.info
+    }
+    fn key_info_mut(&mut self) -> &mut KeyInfo {
+        &mut self.info
     }
 }

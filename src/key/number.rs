@@ -1,14 +1,17 @@
 use rand::Rng;
-use std::ops::Range;
 
-use crate::key::{Key, KeyFrom, SetKey, StatefulKey};
-use crate::lang::Language;
+use crate::{
+    error::{Error, Result},
+    key::{IdentityKey, IoKey, Key, KeyInfo, StatefulKey},
+    lang::Language,
+};
 
 /// Represents a Number (See Affine Cipher)
 ///
 pub struct Number {
     value: i16,
-    range: Range<i16>,
+    legal_values: Vec<i16>,
+    info: KeyInfo,
 }
 
 impl Number {
@@ -22,65 +25,90 @@ impl Number {
     ///
     /// # Arguments
     ///
-    /// * `range` The legal range of numbers
+    /// * `legal_values` The legal range of numbers
     ///
-    pub fn set_range(&mut self, range: Range<i16>) {
-        self.range = range;
+    pub fn set_legal_values(&mut self, range: Vec<i16>) {
+        self.legal_values = range.clone();
+        self.info.desc = format!("An integer.\nLegal values: {:?}", range);
     }
 
-    /// Is the current value within the legal range?
-    ///
-    pub fn validate(&self) -> bool {
-        self.range.contains(&self.value)
+    fn parse(arg: &str) -> Result<i16> {
+        let num = arg.parse::<i16>().map_err(|_| Error::InvalidKeyFmt {
+            expected: "An integer".to_string(),
+            actual: arg.to_string(),
+        })?;
+        Ok(num)
     }
-}
-
-impl KeyFrom<i16> for Number {
-    fn create_from(language: &mut Language, val: i16) -> Number {
-        Number {
-            value: val,
-            range: 0..language.cp_count(),
+    fn check_val(&self, arg: i16) -> Result<i16> {
+        if self.legal_values.contains(&arg) {
+            Ok(arg)
+        } else {
+            Err(Error::InvalidKeyFmt {
+                expected: format!("Number should be in range {:?}", self.legal_values),
+                actual: format!("{}", arg),
+            })
         }
     }
 }
-impl KeyFrom<&String> for Number {
-    fn create_from(language: &mut Language, string: &String) -> Number {
-        let num: i16 = string.parse().expect("Expected a number");
-        Number::create_from(language, num)
+
+impl Key<i16> for Number {
+    fn new(language: &mut Language, arg: i16) -> Result<Box<Self>> {
+        let result = Number {
+            value: arg,
+            legal_values: (0..language.cp_count()).collect(),
+            info: KeyInfo::default(),
+        };
+
+        result.check_val(arg)?;
+
+        Ok(Box::new(result))
+    }
+    fn set(&mut self, _language: &mut Language, arg: i16) -> Result<()> {
+        self.value = self.check_val(arg)?;
+        Ok(())
+    }
+}
+impl Key<&str> for Number {
+    fn new(language: &mut Language, arg: &str) -> Result<Box<Self>> {
+        let num = Self::parse(arg)?;
+        Number::new(language, num)
+    }
+    fn set(&mut self, language: &mut Language, arg: &str) -> Result<()> {
+        let num = Self::parse(arg)?;
+        self.set(language, num)
     }
 }
 
-impl SetKey<i16> for Number {
-    fn set_key(&mut self, _language: &mut Language, num: i16) {
-        assert!(self.range.contains(&num));
-
-        self.value = num;
-    }
-}
-impl SetKey<&String> for Number {
-    fn set_key(&mut self, language: &mut Language, string: &String) {
-        let num: i16 = string.parse().expect("Expected a number");
-        self.set_key(language, num);
-    }
-}
-
-impl Key for Number {
-    fn new(language: &mut Language) -> Number {
-        Number {
+impl IdentityKey for Number {
+    fn identity(language: &mut Language) -> Self {
+        Self {
             value: 0,
-            range: 0..language.cp_count(),
+            legal_values: (0..language.cp_count()).collect(),
+            info: KeyInfo::default(),
         }
-    }
-    fn to_string(&self, _language: &mut Language) -> String {
-        format!("{}", self.value)
     }
 }
 
 impl StatefulKey for Number {
     fn reset(&mut self, _language: &mut Language) {
-        self.value = self.range.start;
+        self.value = self.legal_values[0];
     }
-    fn randomize(&mut self, _language: &mut Language, rng: &mut impl Rng) {
-        self.value = rng.gen_range(self.range.clone());
+    fn to_string(&self, _language: &mut Language) -> String {
+        format!("{}", self.value)
+    }
+    fn randomize(&mut self, _language: &mut Language) {
+        self.value = self.legal_values[rand::thread_rng().gen_range(0..self.legal_values.len())];
+    }
+}
+
+impl IoKey for Number {
+    fn set_key_str(&mut self, language: &mut Language, arg: &str) -> Result<()> {
+        self.set(language, arg)
+    }
+    fn key_info(&self) -> &KeyInfo {
+        &self.info
+    }
+    fn key_info_mut(&mut self) -> &mut KeyInfo {
+        &mut self.info
     }
 }
