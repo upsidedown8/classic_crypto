@@ -29,6 +29,43 @@ pub fn is_unique(string: &str) -> bool {
         .any(|(idx, ch)| string.chars().skip(idx + 1).any(|x| x == ch))
 }
 
+/// Remove all whitespace then seperate each block of `block_size` chars
+/// by `sep`
+///
+/// # Arguments
+///
+/// * `string` The string to put into blocks
+/// * `block_size` The size of the blocks
+/// * `sep` What to put between the blocks
+///
+/// # Examples
+///
+/// ```rust
+/// # use classic_crypto::util;
+/// assert_eq!(util::blocks("AAABBBCCC", 3, " ").as_str(), "AAA BBB CCC");
+/// assert_eq!(util::blocks("AAA \n BBB  CCC", 3, " ").as_str(), "AAA BBB CCC");
+/// assert_eq!(util::blocks("AAAABBBBC", 4, "-").as_str(), "AAAA-BBBB-C");
+/// ```
+///
+pub fn blocks(string: &str, block_size: usize, sep: &str) -> String {
+    let mut len = 0;
+    string
+        .split_whitespace()
+        .fold(String::new(), |acc, x| {
+            len += x.len();
+            acc + x
+        })
+        .char_indices()
+        .map(|(idx, ch)| {
+            let mut result = ch.to_string();
+            if (idx + 1) % block_size == 0 && (idx + 1) < len {
+                result += sep;
+            }
+            result
+        })
+        .collect()
+}
+
 ///
 /// Returns a vector of size `alphabet_size` containing all the values in the
 /// range `0..alphabet_size`, keyed by the slice `key`.  

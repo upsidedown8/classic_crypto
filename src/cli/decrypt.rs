@@ -3,7 +3,7 @@ use structopt::StructOpt;
 
 use super::cipher::CipherOpt;
 use super::RunSubmodule;
-use crate::{cli::cipher::Cipher, error::Result, lang::Language};
+use crate::{cli::cipher::Cipher, error::Result, lang::Language, util};
 
 #[derive(StructOpt, Debug)]
 #[structopt(rename_all = "snake")]
@@ -27,6 +27,10 @@ pub struct Decrypt {
     /// View the argument format for the key(s)
     #[structopt(long)]
     key_help: bool,
+
+    /// Put the resulting text in blocks of 4
+    #[structopt(short = "b", long)]
+    block_size: Option<usize>,
 
     /// The ciphertext
     #[structopt(short = "t", long)]
@@ -56,7 +60,11 @@ impl RunSubmodule for Decrypt {
 
             println!("{}", cipher.to_string(&mut language));
 
-            let ciphertext = cipher.decrypt(&mut language, &self.text);
+            let mut ciphertext = cipher.decrypt(&mut language, &self.text);
+
+            if let Some(block_size) = self.block_size {
+                ciphertext = util::blocks(&ciphertext, block_size.max(1), " ");
+            }
 
             println!("{}", ciphertext);
         }
