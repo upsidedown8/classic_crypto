@@ -162,24 +162,66 @@ impl Key<&str> for Rotor {
         Ok(result)
     }
     fn set(&mut self, _language: &mut Language, arg: &str) -> Result<()> {
-        match arg.to_lowercase().as_str() {
-            "i" => self.wiring_type = RotorType::I,
-            "ii" => self.wiring_type = RotorType::II,
-            "iii" => self.wiring_type = RotorType::III,
-            "iv" => self.wiring_type = RotorType::IV,
-            "v" => self.wiring_type = RotorType::V,
-            "vi" => self.wiring_type = RotorType::VI,
-            "vii" => self.wiring_type = RotorType::VII,
-            "viii" => self.wiring_type = RotorType::VIII,
-            "beta" | "b" => self.wiring_type = RotorType::Beta,
-            "gamma" | "g" => self.wiring_type = RotorType::Gamma,
-            _ => {
-                return Err(Error::InvalidKeyFmt {
-                    expected: "One of [i, ii, iii, iv, v, vi, vii, viii, beta, gamma]".to_string(),
-                    actual: arg.to_string(),
-                })
+        let args = arg.split(':').collect::<Vec<_>>();
+        if let Some(&rotor) = args.get(0) {
+            match rotor {
+                "i" => self.wiring_type = RotorType::I,
+                "ii" => self.wiring_type = RotorType::II,
+                "iii" => self.wiring_type = RotorType::III,
+                "iv" => self.wiring_type = RotorType::IV,
+                "v" => self.wiring_type = RotorType::V,
+                "vi" => self.wiring_type = RotorType::VI,
+                "vii" => self.wiring_type = RotorType::VII,
+                "viii" => self.wiring_type = RotorType::VIII,
+                "beta" | "b" => self.wiring_type = RotorType::Beta,
+                "gamma" | "g" => self.wiring_type = RotorType::Gamma,
+                _ => {
+                    return Err(Error::InvalidKeyFmt {
+                        expected: "One of [i, ii, iii, iv, v, vi, vii, viii, beta, gamma]"
+                            .to_string(),
+                        actual: arg.to_string(),
+                    })
+                }
+            };
+        }
+        if let Some(&grund) = args.get(1) {
+            match grund.parse::<usize>() {
+                Ok(num) => {
+                    if num >= 26 {
+                        return Err(Error::InvalidKeyFmt {
+                            expected: "An integer from 0 to 25".to_string(),
+                            actual: grund.to_string(),
+                        });
+                    }
+                    self.grund = num as i16;
+                }
+                Err(_) => {
+                    return Err(Error::InvalidKeyFmt {
+                        expected: "An integer".to_string(),
+                        actual: grund.to_string(),
+                    })
+                }
             }
-        };
+        }
+        if let Some(&rings) = args.get(2) {
+            match rings.parse::<usize>() {
+                Ok(num) => {
+                    if num >= 26 {
+                        return Err(Error::InvalidKeyFmt {
+                            expected: "An integer from 0 to 25".to_string(),
+                            actual: rings.to_string(),
+                        });
+                    }
+                    self.rings = num as i16;
+                }
+                Err(_) => {
+                    return Err(Error::InvalidKeyFmt {
+                        expected: "An integer".to_string(),
+                        actual: rings.to_string(),
+                    })
+                }
+            }
+        }
         Ok(())
     }
 }
@@ -191,7 +233,7 @@ impl StatefulKey for Rotor {
     }
     fn to_string(&self, _language: &mut Language) -> String {
         format!(
-            "rotor:{}, grund:{}, rings:{}",
+            "type:{}, grund:{}, rings:{}",
             match self.wiring_type {
                 RotorType::I => "I",
                 RotorType::II => "II",
