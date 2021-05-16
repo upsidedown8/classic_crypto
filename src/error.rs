@@ -64,6 +64,9 @@ pub enum Error {
     /// Couldn't Write To Stdout
     CouldntWriteToStdout,
 
-    /// Occurs when not enough text was input to a function
+    /// Not enough text was input to a function
     InsufficientInputLen { expected: usize, actual: usize },
+
+    /// The string sent to a key's new method had invalid formatting
+    InvalidKeyFmt { expected: String, actual: String },
 }
