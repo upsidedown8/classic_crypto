@@ -62,8 +62,11 @@ impl Keyed for KeyedVigenere {
         result
             .keyword
             .key_info_mut()
-            .set("Keyword", "A string", "kw");
-        result.alphabet.key_info_mut().set("Alphabet", "", "alph");
+            .set("Keyword", "<string>", "kw");
+        result
+            .alphabet
+            .key_info_mut()
+            .set("Alphabet", "<string>", "alph");
 
         result
     }

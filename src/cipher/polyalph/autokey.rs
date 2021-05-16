@@ -70,7 +70,7 @@ impl Keyed for Autokey {
         result
             .keyword
             .key_info_mut()
-            .set("Keyword", "A string", "kw");
+            .set("Keyword", "<string>", "kw");
 
         result
     }

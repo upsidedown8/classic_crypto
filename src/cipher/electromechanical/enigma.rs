@@ -82,7 +82,7 @@ impl Keyed for Enigma {
 
         result.plugboard.key_info_mut().set(
             "Plugboard",
-            "Pairs of connected letters, delimited by whitespace",
+            "<space delimited pairs of letters>",
             "plug",
         );
         result.rotors[0]
@@ -97,7 +97,7 @@ impl Keyed for Enigma {
         result
             .reflector
             .key_info_mut()
-            .set("Reflector", "The reflector name", "ref");
+            .set("Reflector", "<reflector_name>", "ref");
 
         result
     }

@@ -123,7 +123,7 @@ impl Keyed for Railfence {
         result
             .num_rails
             .key_info_mut()
-            .set("Number of rails", "An integer", "rails");
+            .set("Number of rails", "<integer>", "rails");
 
         result
     }

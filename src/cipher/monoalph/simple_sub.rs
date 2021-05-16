@@ -44,7 +44,10 @@ impl Keyed for SimpleSubstitution {
             alphabet: Alphabet::identity(language),
         };
 
-        result.alphabet.key_info_mut().set("Alphabet", "", "alph");
+        result
+            .alphabet
+            .key_info_mut()
+            .set("Alphabet", "<string>", "alph");
 
         result
     }
