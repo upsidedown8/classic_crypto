@@ -66,7 +66,7 @@ impl Key<&[i16]> for Keyword {
         }))
     }
     fn set(&mut self, _language: &mut Language, arg: &[i16]) -> Result<()> {
-        self.value.copy_from_slice(arg);
+        self.value = Vec::from(arg);
         Ok(())
     }
 }
