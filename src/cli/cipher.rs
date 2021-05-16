@@ -276,13 +276,18 @@ impl Cipher {
             for arg in args.iter() {
                 let short_name = key.key_info().short_name.clone();
                 if arg[0] == short_name {
-                    key.set_key_str(language, arg[1]).map_err(|err| match err {
-                        Error::InvalidKeyFmt { expected, actual } => Error::InvalidKeyFmt {
-                            expected: format!("[{}]: {}", short_name, expected),
-                            actual,
-                        },
-                        _ => err,
-                    })?;
+                    let remaining_arg = arg[1..]
+                        .iter()
+                        .copied()
+                        .fold(String::new(), |acc, x| acc + x);
+                    key.set_key_str(language, &remaining_arg)
+                        .map_err(|err| match err {
+                            Error::InvalidKeyFmt { expected, actual } => Error::InvalidKeyFmt {
+                                expected: format!("[{}]: {}", short_name, expected),
+                                actual,
+                            },
+                            _ => err,
+                        })?;
                 }
             }
         }
