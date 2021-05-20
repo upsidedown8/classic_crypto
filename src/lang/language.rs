@@ -94,7 +94,7 @@ pub struct Language {
     /// Stores the probability of each code point occuring
     ///
     #[serde(skip)]
-    unigram_probabilities: Vec<f64>,
+    pub unigram_probabilities: Vec<f64>,
 
     /// The index of [`LangAlphabet`] that is currently selected.
     ///
