@@ -48,13 +48,16 @@ impl Keyword {
 
 impl Key<&str> for Keyword {
     fn new(language: &mut Language, arg: &str) -> Result<Box<Self>> {
-        Ok(Box::new(Self {
-            value: language.string_to_vec(arg),
-            info: KeyInfo::default(),
-        }))
+        let mut result = Box::new(Self::identity(language));
+        result.set(language, arg)?;
+        Ok(result)
     }
     fn set(&mut self, language: &mut Language, arg: &str) -> Result<()> {
         self.value = language.string_to_vec(arg);
+        // ensure not empty
+        if self.value.is_empty() {
+            self.value.push(0);
+        }
         Ok(())
     }
 }
@@ -67,6 +70,10 @@ impl Key<&[i16]> for Keyword {
     }
     fn set(&mut self, _language: &mut Language, arg: &[i16]) -> Result<()> {
         self.value = Vec::from(arg);
+        // ensure not empty
+        if self.value.is_empty() {
+            self.value.push(0);
+        }
         Ok(())
     }
 }
