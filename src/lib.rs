@@ -3,7 +3,6 @@
 //! to supply a character set for any [`Language`].
 //!
 
-pub mod cli;
 pub mod error;
 pub mod key;
 pub mod lang;
