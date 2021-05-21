@@ -3,14 +3,11 @@
 
 ### A number of classical ciphers implemented in Rust, with the capability to supply a character set for any language. 
 
-## **CLI**
+## CLI
 
-### Capabilities
-Perform encrypt, decrypt, analytics and solve operations from the command line.
+There is a CLI available for this library [here](https://github.com/upsidedown8/classic_crypto_cli).
 
-## **Library**
-
-### Usage
+## Usage
 
 Add this line to your `Cargo.toml`
 
@@ -18,7 +15,7 @@ Add this line to your `Cargo.toml`
 classic_crypto = "0.1.0"
 ```
 
-### Example
+## Example
 
 ```rust
 use classic_crypto::{Asymmetric, Caesar, Keyed, Solve, lang::Language};
@@ -41,7 +38,7 @@ fn main() {
 }
 ```
 
-## **Supported Ciphers**
+## Supported Ciphers
 
 |      Name                         | Encrypt/Decrypt | Solve |
 | --------------------------------- | --------------- | ----- |
