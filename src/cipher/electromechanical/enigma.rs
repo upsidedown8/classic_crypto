@@ -82,7 +82,7 @@ impl Keyed for Enigma {
 
         result.plugboard.key_info_mut().set(
             "Plugboard",
-            "<space delimited pairs of letters>",
+            "<colon delimited pairs of letters>",
             "plug",
         );
         result.rotors[0]

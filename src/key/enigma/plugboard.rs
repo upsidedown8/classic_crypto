@@ -105,13 +105,13 @@ impl Key<&str> for Plugboard {
         language.set_alph_len(26);
 
         let tokens = arg
-            .split_whitespace()
+            .split(':')
             .map(|t| language.string_to_vec(t))
             .collect::<Vec<_>>();
 
         if tokens.iter().any(|t| t.len() != 2) {
             Err(Error::InvalidKeyFmt {
-                expected: "A whitespace delimited string of pairs of letters".to_string(),
+                expected: "A colon ':' delimited string of pairs of letters".to_string(),
                 actual: arg.to_string(),
             })
         } else if tokens.iter().any(|t| t[0] == t[1]) {
