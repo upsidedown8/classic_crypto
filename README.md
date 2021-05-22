@@ -1,5 +1,7 @@
 # **classic_crypto**
 [![Build Status](https://github.com/upsidedown8/classic_crypto/actions/workflows/rust.yml/badge.svg)](https://github.com/upsidedown8/classic_crypto/actions/workflows/rust.yml/)
+[![crates.io](https://img.shields.io/crates/v/classic_crypto.svg)](https://crates.io/crates/classic_crypto)
+[![docs.rs](https://docs.rs/classic_crypto/badge.svg)](https://docs.rs/classic_crypto)
 
 ### A number of classical ciphers implemented in Rust, with the capability to supply a character set for any language. 
 
