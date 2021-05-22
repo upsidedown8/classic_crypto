@@ -8,8 +8,8 @@ use crate::{
 /// Represents a Matrix (See Hill Cipher)
 ///
 pub struct Matrix {
-    value: Vec<Vec<i16>>,
-    dim_size: usize,
+    value: Vec<i16>,
+    size: usize,
     info: KeyInfo,
 }
 
@@ -18,232 +18,115 @@ impl Matrix {
     ///
     /// # Arguments
     ///
-    /// * `a` The first element
-    /// * `b` The second element
-    /// * `c` The third element
-    /// * `d` The fourth element
+    /// * `matrix` The matrix to find det from
     ///
-    fn x2_det(a: i16, b: i16, c: i16, d: i16) -> i16 {
-        a * d - b * c
+    fn x2_det(matrix: &[i16]) -> i16 {
+        matrix[0] * matrix[3] - matrix[1] * matrix[2]
     }
 
-    /// Determinant of a 2x2 matrix
+    /// Calculate the determinant of the matrix
     ///
     /// # Arguments
     ///
-    /// * `matrix` The matrix to calculate determinant of
+    /// `matrix` The matrix to calculate determinant from
     ///
-    fn x2_det_matrix(matrix: &[Vec<i16>]) -> i16 {
-        util::modulo(
-            Matrix::x2_det(matrix[0][0], matrix[0][1], matrix[1][0], matrix[1][1]),
-            26,
-        )
-    }
+    fn det(matrix: &[i16], language: &Language) -> i16 {
+        match matrix.len() {
+            4 => Matrix::x2_det(matrix),
+            9 => {
+                let mut det = 0;
 
-    /// MMI of a 2x2 matrix
-    ///
-    /// # Arguments
-    ///
-    /// * `matrix` The matrix to calculate MMI of
-    ///
-    fn x2_inv_matrix(matrix: &[Vec<i16>]) -> Option<i16> {
-        util::mmi(Matrix::x2_det_matrix(&matrix), 26)
-    }
+                // calculate determinant from top row
+                let mut x2_mat = vec![0; 4];
+                for col in 0..3 {
+                    // for each position, find 2x2 determinant
+                    let mut i = 0;
+                    for r in 1..3 {
+                        for c in (0..3).filter(|x| *x != col) {
+                            x2_mat[i] = util::modulo(matrix[r * 3 + c], language.cp_count());
+                            i += 1;
+                        }
+                    }
 
-    /// Determinant of a 3x3 matrix
-    ///
-    /// # Arguments
-    ///
-    /// * `matrix` The matrix to calculate determinant of
-    ///
-    fn x3_det_matrix(matrix: &[Vec<i16>]) -> i16 {
-        util::modulo(Matrix::calc_a(matrix) - Matrix::calc_b(matrix), 26)
-    }
+                    det += Matrix::x2_det(&x2_mat) * if col == 1 { -1 } else { 1 } * matrix[col];
+                }
 
-    /// MMI of a 3x3 matrix
-    ///
-    /// # Arguments
-    ///
-    /// * `matrix` The matrix to calculate MMI of
-    ///
-    fn x3_inv_matrix(matrix: &[Vec<i16>]) -> Option<i16> {
-        util::mmi(Matrix::x3_det_matrix(&matrix), 26)
-    }
-
-    /// Helper for x3_det_matrix
-    ///
-    /// # Arguments
-    ///
-    /// * `matrix` The matrix to calculate A from
-    ///
-    fn calc_a(matrix: &[Vec<i16>]) -> i16 {
-        matrix[0][0] * matrix[1][1] * matrix[2][2]
-            + matrix[0][1] * matrix[1][2] * matrix[2][0]
-            + matrix[0][2] * matrix[1][0] * matrix[2][1]
-    }
-
-    /// Helper for x3_det_matrix
-    ///
-    /// # Arguments
-    ///
-    /// * `matrix` The matrix to calculate B from
-    ///
-    fn calc_b(matrix: &[Vec<i16>]) -> i16 {
-        matrix[0][0] * matrix[1][2] * matrix[2][1]
-            + matrix[0][1] * matrix[1][0] * matrix[2][2]
-            + matrix[0][2] * matrix[1][1] * matrix[2][0]
+                det
+            }
+            _ => unreachable!("Matrix must be 2x2 or 3x3"),
+        }
     }
 
     /// Inverts the matrix, if possible to do so
     ///
-    pub fn invert(&self) -> Matrix {
+    pub fn invert(&self, language: &Language) -> Matrix {
         Matrix {
             info: KeyInfo::default(),
+            size: self.size,
             value: {
-                let mut matrix = vec![vec![0; self.dim_size]; self.dim_size];
-                let adj;
-                let inv;
+                let mut adj = vec![0; self.size * self.size];
 
-                match self.dim_size {
+                match self.size {
                     2 => {
-                        adj = vec![
-                            self.value[1][1],
-                            util::modulo(-self.value[0][1], 26),
-                            util::modulo(-self.value[1][0], 26),
-                            self.value[0][0],
-                        ];
-
-                        inv = Matrix::x2_inv_matrix(&matrix);
+                        adj[0] = self.value[3];
+                        adj[1] = util::modulo(-self.value[1], 26);
+                        adj[2] = util::modulo(-self.value[2], 26);
+                        adj[3] = self.value[0];
                     }
                     3 => {
-                        adj = vec![
-                            util::modulo(
-                                Matrix::x2_det(
-                                    self.value[1][1],
-                                    self.value[1][2],
-                                    self.value[2][1],
-                                    self.value[2][2],
-                                ),
-                                26,
-                            ),
-                            util::modulo(
-                                -Matrix::x2_det(
-                                    self.value[0][1],
-                                    self.value[0][2],
-                                    self.value[2][1],
-                                    self.value[2][2],
-                                ),
-                                26,
-                            ),
-                            util::modulo(
-                                Matrix::x2_det(
-                                    self.value[0][1],
-                                    self.value[0][2],
-                                    self.value[1][1],
-                                    self.value[1][2],
-                                ),
-                                26,
-                            ),
-                            util::modulo(
-                                -Matrix::x2_det(
-                                    self.value[1][0],
-                                    self.value[1][2],
-                                    self.value[2][0],
-                                    self.value[2][2],
-                                ),
-                                26,
-                            ),
-                            util::modulo(
-                                Matrix::x2_det(
-                                    self.value[0][0],
-                                    self.value[0][2],
-                                    self.value[2][0],
-                                    self.value[2][2],
-                                ),
-                                26,
-                            ),
-                            util::modulo(
-                                -Matrix::x2_det(
-                                    self.value[0][0],
-                                    self.value[0][2],
-                                    self.value[1][0],
-                                    self.value[1][2],
-                                ),
-                                26,
-                            ),
-                            util::modulo(
-                                Matrix::x2_det(
-                                    self.value[1][0],
-                                    self.value[1][1],
-                                    self.value[2][0],
-                                    self.value[2][1],
-                                ),
-                                26,
-                            ),
-                            util::modulo(
-                                -Matrix::x2_det(
-                                    self.value[0][0],
-                                    self.value[0][1],
-                                    self.value[2][0],
-                                    self.value[2][1],
-                                ),
-                                26,
-                            ),
-                            util::modulo(
-                                Matrix::x2_det(
-                                    self.value[0][0],
-                                    self.value[0][1],
-                                    self.value[1][0],
-                                    self.value[1][1],
-                                ),
-                                26,
-                            ),
-                        ];
+                        let mut x2_mat = vec![0; 4];
+                        // iterate through all matrix positions
+                        for row in 0..3 {
+                            for col in 0..3 {
+                                // for each position, find 2x2 determinant
+                                let mut i = 0;
+                                for r in (0..3).filter(|x| *x != row) {
+                                    for c in (0..3).filter(|x| *x != col) {
+                                        x2_mat[i] = self.value[r * 3 + c];
+                                        i += 1;
+                                    }
+                                }
 
-                        inv = Matrix::x3_inv_matrix(&self.value);
+                                let pos = col * 3 + row;
+                                adj[pos] = Matrix::x2_det(&x2_mat);
+                                adj[pos] *= if (row * 3 + col) % 2 == 0 { 1 } else { -1 };
+                            }
+                        }
                     }
-                    _ => {
-                        panic!("dim_size must be either 2 (2x2) or 3 (3x3)");
-                    }
+                    _ => panic!("Only 2x2 and 3x3 matrices are supported"),
                 }
 
-                let inv = inv.expect("Failed to calculate matrix inverse");
+                let det = util::modulo(Matrix::det(&self.value, language), language.cp_count());
+                let inv = util::mmi(det, language.cp_count())
+                    .expect("Failed to calculate matrix inverse");
 
-                for i in 0..self.dim_size {
-                    for j in 0..self.dim_size {
-                        matrix[i][j] = util::modulo(adj[i * self.dim_size + j] * inv, 26);
-                    }
-                }
-
-                matrix
+                (0..self.size * self.size)
+                    .map(|i| util::modulo(adj[i] * inv, language.cp_count()))
+                    .collect()
             },
-            dim_size: self.dim_size,
         }
     }
 
     /// Is this matrix invertible?
     ///
-    pub fn is_invertible(&self) -> bool {
-        let inv = match self.dim_size {
-            2 => Matrix::x3_inv_matrix(&self.value),
-            3 => Matrix::x3_inv_matrix(&self.value),
-            _ => {
-                panic!("dim_size must be either 2 (2x2) or 3 (3x3)");
-            }
-        };
-        inv != None
+    /// # Arguments
+    ///
+    /// `language` A [`Language`] instance
+    ///
+    pub fn is_invertible(&self, language: &Language) -> bool {
+        util::mmi(Matrix::det(&self.value, language), language.cp_count()).is_some()
     }
 
-    /// Gets the element at (x,y) in the matrix
+    /// Gets the element at (row, col) in the matrix
     ///
     /// # Arguments
     ///
-    /// * `x` The horizontal coordinate
-    /// * `y` The vertical coordinate
+    /// * `row` The row
+    /// * `col` The column
     ///
     #[inline(always)]
-    pub fn at(&self, x: usize, y: usize) -> i16 {
-        self.value[x][y]
+    pub fn at(&self, row: usize, col: usize) -> i16 {
+        self.value[row * self.size + col]
     }
 }
 
@@ -260,52 +143,13 @@ impl Key<&[i16]> for Matrix {
                 actual: format!("{} values, data: {:?}", arg.len(), arg),
             })
         } else {
-            let dim_size = match arg.len() {
+            self.value = Vec::from(arg);
+            self.size = match arg.len() {
                 4 => 2,
                 9 => 3,
                 _ => unreachable!(),
             };
 
-            self.value = {
-                let mut matrix = vec![vec![0; dim_size]; dim_size];
-                for i in 0..dim_size {
-                    for j in 0..dim_size {
-                        matrix[i][j] = arg[i * dim_size + j];
-                    }
-                }
-                matrix
-            };
-            self.dim_size = dim_size;
-
-            Ok(())
-        }
-    }
-}
-impl Key<&Vec<Vec<i16>>> for Matrix {
-    fn new(language: &mut Language, arg: &Vec<Vec<i16>>) -> Result<Box<Self>> {
-        let mut result = Matrix::identity(language);
-        result.set(language, arg)?;
-        Ok(Box::new(result))
-    }
-    fn set(&mut self, _language: &mut Language, arg: &Vec<Vec<i16>>) -> Result<()> {
-        if arg.is_empty() {
-            Err(Error::InvalidKeyFmt {
-                expected: "Not empty".to_string(),
-                actual: "Empty vec".to_string(),
-            })
-        } else if arg.len() != arg[0].len() {
-            Err(Error::InvalidKeyFmt {
-                expected: "Square matrix".to_string(),
-                actual: format!("rows ({}) != cols ({})", arg.len(), arg[0].len()),
-            })
-        } else if !(2..=3).contains(&arg.len()) {
-            Err(Error::InvalidKeyFmt {
-                expected: "Matrix must be 2x2 or 3x3".to_string(),
-                actual: format!("rows: {} cols: {}", arg.len(), arg[0].len()),
-            })
-        } else {
-            self.value = arg.clone();
-            self.dim_size = arg.len();
             Ok(())
         }
     }
@@ -323,38 +167,40 @@ impl Key<&str> for Matrix {
 }
 
 impl IdentityKey for Matrix {
-    fn identity(language: &mut Language) -> Self {
-        language.set_alph_len(26);
+    fn identity(_language: &mut Language) -> Self {
         Self {
-            value: { vec![vec![0; 2]; 2] },
-            dim_size: 2,
+            value: { vec![0; 4] },
+            size: 2,
             info: KeyInfo::default(),
         }
     }
 }
 
 impl StatefulKey for Matrix {
-    fn reset(&mut self, language: &mut Language) {
-        language.set_alph_len(26);
-        self.value = vec![vec![0; self.dim_size]; self.dim_size];
-        for i in 0..self.dim_size {
-            self.value[i][i] = 1;
+    fn reset(&mut self, _language: &mut Language) {
+        self.value = vec![0; self.size * self.size];
+        for i in 0..self.size {
+            self.value[(self.size + 1) * i] = 1;
         }
     }
     fn to_string(&self, language: &mut Language) -> String {
         self.value
             .iter()
-            .map(|row| language.vec_to_string(row))
-            .fold(String::new(), |acc, row| row + &acc)
+            .map(|&item| language.cp_to_upper(item))
+            .fold(
+                String::with_capacity(self.size * self.size),
+                |mut acc, ch| {
+                    acc.push(ch);
+                    acc
+                },
+            )
     }
-    fn randomize(&mut self, _language: &mut Language) {
+    fn randomize(&mut self, language: &mut Language) {
         loop {
-            for i in 0..self.dim_size {
-                for j in 0..self.dim_size {
-                    self.value[i][j] = fastrand::i16(0..26);
-                }
+            for i in 0..self.size * self.size {
+                self.value[i] = fastrand::i16(0..language.cp_count());
             }
-            if self.is_invertible() {
+            if self.is_invertible(language) {
                 break;
             }
         }
@@ -370,5 +216,26 @@ impl IoKey for Matrix {
     }
     fn key_info_mut(&mut self) -> &mut KeyInfo {
         &mut self.info
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn x2_inv() {
+        let mut language = Language::from_file("examples/data/english.bin").unwrap();
+        let mat = *Matrix::new(&mut language, "hill").unwrap();
+
+        assert_eq!(vec![25, 22, 1, 23], mat.invert(&language).value);
+    }
+
+    #[test]
+    fn x3_inv() {
+        let mut language = Language::from_file("examples/data/english.bin").unwrap();
+        let mat = *Matrix::new(&mut language, "AlphaBeta").unwrap();
+
+        assert_eq!(vec![3, 7, 1, 24, 4, 19, 5, 4, 19], mat.invert(&language).value);
     }
 }
