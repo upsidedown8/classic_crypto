@@ -4,11 +4,6 @@ use crate::{
     lang::Language,
 };
 
-use rand::{
-    distributions::{Distribution, Standard},
-    Rng,
-};
-
 // Wiring details from: https://en.wikipedia.org/wiki/Enigma_rotor_details#Rotor_wiring_tables
 
 /// Collection of all Enigma Reflector types from the M3 and M4 Enigma
@@ -23,13 +18,14 @@ pub enum ReflectorType {
     CThin = 4, // M4
 }
 
-impl Distribution<ReflectorType> for Standard {
-    /// BThin and CThin are a special case for M4 Enigma
-    fn sample<R: rand::Rng + ?Sized>(&self, rng: &mut R) -> ReflectorType {
-        match rng.gen_range(0..5) {
+impl From<usize> for ReflectorType {
+    fn from(arg: usize) -> Self {
+        match arg {
             0 => ReflectorType::A,
             1 => ReflectorType::B,
-            _ => ReflectorType::C,
+            2 => ReflectorType::C,
+            3 => ReflectorType::BThin,
+            _ => ReflectorType::CThin,
         }
     }
 }
@@ -128,7 +124,7 @@ impl StatefulKey for Reflector {
         .to_string()
     }
     fn randomize(&mut self, _language: &mut Language) {
-        self.wiring_type = rand::thread_rng().gen();
+        self.wiring_type = ReflectorType::from(fastrand::usize(0..5));
     }
 }
 

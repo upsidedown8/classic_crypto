@@ -1,5 +1,3 @@
-use rand::Rng;
-
 use crate::{
     error::{Error, Result},
     key::{IdentityKey, IoKey, Key, KeyInfo, StatefulKey},
@@ -353,7 +351,7 @@ impl StatefulKey for Matrix {
         loop {
             for i in 0..self.dim_size {
                 for j in 0..self.dim_size {
-                    self.value[i][j] = rand::thread_rng().gen_range(0..26);
+                    self.value[i][j] = fastrand::i16(0..26);
                 }
             }
             if self.is_invertible() {

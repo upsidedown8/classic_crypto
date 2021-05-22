@@ -1,5 +1,3 @@
-use rand::Rng;
-
 use crate::{
     error::Result,
     key::{IdentityKey, IoKey, Key, KeyInfo, StatefulKey},
@@ -95,7 +93,7 @@ impl StatefulKey for Keyword {
         language.vec_to_string(&self.value)
     }
     fn randomize(&mut self, language: &mut Language) {
-        let length = rand::thread_rng().gen_range(3..12);
+        let length = fastrand::usize(3..12);
         self.value.resize(length, 0);
         util::fill_random_array(&mut self.value, language.cp_count());
     }

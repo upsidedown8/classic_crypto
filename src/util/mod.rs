@@ -2,8 +2,6 @@
 //! Contains functions that are used across the library
 //!
 
-use rand::Rng;
-
 pub mod prime_gen;
 
 /// Returns true if the string contains any repeated characters
@@ -217,7 +215,6 @@ pub fn fill_consecutive_vec(arr: &mut Vec<i16>, start: i16, modulus: i16) {
 /// # Arguments
 ///
 /// * `arr` A mutable borrow of the Vec<i16> to fill
-/// * `rng` A rand::Rng implementation to generate random numbers
 /// * `max_exclusive` The maximum exclusive value to use in the rng range
 ///
 /// # Examples
@@ -232,9 +229,8 @@ pub fn fill_consecutive_vec(arr: &mut Vec<i16>, start: i16, modulus: i16) {
 /// ```
 ///
 pub fn fill_random_array(arr: &mut Vec<i16>, max_exclusive: i16) {
-    let mut rng = rand::thread_rng();
     for item in arr {
-        *item = rng.gen_range(0..max_exclusive);
+        *item = fastrand::i16(0..max_exclusive);
     }
 }
 
@@ -255,10 +251,9 @@ pub fn fill_random_array(arr: &mut Vec<i16>, max_exclusive: i16) {
 /// ```
 ///
 pub fn shuffle<T>(arr: &mut Vec<T>) {
-    let mut rng = rand::thread_rng();
     for i in 0..arr.len() {
-        let pos = rng.gen_range(0..arr.len());
-        arr.swap(i, pos);
+        let j = fastrand::usize(0..arr.len());
+        arr.swap(i, j);
     }
 }
 

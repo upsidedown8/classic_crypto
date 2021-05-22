@@ -4,10 +4,6 @@ use crate::{
     lang::Language,
     util,
 };
-use rand::{
-    distributions::{Distribution, Standard},
-    Rng,
-};
 
 // Wiring details from: https://en.wikipedia.org/wiki/Enigma_rotor_details#Rotor_wiring_tables
 
@@ -30,10 +26,9 @@ pub enum RotorType {
     Gamma = 9,
 }
 
-impl Distribution<RotorType> for Standard {
-    // Beta and Gamma rotors are generated with a seperate RNG
-    fn sample<R: rand::Rng + ?Sized>(&self, rng: &mut R) -> RotorType {
-        match rng.gen_range(0..8) {
+impl From<usize> for RotorType {
+    fn from(arg: usize) -> Self {
+        match arg {
             0 => RotorType::I,
             1 => RotorType::II,
             2 => RotorType::III,
@@ -251,10 +246,9 @@ impl StatefulKey for Rotor {
         )
     }
     fn randomize(&mut self, _language: &mut Language) {
-        let mut rng = rand::thread_rng();
-        self.wiring_type = rng.gen();
-        self.grund = rng.gen_range(0..26);
-        self.rings = rng.gen_range(0..26);
+        self.wiring_type = RotorType::from(fastrand::usize(0..10));
+        self.grund = fastrand::i16(0..26);
+        self.rings = fastrand::i16(0..26);
     }
 }
 

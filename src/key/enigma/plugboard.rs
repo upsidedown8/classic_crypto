@@ -1,5 +1,3 @@
-use rand::Rng;
-
 use crate::{
     error::{Error, Result},
     key::{IdentityKey, IoKey, Key, KeyInfo, StatefulKey},
@@ -176,7 +174,7 @@ impl StatefulKey for Plugboard {
         let mut values = vec![0; 26];
         util::fill_consecutive_vec(&mut values, 0, 26);
         util::shuffle(&mut values);
-        let num_plugs = rand::thread_rng().gen_range(5..13);
+        let num_plugs = fastrand::usize(5..13);
         for i in 0..num_plugs {
             self.add_plug(values[i * 2], values[i * 2 + 1]);
         }

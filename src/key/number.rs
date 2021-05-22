@@ -1,5 +1,3 @@
-use rand::Rng;
-
 use crate::{
     error::{Error, Result},
     key::{IdentityKey, IoKey, Key, KeyInfo, StatefulKey},
@@ -97,7 +95,7 @@ impl StatefulKey for Number {
         format!("{}", self.value)
     }
     fn randomize(&mut self, _language: &mut Language) {
-        self.value = self.legal_values[rand::thread_rng().gen_range(0..self.legal_values.len())];
+        self.value = self.legal_values[fastrand::usize(0..self.legal_values.len())];
     }
 }
 
