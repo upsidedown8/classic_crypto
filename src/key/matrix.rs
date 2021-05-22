@@ -236,6 +236,9 @@ mod tests {
         let mut language = Language::from_file("examples/data/english.bin").unwrap();
         let mat = *Matrix::new(&mut language, "AlphaBeta").unwrap();
 
-        assert_eq!(vec![3, 7, 1, 24, 4, 19, 5, 4, 19], mat.invert(&language).value);
+        assert_eq!(
+            vec![3, 7, 1, 24, 4, 19, 5, 4, 19],
+            mat.invert(&language).value
+        );
     }
 }
