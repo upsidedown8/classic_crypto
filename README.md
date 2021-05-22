@@ -14,7 +14,7 @@ There is a CLI available for this library [here](https://github.com/upsidedown8/
 Add this line to your `Cargo.toml`
 
 ```toml
-classic_crypto = "0.1.0"
+classic_crypto = "0.2.0"
 ```
 
 ## Example
