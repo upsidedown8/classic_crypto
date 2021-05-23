@@ -64,7 +64,7 @@ fn main() {
 | Fialka                            | ⬜️              | ⬜️   |
 | Four Square                       | ⬜️              | ⬜️   |
 | Fractionated Morse                | ⬜️              | ⬜️   |
-| Hill (2x2 and 3x3 matrices)       | ⬜️              | ⬜️   |
+| Hill (2x2 and 3x3 matrices)       | ✅              | ⬜️   |
 | Homophonic Substitution           | ⬜️              | ⬜️   |
 | Keyed Vigenère                    | ✅              | ⬜️   |
 | Lorenz                            | ⬜️              | ⬜️   |

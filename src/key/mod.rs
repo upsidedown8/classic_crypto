@@ -24,7 +24,7 @@ pub use enigma::plugboard::Plugboard;
 pub use enigma::reflector::*;
 pub use enigma::rotor::*;
 pub use keyword::Keyword;
-pub use matrix::Matrix;
+pub use matrix::{Matrix, MatrixDimSize};
 pub use number::Number;
 pub use vigenere_square::bellaso_square::BellasoSquare;
 pub use vigenere_square::classic_vig_square::ClassicVigSquare;

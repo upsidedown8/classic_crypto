@@ -41,6 +41,11 @@ pub use cipher::polyalph::keyed_vig::KeyedVigenere;
 pub use cipher::polyalph::porta::Porta;
 
 /* -------------------------------------------------------------------------- */
+/*                                 Polygraphic                                */
+/* -------------------------------------------------------------------------- */
+pub use cipher::polygraph::hill::Hill;
+
+/* -------------------------------------------------------------------------- */
 /*                                Transposition                               */
 /* -------------------------------------------------------------------------- */
 pub use cipher::transpos::block_transpos::BlockTransposition;

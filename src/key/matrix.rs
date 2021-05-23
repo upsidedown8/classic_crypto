@@ -5,11 +5,19 @@ use crate::{
     util,
 };
 
+/// The dimension size of a matrix (2x2 or 3x3)
+///
+#[derive(Clone, Copy)]
+pub enum MatrixDimSize {
+    Two = 2,
+    Three = 3,
+}
+
 /// Represents a Matrix (See Hill Cipher)
 ///
 pub struct Matrix {
+    pub size: MatrixDimSize,
     value: Vec<i16>,
-    size: usize,
     info: KeyInfo,
 }
 
@@ -64,16 +72,16 @@ impl Matrix {
             info: KeyInfo::default(),
             size: self.size,
             value: {
-                let mut adj = vec![0; self.size * self.size];
+                let mut adj = vec![0; self.size as usize * self.size as usize];
 
                 match self.size {
-                    2 => {
+                    MatrixDimSize::Two => {
                         adj[0] = self.value[3];
                         adj[1] = util::modulo(-self.value[1], 26);
                         adj[2] = util::modulo(-self.value[2], 26);
                         adj[3] = self.value[0];
                     }
-                    3 => {
+                    MatrixDimSize::Three => {
                         let mut x2_mat = vec![0; 4];
                         // iterate through all matrix positions
                         for row in 0..3 {
@@ -93,14 +101,13 @@ impl Matrix {
                             }
                         }
                     }
-                    _ => panic!("Only 2x2 and 3x3 matrices are supported"),
                 }
 
                 let det = util::modulo(Matrix::det(&self.value, language), language.cp_count());
                 let inv = util::mmi(det, language.cp_count())
                     .expect("Failed to calculate matrix inverse");
 
-                (0..self.size * self.size)
+                (0..self.size as usize * self.size as usize)
                     .map(|i| util::modulo(adj[i] * inv, language.cp_count()))
                     .collect()
             },
@@ -126,7 +133,7 @@ impl Matrix {
     ///
     #[inline(always)]
     pub fn at(&self, row: usize, col: usize) -> i16 {
-        self.value[row * self.size + col]
+        self.value[row * self.size as usize + col]
     }
 }
 
@@ -145,8 +152,8 @@ impl Key<&[i16]> for Matrix {
         } else {
             self.value = Vec::from(arg);
             self.size = match arg.len() {
-                4 => 2,
-                9 => 3,
+                4 => MatrixDimSize::Two,
+                9 => MatrixDimSize::Three,
                 _ => unreachable!(),
             };
 
@@ -170,7 +177,7 @@ impl IdentityKey for Matrix {
     fn identity(_language: &mut Language) -> Self {
         Self {
             value: { vec![0; 4] },
-            size: 2,
+            size: MatrixDimSize::Two,
             info: KeyInfo::default(),
         }
     }
@@ -178,9 +185,9 @@ impl IdentityKey for Matrix {
 
 impl StatefulKey for Matrix {
     fn reset(&mut self, _language: &mut Language) {
-        self.value = vec![0; self.size * self.size];
-        for i in 0..self.size {
-            self.value[(self.size + 1) * i] = 1;
+        self.value = vec![0; self.size as usize * self.size as usize];
+        for i in 0..self.size as usize {
+            self.value[(self.size as usize + 1) * i] = 1;
         }
     }
     fn to_string(&self, language: &mut Language) -> String {
@@ -188,7 +195,7 @@ impl StatefulKey for Matrix {
             .iter()
             .map(|&item| language.cp_to_upper(item))
             .fold(
-                String::with_capacity(self.size * self.size),
+                String::with_capacity(self.size as usize * self.size as usize),
                 |mut acc, ch| {
                     acc.push(ch);
                     acc
@@ -197,7 +204,7 @@ impl StatefulKey for Matrix {
     }
     fn randomize(&mut self, language: &mut Language) {
         loop {
-            for i in 0..self.size * self.size {
+            for i in 0..self.size as usize * self.size as usize {
                 self.value[i] = fastrand::i16(0..language.cp_count());
             }
             if self.is_invertible(language) {
