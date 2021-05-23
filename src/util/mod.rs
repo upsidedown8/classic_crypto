@@ -2,6 +2,8 @@
 //! Contains functions that are used across the library
 //!
 
+use std::ops::{Add, Rem};
+
 pub mod prime_gen;
 
 /// Returns true if the string contains any repeated characters
@@ -418,6 +420,6 @@ pub fn gcd(a: i16, b: i16) -> i16 {
 /// assert_eq!(util::modulo(a, b), 16);
 /// ```
 ///
-pub fn modulo(a: i16, b: i16) -> i16 {
+pub fn modulo<T: Rem<Output = T> + Add<Output = T> + Copy>(a: T, b: T) -> T {
     (b + (a % b)) % b
 }
