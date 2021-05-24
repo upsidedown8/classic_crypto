@@ -152,7 +152,7 @@ impl Key<&[i16]> for Matrix {
         } else {
             let val = Vec::from(arg);
 
-            if util::mmi(Matrix::det(&val, &language), language.cp_count()).is_some() {
+            if util::mmi(Matrix::det(&val, &language), language.cp_count()).is_none() {
                 Err(Error::InvalidKeyFmt {
                     expected: "Matrix to have an inverse".to_string(),
                     actual: format!("{:?}", arg),
