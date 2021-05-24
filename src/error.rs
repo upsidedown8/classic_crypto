@@ -1,3 +1,6 @@
+//! Provides the library [`Result`] and [`Error`] types
+//!
+
 use std::path::PathBuf;
 
 use bincode::ErrorKind;
