@@ -97,10 +97,7 @@ impl Keyed for Hill {
             matrix: Matrix::identity(language),
         };
 
-        result
-            .matrix
-            .key_info_mut()
-            .set("Matrix", "<4 or 9 letter string>", "mat");
+        result.matrix.info_mut().set("Matrix", "mat");
 
         result
     }

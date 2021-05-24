@@ -159,7 +159,7 @@ impl Key<&str> for Rotor {
     fn set(&mut self, _language: &mut Language, arg: &str) -> Result<()> {
         let args = arg.split(':').collect::<Vec<_>>();
         if let Some(&rotor) = args.get(0) {
-            match rotor {
+            match rotor.to_lowercase().as_str() {
                 "i" => self.wiring_type = RotorType::I,
                 "ii" => self.wiring_type = RotorType::II,
                 "iii" => self.wiring_type = RotorType::III,
@@ -256,10 +256,13 @@ impl IoKey for Rotor {
     fn set_key_str(&mut self, language: &mut Language, arg: &str) -> Result<()> {
         self.set(language, arg)
     }
-    fn key_info(&self) -> &KeyInfo {
+    fn info(&self) -> &KeyInfo {
         &self.info
     }
-    fn key_info_mut(&mut self) -> &mut KeyInfo {
+    fn info_mut(&mut self) -> &mut KeyInfo {
         &mut self.info
+    }
+    fn desc(&self) -> String {
+        "<rotor_name>:<grund>:<rings>".to_string()
     }
 }

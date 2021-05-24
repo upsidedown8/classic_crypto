@@ -10,6 +10,7 @@ pub struct Number {
     value: i16,
     legal_values: Vec<i16>,
     info: KeyInfo,
+    desc: String,
 }
 
 impl Number {
@@ -27,7 +28,7 @@ impl Number {
     ///
     pub fn set_legal_values(&mut self, range: Vec<i16>) {
         self.legal_values = range.clone();
-        self.info.desc = format!("An integer.\nLegal values: {:?}", range);
+        self.desc = format!("<integer: {:?}>", range);
     }
 
     fn parse(arg: &str) -> Result<i16> {
@@ -55,6 +56,7 @@ impl Key<i16> for Number {
             value: arg,
             legal_values: (0..language.cp_count()).collect(),
             info: KeyInfo::default(),
+            desc: "<integer>".to_string(),
         };
 
         result.check_val(arg)?;
@@ -83,6 +85,7 @@ impl IdentityKey for Number {
             value: 0,
             legal_values: (0..language.cp_count()).collect(),
             info: KeyInfo::default(),
+            desc: "<integer>".to_string(),
         }
     }
 }
@@ -103,10 +106,13 @@ impl IoKey for Number {
     fn set_key_str(&mut self, language: &mut Language, arg: &str) -> Result<()> {
         self.set(language, arg)
     }
-    fn key_info(&self) -> &KeyInfo {
+    fn info(&self) -> &KeyInfo {
         &self.info
     }
-    fn key_info_mut(&mut self) -> &mut KeyInfo {
+    fn info_mut(&mut self) -> &mut KeyInfo {
         &mut self.info
+    }
+    fn desc(&self) -> String {
+        self.desc.clone()
     }
 }

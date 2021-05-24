@@ -37,14 +37,12 @@ pub use vigenere_square::VigSquare;
 #[derive(Default, Clone)]
 pub struct KeyInfo {
     pub name: String,
-    pub desc: String,
     pub short_name: String,
 }
 
 impl KeyInfo {
-    pub fn set(&mut self, name: &str, desc: &str, short_name: &str) {
+    pub fn set(&mut self, name: &str, short_name: &str) {
         self.name = name.to_string();
-        self.desc = desc.to_string();
         self.short_name = short_name.to_string();
     }
 }
@@ -128,9 +126,11 @@ pub trait IoKey: StatefulKey {
 
     /// Get the key info for this key type
     ///
-    fn key_info(&self) -> &KeyInfo;
+    fn info(&self) -> &KeyInfo;
 
     /// Get the mutable key info for this key type
     ///
-    fn key_info_mut(&mut self) -> &mut KeyInfo;
+    fn info_mut(&mut self) -> &mut KeyInfo;
+
+    fn desc(&self) -> String;
 }

@@ -132,10 +132,13 @@ impl IoKey for Reflector {
     fn set_key_str(&mut self, language: &mut Language, arg: &str) -> Result<()> {
         self.set(language, arg)
     }
-    fn key_info(&self) -> &KeyInfo {
+    fn info(&self) -> &KeyInfo {
         &self.info
     }
-    fn key_info_mut(&mut self) -> &mut KeyInfo {
+    fn info_mut(&mut self) -> &mut KeyInfo {
         &mut self.info
+    }
+    fn desc(&self) -> String {
+        "<reflector_name>".to_string()
     }
 }

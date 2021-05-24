@@ -70,10 +70,7 @@ impl Keyed for BlockTransposition {
             keyword: Keyword::identity(language),
         };
 
-        result
-            .keyword
-            .key_info_mut()
-            .set("Keyword", "<string>", "kw");
+        result.keyword.info_mut().set("Keyword", "kw");
 
         result
     }

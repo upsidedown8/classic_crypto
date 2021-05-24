@@ -112,10 +112,13 @@ impl IoKey for Alphabet {
     fn set_key_str(&mut self, language: &mut Language, arg: &str) -> crate::error::Result<()> {
         self.set(language, arg)
     }
-    fn key_info(&self) -> &KeyInfo {
+    fn info(&self) -> &KeyInfo {
         &self.info
     }
-    fn key_info_mut(&mut self) -> &mut KeyInfo {
+    fn info_mut(&mut self) -> &mut KeyInfo {
         &mut self.info
+    }
+    fn desc(&self) -> String {
+        "<string>".to_string()
     }
 }

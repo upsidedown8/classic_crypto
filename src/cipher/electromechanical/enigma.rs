@@ -80,24 +80,11 @@ impl Keyed for Enigma {
             reflector: *Reflector::new(language, ReflectorType::B).unwrap(),
         };
 
-        result.plugboard.key_info_mut().set(
-            "Plugboard",
-            "<colon delimited pairs of letters>",
-            "plug",
-        );
-        result.rotors[0]
-            .key_info_mut()
-            .set("Right rotor", "<rotor_name>:<grund>:<rings>", "r0");
-        result.rotors[1]
-            .key_info_mut()
-            .set("Middle rotor", "<rotor_name>:<grund>:<rings>", "r1");
-        result.rotors[2]
-            .key_info_mut()
-            .set("Left rotor", "<rotor_name>:<grund>:<rings>", "r3");
-        result
-            .reflector
-            .key_info_mut()
-            .set("Reflector", "<reflector_name>", "ref");
+        result.plugboard.info_mut().set("Plugboard", "plug");
+        result.rotors[0].info_mut().set("Right rotor", "r0");
+        result.rotors[1].info_mut().set("Middle rotor", "r1");
+        result.rotors[2].info_mut().set("Left rotor", "r2");
+        result.reflector.info_mut().set("Reflector", "ref");
 
         result
     }

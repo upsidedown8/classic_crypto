@@ -98,7 +98,7 @@ pub trait Keyed {
         (0..keys.len()).for_each(|i| {
             result.push_str(&format!(
                 "{}: {}",
-                keys[i].key_info().name,
+                keys[i].info().name,
                 keys[i].to_string(language),
             ));
             result.push('\n');

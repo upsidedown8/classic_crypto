@@ -75,10 +75,7 @@ impl Keyed for Scytale {
         };
 
         result.num_faces.set_legal_values((2..15).collect());
-        result
-            .num_faces
-            .key_info_mut()
-            .set("Number of faces", "<integer>", "faces");
+        result.num_faces.info_mut().set("Number of faces", "faces");
 
         result
     }

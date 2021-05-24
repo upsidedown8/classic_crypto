@@ -91,8 +91,8 @@ impl Keyed for Affine {
         result
             .b
             .set_legal_values((0..language.cp_count()).collect::<Vec<_>>());
-        result.a.key_info_mut().set("A", "<integer>", "a");
-        result.b.key_info_mut().set("B", "<integer>", "b");
+        result.a.info_mut().set("A", "a");
+        result.b.info_mut().set("B", "b");
 
         result
     }

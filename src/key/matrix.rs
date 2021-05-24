@@ -143,21 +143,30 @@ impl Key<&[i16]> for Matrix {
         result.set(language, arg)?;
         Ok(Box::new(result))
     }
-    fn set(&mut self, _language: &mut Language, arg: &[i16]) -> Result<()> {
+    fn set(&mut self, language: &mut Language, arg: &[i16]) -> Result<()> {
         if arg.len() != 4 && arg.len() != 9 {
             Err(Error::InvalidKeyFmt {
                 expected: "Expected 4 or 9 values".to_string(),
                 actual: format!("{} values, data: {:?}", arg.len(), arg),
             })
         } else {
-            self.value = Vec::from(arg);
-            self.size = match arg.len() {
-                4 => MatrixDimSize::Two,
-                9 => MatrixDimSize::Three,
-                _ => unreachable!(),
-            };
+            let val = Vec::from(arg);
 
-            Ok(())
+            if util::mmi(Matrix::det(&val, &language), language.cp_count()).is_some() {
+                Err(Error::InvalidKeyFmt {
+                    expected: "Matrix to have an inverse".to_string(),
+                    actual: format!("{:?}", arg),
+                })
+            } else {
+                self.value = val;
+                self.size = match arg.len() {
+                    4 => MatrixDimSize::Two,
+                    9 => MatrixDimSize::Three,
+                    _ => unreachable!(),
+                };
+
+                Ok(())
+            }
         }
     }
 }
@@ -218,11 +227,14 @@ impl IoKey for Matrix {
     fn set_key_str(&mut self, language: &mut Language, arg: &str) -> Result<()> {
         self.set(language, arg)
     }
-    fn key_info(&self) -> &KeyInfo {
+    fn info(&self) -> &KeyInfo {
         &self.info
     }
-    fn key_info_mut(&mut self) -> &mut KeyInfo {
+    fn info_mut(&mut self) -> &mut KeyInfo {
         &mut self.info
+    }
+    fn desc(&self) -> String {
+        "<4 or 9 letter string>".to_string()
     }
 }
 

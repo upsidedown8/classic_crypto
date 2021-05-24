@@ -59,14 +59,8 @@ impl Keyed for KeyedVigenere {
             alphabet: Alphabet::identity(language),
         };
 
-        result
-            .keyword
-            .key_info_mut()
-            .set("Keyword", "<string>", "kw");
-        result
-            .alphabet
-            .key_info_mut()
-            .set("Alphabet", "<string>", "alph");
+        result.keyword.info_mut().set("Keyword", "kw");
+        result.alphabet.info_mut().set("Alphabet", "alph");
 
         result
     }
