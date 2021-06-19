@@ -1,86 +1,50 @@
-// use key::{Key, SetKey, StatefulKey};
+use std::collections::HashMap;
 
-// use crate::convert;
-// use crate::util;
-// use crate::key::key;
+use crate::{
+    error::Result,
+    key::{IdentityKey, IoKey, Key, KeyInfo, StatefulKey},
+    lang::Language,
+    util,
+};
 
-// pub struct PolybiusSquare {
-//     square: Vec<Vec<i16>>,
-//     dim_size: usize,
-//     column_labels: Vec<i16>,
-//     row_labels: Vec<i16>
-// }
+/// Represents a Polybius Square
+///
+pub struct PolybiusSquare {
+    value: Vec<i16>,
+    inverse: Vec<i16>,
+    row_keys: Vec<i16>,
+    col_keys: Vec<i16>,
+    row_lookup: HashMap<i16, usize>,
+    col_lookup: HashMap<i16, usize>,
+    dim_size: usize,
+}
 
-// impl PolybiusSquare {
-//     fn from_string(square: &String, col_labels: &String, row_labels: &String) -> PolybiusSquare {
-//         PolybiusSquare::from_vector(
-//             &convert::from_string(square),
-//             &convert::from_string(col_labels),
-//             &convert::from_string(row_labels)
-//         )
-//     }
-//     fn from_vector(square: &Vec<i16>, col_labels: &Vec<i16>, row_labels: &Vec<i16>) -> PolybiusSquare {
-//         match square.len() {
-//             25 => {
-//                 PolybiusSquare {
-//                     square: {
-//                         let mut square = vec![vec![0; 5]; 5];
+impl PolybiusSquare {
+    /// Encrypts `cp` and returns a pair of row/col coordinates
+    ///
+    /// # Arguments
+    ///
+    /// * `cp` The letter to encrypt
+    ///
+    pub fn encrypt(&self, cp: i16) -> (i16, i16) {
+        let pos = self.inverse[cp as usize] as usize;
+        let row = self.value[(pos / self.dim_size) as usize] as usize;
+        let col = self.value[(pos % self.dim_size) as usize] as usize;
+        (self.row_keys[row], self.col_keys[col])
+    }
 
-//                         square
-//                     },
-//                     dim_size: 5,
-//                     column_labels: col_labels.clone(),
-//                     row_labels: row_labels.clone()
-//                 }
-//             },
-//             36 => {
-//                 PolybiusSquare {
-//                     square: {
-//                         let mut square = vec![vec![0; 6]; 6];
-
-//                         square
-//                     },
-//                     dim_size: 5,
-//                     column_labels: col_labels.clone(),
-//                     row_labels: row_labels.clone()
-//                 }
-//             },
-//             _ => {
-//                 panic!("");
-//             }
-//         }
-//     }
-// }
-
-// impl SetKey<&String> for PolybiusSquare {
-//     fn set(&mut self, string: &String) {
-//         self.value = convert::from_string(&string);
-//     }
-// }
-// impl SetKey<&Vec<i16>> for PolybiusSquare {
-//     fn set(&mut self, key: &Vec<i16>) {
-//         self.value = key.clone();
-//     }
-// }
-
-// impl Key for PolybiusSquare {
-//     fn to_string(&self) -> String {
-//         convert::to_string(&self.value)
-//     }
-//     fn new() -> PolybiusSquare {
-//         PolybiusSquare {
-//             value: vec![0]
-//         }
-//     }
-// }
-
-// impl StatefulKey for PolybiusSquare {
-//     fn reset(&mut self) {
-//         self.value = vec![0];
-//     }
-//     fn randomize(&mut self) {
-//         let length = rng.gen_range(3..12);
-//         self.value.resize(length, 0);
-//         util::fill_random_array(&mut self.value, rng, 26);
-//     }
-// }
+    /// Decrypts a pair of (`row`, `col`). If the row/col are
+    /// not found returns `None`.
+    ///
+    /// # Arguments
+    ///
+    /// * `row` The row coordinate of the letter
+    /// * `col` The col coordinate of the letter
+    ///
+    pub fn decrypt(&self, row: i16, col: i16) -> Option<i16> {
+        let row_idx = self.row_lookup.get(&row)?;
+        let col_idx = self.col_lookup.get(&col)?;
+        let pos = *row_idx * self.dim_size + *col_idx;
+        Some(self.value[pos])
+    }
+}
